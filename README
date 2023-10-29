@@ -1,0 +1,3 @@
+Filters for iCalendar events.
+
+harbour-webcal-filters modifies iCalendarFilters.json in ~/.config/null.hsjpekka/webcal-filters/. Thus, to use it effectively, change the iCalendar filter description file iCalendarFilters.json in ~/.config/webcal-client/ to a link pointing to ~/.config/null.hsjpekka/webcal-filters/iCalendarFilters.json.
