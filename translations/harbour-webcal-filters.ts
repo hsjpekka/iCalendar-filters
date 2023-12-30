@@ -4,7 +4,7 @@
 <context>
     <name>CoverPage</name>
     <message>
-        <source>My Cover</source>
+        <source>Webcal Filters</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -181,14 +181,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>add a reminder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>no reminders</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>remind NN min before the event, after if negative</source>
         <translation type="unfinished"></translation>
     </message>
@@ -230,6 +222,14 @@
     </message>
     <message>
         <source>address of the iCalendar-file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>add a reminder for normal events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>no reminders for normal events</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

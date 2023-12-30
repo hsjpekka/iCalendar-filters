@@ -12,161 +12,161 @@
     <name>FilterTest</name>
     <message>
         <source>%1, testing filter</source>
-        <translation type="unfinished"></translation>
+        <translation>%1, suodatinten testaus</translation>
     </message>
 </context>
 <context>
     <name>Filters</name>
     <message>
         <source>delete</source>
-        <translation type="unfinished"></translation>
+        <translation>poista</translation>
     </message>
     <message>
         <source>modify</source>
-        <translation type="unfinished"></translation>
+        <translation>muokkaa</translation>
     </message>
     <message>
         <source>add</source>
-        <translation type="unfinished"></translation>
+        <translation>lisää</translation>
     </message>
     <message>
         <source>filters for %1</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 suodattimet</translation>
     </message>
     <message>
         <source>all filters have to match</source>
-        <translation type="unfinished"></translation>
+        <translation>kaikkien ehtojen on toteuduttava</translation>
     </message>
     <message>
         <source>type of property</source>
-        <translation type="unfinished"></translation>
+        <translation>ominaisuuden tyyppi</translation>
     </message>
     <message>
         <source>string</source>
-        <translation type="unfinished"></translation>
+        <translation>merkkejä</translation>
     </message>
     <message>
         <source>date</source>
-        <translation type="unfinished"></translation>
+        <translation>päivämäärä</translation>
     </message>
     <message>
         <source>time</source>
-        <translation type="unfinished"></translation>
+        <translation>kellonaika</translation>
     </message>
     <message>
         <source>number</source>
-        <translation type="unfinished"></translation>
+        <translation>numero</translation>
     </message>
     <message>
         <source>equal to</source>
-        <translation type="unfinished"></translation>
+        <translation>sama kuin</translation>
     </message>
     <message>
         <source>not equal to</source>
-        <translation type="unfinished"></translation>
+        <translation>eri kuin</translation>
     </message>
     <message>
         <source>contains</source>
-        <translation type="unfinished"></translation>
+        <translation>sisältää</translation>
     </message>
     <message>
         <source>doesn&apos;t contain</source>
-        <translation type="unfinished"></translation>
+        <translation>ei sisällä</translation>
     </message>
     <message>
         <source>earliest at</source>
-        <translation type="unfinished"></translation>
+        <translation>aikaisintaan</translation>
     </message>
     <message>
         <source>latest at</source>
-        <translation type="unfinished"></translation>
+        <translation>viimeistään</translation>
     </message>
     <message>
         <source>larger than or equal to</source>
-        <translation type="unfinished"></translation>
+        <translation>suurempi tai yhtäsuuri</translation>
     </message>
     <message>
         <source>smaller than or equal to</source>
-        <translation type="unfinished"></translation>
+        <translation>pienempi tai yhtäsuuri</translation>
     </message>
     <message>
         <source>criteria</source>
-        <translation type="unfinished"></translation>
+        <translation>ehto</translation>
     </message>
     <message>
         <source>value</source>
-        <translation type="unfinished"></translation>
+        <translation>arvo</translation>
     </message>
     <message>
         <source>filtering value</source>
-        <translation type="unfinished"></translation>
+        <translation>suodattimen arvo</translation>
     </message>
     <message>
         <source>filters</source>
-        <translation type="unfinished"></translation>
+        <translation>suodattimet</translation>
     </message>
     <message>
         <source>read in matching components</source>
-        <translation type="unfinished"></translation>
+        <translation>hyväksy suodattimeen sopivat</translation>
     </message>
     <message>
         <source>leave out matching components</source>
-        <translation type="unfinished"></translation>
+        <translation>poista suodattimeen sopivat</translation>
     </message>
     <message>
         <source>a single matching property is enough</source>
-        <translation type="unfinished"></translation>
+        <translation>yhden ominaisuuden sopiminen riittää</translation>
     </message>
     <message>
         <source>value has to match all filters</source>
-        <translation type="unfinished"></translation>
+        <translation>kaikkien ominaisuuksien on sovittava</translation>
     </message>
     <message>
         <source>a single matching filter is enough</source>
-        <translation type="unfinished"></translation>
+        <translation>yhden ehdon täyttyminen riittää</translation>
     </message>
     <message>
         <source>test</source>
-        <translation type="unfinished"></translation>
+        <translation>kokeile</translation>
     </message>
     <message>
         <source>filters for</source>
-        <translation type="unfinished"></translation>
+        <translation>suodatettava</translation>
     </message>
     <message>
         <source>filtering property</source>
-        <translation type="unfinished"></translation>
+        <translation>suodatettava ominaisuus</translation>
     </message>
     <message>
         <source>reset</source>
-        <translation type="unfinished"></translation>
+        <translation>palauta</translation>
     </message>
     <message>
         <source>&lt;b&gt;ics-file&lt;/b&gt; &lt;i&gt;filter&lt;/i&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;ics-tiedosto&lt;/b&gt; &lt;i&gt;suodatin&lt;/i&gt;</translation>
     </message>
     <message>
         <source>&lt;i&gt;ics-file&lt;/i&gt; &lt;b&gt;filter&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;ics-tiedosto&lt;/i&gt; &lt;b&gt;suodatin&lt;/b&gt;</translation>
     </message>
 </context>
 <context>
     <name>FirstPage</name>
     <message>
         <source>remove calendar settings</source>
-        <translation type="unfinished"></translation>
+        <translation>poista kalenterin asetukset</translation>
     </message>
     <message>
         <source>Deleting</source>
-        <translation type="unfinished"></translation>
+        <translation>Poistaa</translation>
     </message>
     <message>
         <source>New calendar</source>
-        <translation type="unfinished"></translation>
+        <translation>Uusi kalenteri</translation>
     </message>
     <message>
         <source>Set up filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Luo suodatin</translation>
     </message>
     <message>
         <source>iCalendars</source>
@@ -174,43 +174,43 @@
     </message>
     <message>
         <source>calendar</source>
-        <translation type="unfinished"></translation>
+        <translation>kalenteri</translation>
     </message>
     <message>
         <source>no calendars</source>
-        <translation type="unfinished"></translation>
+        <translation>ei kalentereita</translation>
     </message>
     <message>
         <source>remind NN min before the event, after if negative</source>
-        <translation type="unfinished"></translation>
+        <translation>muistuta NN min ennen tapahtumaa, jälkeen mikäli negatiivinen</translation>
     </message>
     <message>
         <source>remind %1 min before each event</source>
-        <translation type="unfinished"></translation>
+        <translation>muistuta %1 min ennen tapahtumaa</translation>
     </message>
     <message>
         <source>remind %1 min after the start</source>
-        <translation type="unfinished"></translation>
+        <translation>muistuta %1 min alun jälkeen</translation>
     </message>
     <message>
         <source>add a reminder for full day events</source>
-        <translation type="unfinished"></translation>
+        <translation>lisää muistutus koko päivän tapahtumiin</translation>
     </message>
     <message>
         <source>no reminders for full day events</source>
-        <translation type="unfinished"></translation>
+        <translation>ei muistutuksia koko päivän tapahtumiin</translation>
     </message>
     <message>
         <source>remind at hh:mm on the previous day, -hh:mm at the same day</source>
-        <translation type="unfinished"></translation>
+        <translation>muistutus kello hh:mm edellisenä päivänä, -hh:mm samana päivänä</translation>
     </message>
     <message>
         <source>remind at %1 at the event day</source>
-        <translation type="unfinished"></translation>
+        <translation>muistutus %1 tapahtuman päivänä</translation>
     </message>
     <message>
         <source>remind at %1 at the previous day</source>
-        <translation type="unfinished"></translation>
+        <translation>muistutus %1 edellisenä päivänä</translation>
     </message>
     <message>
         <source>components</source>
@@ -218,46 +218,46 @@
     </message>
     <message>
         <source>https://address.of.the/calendar</source>
-        <translation type="unfinished"></translation>
+        <translation>https://kalen.te.rin/tiedosto</translation>
     </message>
     <message>
         <source>address of the iCalendar-file</source>
-        <translation type="unfinished"></translation>
+        <translation>iCalendar-tiedoston osoite</translation>
     </message>
     <message>
         <source>add a reminder for normal events</source>
-        <translation type="unfinished"></translation>
+        <translation>lisää muistutus normaaleille tapahtumille</translation>
     </message>
     <message>
         <source>no reminders for normal events</source>
-        <translation type="unfinished"></translation>
+        <translation>ei muistutusta normaaleille tapahtumille</translation>
     </message>
 </context>
 <context>
     <name>NewCalendar</name>
     <message>
         <source>calendar label</source>
-        <translation type="unfinished"></translation>
+        <translation>kalenterin nimi</translation>
     </message>
     <message>
         <source>write exactly as in Jolla Calendar</source>
-        <translation type="unfinished"></translation>
+        <translation>kirjoitan samoin kuin Jollan Kalenterissa</translation>
     </message>
     <message>
         <source>Create calendar entry</source>
-        <translation type="unfinished"></translation>
+        <translation>Uusi kalenteri-tietue</translation>
     </message>
     <message>
         <source>Delete calendar entry?</source>
-        <translation type="unfinished"></translation>
+        <translation>Poista kalenterin tietue</translation>
     </message>
     <message>
         <source>https://address.of.the/calendar</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">https://kalen.te.rin/tiedosto</translation>
     </message>
     <message>
         <source>address of the iCalendar-file</source>
-        <translation type="unfinished"></translation>
+        <translation>iCalendar-tiedoston osoite</translation>
     </message>
 </context>
 </TS>

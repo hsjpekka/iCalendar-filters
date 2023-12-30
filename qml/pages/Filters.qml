@@ -423,6 +423,8 @@ Page {
                         i++;
                     }
 
+                    console.log("järjestysnumero", N)
+
                     return N;
                 }
             }
@@ -440,7 +442,7 @@ Page {
                     }
                 }
                 onCurrentIndexChanged: {
-                    if (!settingUp) {
+                    if (!settingUp && currentIndex >= 0) {
                         if (value === "dtstart") {
                             cbPropertyType.setValue(cbPropertyType.ptime)
                         } else {
@@ -687,26 +689,26 @@ Page {
                         MenuItem {
                             text: description
                             onClicked: {
-                                cbFilteringCriteria.selectedComparison = comparison
-                                console.log(cbFilteringCriteria.selectedComparison + ", " + description + ", " + comparison)
+                                cbFilteringCriteria.setValue(comparison)
+                                console.log(cbFilteringCriteria.selectedComparison() + ", " + description + ", " + comparison)
                             }
                         }
                     }
                 }
 
-                property string selectedComparison: "="
-
-                onCurrentIndexChanged: {
+                function selectedComparison() {
+                    var result;
                     if (currentIndex >= 0) {
                         if (cbPropertyType.ptype == cbPropertyType.pnumber) {
-                            selectedComparison = criteriaNumber.get(currentIndex).comparison
+                            result = criteriaNumber.get(currentIndex).comparison
                         } else if (cbPropertyType.ptype == cbPropertyType.pstring) {
-                            selectedComparison = criteriaStrings.get(currentIndex).comparison
+                            result = criteriaStrings.get(currentIndex).comparison
                         } else if (cbPropertyType.ptype == cbPropertyType.ptime ||
                                    cbPropertyType.ptype == cbPropertyType.pdate) {
-                            selectedComparison =  criteriaTime.get(currentIndex).comparison
+                            result = criteriaTime.get(currentIndex).comparison
                         }
                     }
+                    return result;
                 }
 
                 function setValue(str) {
@@ -790,12 +792,12 @@ Page {
         if (filterNr >= 0) {
             filterModel.modifyFilter(filterNr, vcomponent, //action, propMatches,
                                   cbFilterProperty.value, cbPropertyType.pTypeToString(cbPropertyType.ptype),
-                                  valMatches, cbFilteringCriteria.selectedComparison,
+                                  valMatches, cbFilteringCriteria.selectedComparison(),
                                   filterValueTF.text);
         } else {
             filterModel.addFilter(vcomponent, //action, propMatches,
                                   cbFilterProperty.value, cbPropertyType.pTypeToString(cbPropertyType.ptype),
-                                  valMatches, cbFilteringCriteria.selectedComparison,
+                                  valMatches, cbFilteringCriteria.selectedComparison(),
                                   filterValueTF.text);
             listViewFilters.currentIndex = filterModel.count - 1;
         }
@@ -966,7 +968,7 @@ Page {
         while (ic < fltrs.length) {
             ip = 0;
             calendarComponents.modifyAction(fltrs[ic].component, fltrs[ic].action);
-            calendarComponents.modifyLimit(fltrs[ic].component, fltrs[ic].propMatches*100);
+            calendarComponents.modifyLimit(fltrs[ic].component, fltrs[ic].propMatches);
             while (ip < fltrs[ic].properties.length) {
                 iprop = fltrs[ic].properties[ip];
                 iv = 0;
@@ -989,7 +991,7 @@ Page {
         var fltr0, prop0;
         if (filters === undefined) {
             cbFilteringCriteria.currentIndex = 0
-            cbFilteringCriteria.selectedComparison = criteriaStrings.get(cbFilteringCriteria.currentIndex).comparison
+            //cbFilteringCriteria.selectedComparison = criteriaStrings.get(cbFilteringCriteria.currentIndex).comparison
             cbPropertyType.setValue(cbPropertyType.pstring)
             cbFilterComponent.currentIndex = 0
             cbFilterProperty.currentIndex = 0

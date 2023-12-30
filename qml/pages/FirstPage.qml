@@ -8,7 +8,7 @@ Page {
     allowedOrientations: Orientation.All
 
     Component.onCompleted: {
-        console.log("nyt")
+        console.log("nyt", Theme.opacityHigh)
         setFiltersFile()
         readFilters()
 
@@ -299,6 +299,7 @@ Page {
                 placeholderText: qsTr("https://address.of.the/calendar")
                 label: qsTr("address of the iCalendar-file")
                 readOnly: true
+                opacity: readOnly? Theme.opacityOverlay : 1
                 EnterKey.onClicked: {
                     addCalendarUrl(iCurrent, text)
                     focus = false
@@ -307,11 +308,16 @@ Page {
                 onPressAndHold: {
                     readOnly = false
                 }
+                onFocusChanged: {
+                    if (!focus) {
+                        readOnly = true
+                    }
+                }
             }
 
             TextSwitch {
                 id: addReminderAdvance
-                text: checked? qsTr("add a reminder") : qsTr("no reminders")
+                text: checked? qsTr("add a reminder for normal events") : qsTr("no reminders for normal events")
                 onCheckedChanged: {
                     if (!settingUp) {
                         if (checked) {
@@ -462,20 +468,6 @@ Page {
                     return;
                 }
             }
-
-            /*
-            TextArea {
-                id: viewFiltersFile
-                width: parent.width
-                //height: page.height - y > Theme.fontSizeMedium*6 ? page.height - y : Theme.fontSizeMedium*6
-                font.pixelSize: Theme.fontSizeMedium
-                readOnly: true
-
-                function update() {
-                    text = JSON.stringify(filtersJson);
-                    return;
-                }
-            }//*/
 
         }
     }
