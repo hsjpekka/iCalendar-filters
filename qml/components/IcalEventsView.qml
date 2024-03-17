@@ -5,10 +5,14 @@ import Sailfish.Silica 1.0
 SilicaListView{
     id: icalEventView
     width: parent? parent.width : Screen.width
-    height: Theme.fontSizeMedium*4
+    //height: Theme.fontSizeMedium*16
+    contentHeight: implicitHeight
+    implicitHeight: count*itemHeight + (count-1)*spacing
 
     signal calendarFetched()
 
+    property int fontSize: Theme.fontSizeMedium
+    property int itemHeight: fontSize + Theme.paddingSmall
     property color leaveOutColor: Theme.secondaryColor
     property color readInColor: Theme.highlightColor
     property string icsOriginal: ""
@@ -16,7 +20,6 @@ SilicaListView{
     readonly property bool filterDefault: false // by default rejects events that match filters
 
     onIcsOriginalChanged: {
-        console.log("taas lähtee")
         refresh(true) // unfiltered file
         refresh(false) // filtered file
     }
@@ -134,18 +137,21 @@ SilicaListView{
 
                 Label {
                     id: eventDay
+                    font.pixelSize: icalEventView.fontSize
                     text: day
                     color: eventsListItem.accept ? Theme.highlightColor : Theme.secondaryHighlightColor
                 }
 
                 Label {
                     id: eventClock
+                    font.pixelSize: icalEventView.fontSize
                     text: clock
                     color: eventDay.color
                 }
 
                 Label {
                     id: eventName
+                    font.pixelSize: icalEventView.fontSize
                     text: txt
                     color: eventDay.color
                 }
@@ -348,7 +354,10 @@ SilicaListView{
         var xhttp = new XMLHttpRequest();
 
         xhttp.onreadystatechange = function () {
-            console.log(" " + xhttp.readyState + " ~ " + xhttp.status + ", " + xhttp.statusText);
+            if (xhttp.readyState) {
+                console.log(" " + xhttp.readyState + " ~ " + xhttp.status + ", " + xhttp.statusText);
+            }
+
             if (xhttp.readyState === 4) {
                 if (xhttp.status === 200) {
                     whenReady(url, xhttp.responseText);

@@ -118,14 +118,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>value has to match all filters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>a single matching filter is enough</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>test</source>
         <translation type="unfinished"></translation>
     </message>
@@ -142,11 +134,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;b&gt;ics-file&lt;/b&gt; &lt;i&gt;filter&lt;/i&gt;</source>
+        <source>all criteria have to match</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;i&gt;ics-file&lt;/i&gt; &lt;b&gt;filter&lt;/b&gt;</source>
+        <source>a single matching criteria is enough</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>original</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>modified</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filter</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -158,14 +162,6 @@
     </message>
     <message>
         <source>Deleting</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New calendar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set up filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -193,14 +189,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>add a reminder for full day events</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>no reminders for full day events</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>remind at hh:mm on the previous day, -hh:mm at the same day</source>
         <translation type="unfinished"></translation>
     </message>
@@ -225,11 +213,44 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>add a reminder for normal events</source>
+        <source>The app writes the filters in %1 in %2, but the modified %3 reads the file in %4. Thus, to make it work, you should create a link. 
+&lt;i&gt;ln -s %2%1 %4&lt;/i&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>no reminders for normal events</source>
+        <source>use both reminder types for normal events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>use only relative reminder type for normal events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>add a relative reminder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>no relative reminders</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>add a defined time reminder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>no defined time reminders</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>add a defined time reminder for full day events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>new calendar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>set up filter</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

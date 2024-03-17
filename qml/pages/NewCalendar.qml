@@ -16,6 +16,7 @@ Dialog {
     onAccepted: {
         calendarLabel = txtLabel.text
         url = txtOsoite.text
+        console.log("hyväksytty")
     }
 
     Column {
@@ -35,34 +36,28 @@ Dialog {
                            qsTr("calendar label")
             readOnly: !create
             EnterKey.onClicked: {
-                focus = false
+                //focus = false
+                txtOsoite.focus = true
             }
         }
 
         TextField {
             id: txtOsoite
             width: parent.width
-            enabled: create
+            readOnly: !create
+            text: create? "" : url
             placeholderText: qsTr("https://address.of.the/calendar")
             label: qsTr("address of the iCalendar-file")
+            validator: RegExpValidator {
+                regExp: /[^\s]+/ // no spaces or tabs in the url
+            }
+            EnterKey.onClicked: {
+                focus = false
+            }
 
             property int i: 0
-            property string haaga: "https://haagankarhut.nimenhuuto.com/calendar/ical?auth[user_id]=284538&auth[ver]=02&auth[signature]=71b4f7c43381a8146f954d03d8498af910a9aa93"
-            property string arena: "https://warriorbears.nimenhuuto.com/calendar/ical?auth[user_id]=163835&auth[ver]=02&auth[signature]=0874572b168871b055d4eb8fc44a94a85509c667"
         }
 
-        Button {
-            text: "vaihda"
-            onClicked: {
-                if (txtOsoite.i === 0) {
-                    txtOsoite.text = txtOsoite.haaga
-                    txtOsoite.i++
-                } else {
-                    txtOsoite.text = txtOsoite.arena
-                    txtOsoite.i = 0
-                }
-            }
-        }
     }
 
 

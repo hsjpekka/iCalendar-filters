@@ -14,54 +14,72 @@ Page {
     property string icsFile: ""
     property var jsonFilters: {"calendars": [] }
 
-    Column {
-        width: parent.width
+    SilicaFlickable {
+        anchors.fill: parent
+        contentHeight: column.height
 
-        PageHeader{
-            title: qsTr("%1, testing filter").arg(calendar)
-        }
+        //some D-bus interface to Calendar should be found
+        //dbus-send --print-reply --type=method_call --dest=com.jolla.calendar.ui /com/jolla/calendar/ui com.jolla.calendar.ui.importFile string:$HOME/<readableDir>/calendar.ics
+        //PullDownMenu {
+        //    MenuItem {
+        //        text: qsTr("export to calendar")
+        //        onClicked: {
+        //
+        //        }
+        //    }
+        //}
 
-        IcalEventsView {
-            id: eventsView
-            x: 2*Theme.horizontalPageMargin
-            width: parent.width - 1.5*x
-            height: page.height - y
-            icsOriginal: icsFile
-            //settingUp: true
+        Column {
+            id: column
+            width: parent.width
 
-            function filterIcs(filterJson) {
-                if (filterJson) {
-                    icsModified = icsFilter.filterIcs(calendar, icsOriginal, JSON.stringify(filterJson));
-                } else {
-                    icsModified = icsFilter.filterIcs(calendar, icsOriginal);
-                }
-
-                return;
+            PageHeader{
+                title: qsTr("%1, testing filter").arg(calendar)
             }
 
-            function setFilterType(cal) {
-                var cmp, i, isReject, nfltrs;
-                if (cal.filters) {
-                    if (cal.filters.count) {
-                        nfltrs = cal.filters.count;
+            IcalEventsView {
+                id: eventsView
+                x: 2*Theme.horizontalPageMargin
+                width: parent.width - 1.5*x
+                height: page.height - y
+                icsOriginal: icsFile
+                //settingUp: true
+
+                function filterIcs(filterJson) {
+                    if (filterJson) {
+                        icsModified = icsFilter.filterIcs(calendar, icsOriginal, JSON.stringify(filterJson));
                     } else {
-                        nfltrs = 0;
+                        icsModified = icsFilter.filterIcs(calendar, icsOriginal);
                     }
-                    i = 0;
-                    while (i < nfltrs) {
-                        isReject = "";
-                        if (cal.filters[i].component) {
-                            cmp = cal.filters[i].component;
-                            if (cal.filters[i].action) {
-                                isReject = cal.filters[i].action;
-                            }
-                            setActionDefault(cmp, isReject);
-                        }
-                        i++;
-                    }
+
+                    return;
                 }
 
-                return;
+                function setFilterType(cal) {
+                    var cmp, i, isReject, nfltrs;
+                    if (cal.filters) {
+                        if (cal.filters.count) {
+                            nfltrs = cal.filters.count;
+                        } else {
+                            nfltrs = 0;
+                        }
+                        i = 0;
+                        while (i < nfltrs) {
+                            isReject = "";
+                            if (cal.filters[i].component) {
+                                cmp = cal.filters[i].component;
+                                if (cal.filters[i].action) {
+                                    isReject = cal.filters[i].action;
+                                }
+                                setActionDefault(cmp, isReject);
+                            }
+                            i++;
+                        }
+                    }
+
+                    return;
+                }
+
             }
 
         }
@@ -70,6 +88,7 @@ Page {
 
     function findCalendarIndex(label) {
         var i, k;
+        console.log("etsii", label)
         k = -1;
         i = 0;
         while (i < jsonFilters.calendars.length) {
@@ -78,6 +97,12 @@ Page {
             }
             i++;
         }
+        if (k < 0) {
+            console.log("ei löytynyt")
+            console.log(label)
+            console.log(jsonFilters.calendars[jsonFilters.calendars.length-1].label)
+        }
+
         return k;
     }
 }

@@ -17,11 +17,14 @@ CONFIG += sailfishapp
 HEADERS += \
     ../buteo-sync-plugin-webcal-filtered/src/icsfilter.h
 
-SOURCES += src/harbour-webcal-filters.cpp \
-    ../buteo-sync-plugin-webcal-filtered/src/icsfilter.cpp
+SOURCES += \
+    ../buteo-sync-plugin-webcal-filtered/src/icsfilter.cpp \
+    src/harbour-iCalendar-filters.cpp
 
-DISTFILES += qml/harbour-webcal-filters.qml \
+DISTFILES += \
+    harbour-iCalendar-filters.desktop \
     qml/cover/CoverPage.qml \
+    qml/harbour-iCalendar-filters.qml \
     qml/pages/FilterTest.qml \
     qml/pages/Filters.qml \
     qml/pages/FirstPage.qml \
@@ -29,8 +32,7 @@ DISTFILES += qml/harbour-webcal-filters.qml \
     rpm/harbour-webcal-filters.changes.in \
     rpm/harbour-webcal-filters.changes.run.in \
     rpm/harbour-webcal-filters.spec \
-    translations/*.ts \
-    harbour-webcal-filters.desktop
+    translations/*.ts
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172
 

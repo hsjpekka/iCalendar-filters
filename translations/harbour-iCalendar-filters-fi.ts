@@ -2,13 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>CoverPage</name>
-    <message>
-        <source>Webcal Filters</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>FilterTest</name>
     <message>
         <source>%1, testing filter</source>
@@ -118,14 +111,6 @@
         <translation>yhden ominaisuuden sopiminen riittää</translation>
     </message>
     <message>
-        <source>value has to match all filters</source>
-        <translation>kaikkien ominaisuuksien on sovittava</translation>
-    </message>
-    <message>
-        <source>a single matching filter is enough</source>
-        <translation>yhden ehdon täyttyminen riittää</translation>
-    </message>
-    <message>
         <source>test</source>
         <translation>kokeile</translation>
     </message>
@@ -142,12 +127,24 @@
         <translation>palauta</translation>
     </message>
     <message>
-        <source>&lt;b&gt;ics-file&lt;/b&gt; &lt;i&gt;filter&lt;/i&gt;</source>
-        <translation>&lt;b&gt;ics-tiedosto&lt;/b&gt; &lt;i&gt;suodatin&lt;/i&gt;</translation>
+        <source>all criteria have to match</source>
+        <translation>kaikkien ehtojen on täytyttävä</translation>
     </message>
     <message>
-        <source>&lt;i&gt;ics-file&lt;/i&gt; &lt;b&gt;filter&lt;/b&gt;</source>
-        <translation>&lt;i&gt;ics-tiedosto&lt;/i&gt; &lt;b&gt;suodatin&lt;/b&gt;</translation>
+        <source>a single matching criteria is enough</source>
+        <translation>yhden ehdon täyttyminen riittää</translation>
+    </message>
+    <message>
+        <source>original</source>
+        <translation>alkuperäinen</translation>
+    </message>
+    <message>
+        <source>modified</source>
+        <translation>muokattu</translation>
+    </message>
+    <message>
+        <source>filter</source>
+        <translation>suodatin</translation>
     </message>
 </context>
 <context>
@@ -159,14 +156,6 @@
     <message>
         <source>Deleting</source>
         <translation>Poistaa</translation>
-    </message>
-    <message>
-        <source>New calendar</source>
-        <translation>Uusi kalenteri</translation>
-    </message>
-    <message>
-        <source>Set up filter</source>
-        <translation>Luo suodatin</translation>
     </message>
     <message>
         <source>iCalendars</source>
@@ -193,14 +182,6 @@
         <translation>muistuta %1 min alun jälkeen</translation>
     </message>
     <message>
-        <source>add a reminder for full day events</source>
-        <translation>lisää muistutus koko päivän tapahtumiin</translation>
-    </message>
-    <message>
-        <source>no reminders for full day events</source>
-        <translation>ei muistutuksia koko päivän tapahtumiin</translation>
-    </message>
-    <message>
         <source>remind at hh:mm on the previous day, -hh:mm at the same day</source>
         <translation>muistutus kello hh:mm edellisenä päivänä, -hh:mm samana päivänä</translation>
     </message>
@@ -214,23 +195,56 @@
     </message>
     <message>
         <source>components</source>
-        <translation type="unfinished"></translation>
+        <translation>merkinnät</translation>
     </message>
     <message>
         <source>https://address.of.the/calendar</source>
-        <translation>https://kalen.te.rin/tiedosto</translation>
+        <translation>https://kalen.te.ri/tiedosto</translation>
     </message>
     <message>
         <source>address of the iCalendar-file</source>
         <translation>iCalendar-tiedoston osoite</translation>
     </message>
     <message>
-        <source>add a reminder for normal events</source>
-        <translation>lisää muistutus normaaleille tapahtumille</translation>
+        <source>The app writes the filters in %1 in %2, but the modified %3 reads the file in %4. Thus, to make it work, you should create a link. 
+&lt;i&gt;ln -s %2%1 %4&lt;/i&gt;.</source>
+        <translation>Ohjelma kirjoittaa tiedoston %1 hakemistoon %2, mutta muutettu %3 lukee tiedoston hakemistosta %4. Joten, jotta homma toimisi, sinun pitäisi luoda linkki \n &lt;i&gt;ln -s %2%1 %4&lt;/i&gt;.</translation>
     </message>
     <message>
-        <source>no reminders for normal events</source>
-        <translation>ei muistutusta normaaleille tapahtumille</translation>
+        <source>use both reminder types for normal events</source>
+        <translation>käytä molempia muistutuksia tavallisille tapahtumille</translation>
+    </message>
+    <message>
+        <source>use only relative reminder type for normal events</source>
+        <translation>käytä vain suhteellista ajoitusta tavallisten tapahtumien muistutuksille</translation>
+    </message>
+    <message>
+        <source>add a relative reminder</source>
+        <translation>lisää suhteellinen muistutus</translation>
+    </message>
+    <message>
+        <source>no relative reminders</source>
+        <translation>ei suhteellista muistutusta</translation>
+    </message>
+    <message>
+        <source>add a defined time reminder</source>
+        <translation>lisää muistutuksen aika</translation>
+    </message>
+    <message>
+        <source>no defined time reminders</source>
+        <translation>ei määritetyn ajan muistutusta</translation>
+    </message>
+    <message>
+        <source>add a defined time reminder for full day events</source>
+        <translation>lisää muistutuksen aika koko päivän tapahtumiin</translation>
+    </message>
+    <message>
+        <source>new calendar</source>
+        <translation>lisää kalenteri</translation>
+    </message>
+    <message>
+        <source>set up filter</source>
+        <translation>suodattimen määritys</translation>
     </message>
 </context>
 <context>
@@ -253,7 +267,7 @@
     </message>
     <message>
         <source>https://address.of.the/calendar</source>
-        <translation type="unfinished">https://kalen.te.rin/tiedosto</translation>
+        <translation>https://kalen.te.rin/tiedosto</translation>
     </message>
     <message>
         <source>address of the iCalendar-file</source>

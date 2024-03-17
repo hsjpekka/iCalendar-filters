@@ -561,8 +561,8 @@ Page {
 
             TextSwitch {
                 id: allOrAnyValue
-                text: checked? qsTr("value has to match all filters") :
-                               qsTr("a single matching filter is enough")
+                text: checked? qsTr("all criteria have to match") :
+                               qsTr("a single matching criteria is enough")
 
                 function setValue(fraction) {
                     if (fraction*1.0 > 0.5) {
@@ -746,8 +746,9 @@ Page {
             }
 
             SectionHeader{
-                text: viewFiltersFile.i === 0 ? qsTr("<b>ics-file</b> <i>filter</i>")
-                                              : qsTr("<i>ics-file</i> <b>filter</b>")
+                text: viewFiltersFile.i === 0 ?    "<b>" + qsTr("original") + "</b> &nbsp; | &nbsp; <i>" + qsTr("filter") + "</i> &nbsp; | &nbsp; <i>" + qsTr("modified") + "</i>"
+                      : (viewFiltersFile.i === 1 ? "<i>" + qsTr("original") + "</i> &nbsp; | &nbsp; <b>" + qsTr("filter") + "</b> &nbsp; | &nbsp; <i>" + qsTr("modified") + "</i>"
+                        :                          "<i>" + qsTr("original") + "</i> &nbsp; | &nbsp; <i>" + qsTr("filter") + "</i> &nbsp; | &nbsp; <b>" + qsTr("modified") + "</b>")
                 textFormat: Text.StyledText
             }
 
@@ -759,9 +760,11 @@ Page {
                 text: icsFile
                 onClicked: {
                     if (i === 0) {
+                        text = icsFile
+                    } else if (i === 1){
                         text = JSON.stringify(jsonFilters, null, 2)
                     } else {
-                        text = icsFile
+                        text = icsFilter.filterIcs(calendarLbl, icsFile, JSON.stringify(jsonFilters))
                         i = -1
                     }
 
