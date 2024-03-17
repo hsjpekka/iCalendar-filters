@@ -1,4 +1,4 @@
-Name:       harbour-webcal-filters
+Name:       harbour-iCalendar-filters
 
 Summary:    Filter creator for webcal-client
 Version:    0.2
