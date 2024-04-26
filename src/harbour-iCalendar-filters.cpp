@@ -10,10 +10,11 @@
 #include <QQmlContext>
 
 #include "../buteo-sync-plugin-webcal-filtered/src/icsfilter.h"
+#include "fileoperations.h"
 
 int main(int argc, char *argv[])
 {
-    // SailfishApp::main() will display "qml/harbour-webcal-filters.qml", if you need more
+    // SailfishApp::main() will display "qml/harbour-icalendar-filters.qml", if you need more
     // control over initialization, you can use:
     //
     //   - SailfishApp::application(int, char *[]) to get the QGuiApplication *
@@ -25,8 +26,10 @@ int main(int argc, char *argv[])
     QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
     QScopedPointer<QQuickView> view(SailfishApp::createView());
     icsFilter filter;
+    fileOperations tmpIcs;
 
     view->engine()->rootContext()->setContextProperty("icsFilter", &filter);
+    view->engine()->rootContext()->setContextProperty("tmpIcs", &tmpIcs);
 
     view->setSource(SailfishApp::pathToMainQml());
     view->show();

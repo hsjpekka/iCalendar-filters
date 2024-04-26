@@ -8,6 +8,10 @@ SilicaListView{
     //height: Theme.fontSizeMedium*16
     contentHeight: implicitHeight
     implicitHeight: count*itemHeight + (count-1)*spacing
+    spacing: Theme.paddingMedium
+    clip: true
+    model: calendarData//isCppModel? eventsListModelcpp : eventsListModelJS
+    delegate: eventListDelegate
 
     signal calendarFetched()
 
@@ -19,14 +23,6 @@ SilicaListView{
     property string icsModified: ""
     readonly property bool filterDefault: false // by default rejects events that match filters
 
-    onIcsOriginalChanged: {
-        refresh(true) // unfiltered file
-        refresh(false) // filtered file
-    }
-
-    onIcsModifiedChanged: {
-        refresh(false)
-    }
 
     ListModel {
         id: filterActionList
@@ -219,12 +215,6 @@ SilicaListView{
         }
     }
 
-    spacing: Theme.paddingMedium
-    clip: true
-
-    model: calendarData//isCppModel? eventsListModelcpp : eventsListModelJS
-    delegate: eventListDelegate
-
     VerticalScrollDecorator{}
 
     function clear() {
@@ -265,7 +255,7 @@ SilicaListView{
         // set the end of the component
         strs = lineArray[i0].split(":");//begin:vcomponent
         if (strs.length < 2) {
-            console.log("rivi = " + lineArray[i0]);
+            console.log("not 'begin:vcomponent', but:_" + lineArray[i0] + "_");
             return i0;
         }
         cmp = strs[1].trim();
@@ -334,42 +324,15 @@ SilicaListView{
         return iN;
     }
 
-    function fetchCalendar(url) {
-        if (url === undefined || url === "") {
-            console.log("no calendar url");
-            return -1;
-        }
-
-        fetchIcalFile(url, function (url, icalFile) {
-            icsOriginal = icalFile; // stores the latest file
-            console.log(url, "\n", icsOriginal.substring(0,20), " ...")
-            calendarFetched();
-            return;
-        });
-
-        return 0;
+    function icsModifiedChange(newIcs) {
+        icsModified = newIcs;
+        refresh(false); // filtered file
+        return;
     }
 
-    function fetchIcalFile(url, whenReady){
-        var xhttp = new XMLHttpRequest();
-
-        xhttp.onreadystatechange = function () {
-            if (xhttp.readyState) {
-                console.log(" " + xhttp.readyState + " ~ " + xhttp.status + ", " + xhttp.statusText);
-            }
-
-            if (xhttp.readyState === 4) {
-                if (xhttp.status === 200) {
-                    whenReady(url, xhttp.responseText);
-                }
-            }
-            return;
-        }
-
-        console.log(url);
-        xhttp.open("GET", url, true);
-        xhttp.send();
-
+    function icsOriginalChange(newIcs) {
+        icsOriginal = newIcs;
+        refresh(true); // unfiltered file
         return;
     }
 
@@ -466,7 +429,7 @@ SilicaListView{
         if (icsOriginal === undefined || icsOriginal.length === 0 ||
                 (!isOrig && (icsModified === undefined ||
                                   icsModified.length === 0))) {
-            console.log(isOrig,"tyhjä tiedosto");
+            console.log(isOrig,"empty file");
         } else {
             if (isOrig) {
                 calendarData.clear();

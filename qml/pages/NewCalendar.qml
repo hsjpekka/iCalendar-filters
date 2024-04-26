@@ -16,7 +16,6 @@ Dialog {
     onAccepted: {
         calendarLabel = txtLabel.text
         url = txtOsoite.text
-        console.log("hyväksytty")
     }
 
     Column {
@@ -55,7 +54,23 @@ Dialog {
                 focus = false
             }
 
-            property int i: 0
+            //property int i: 0
+        }
+
+        Button {
+            text: "sähly"
+            onClicked: {
+                txtLabel.text = "sähly"
+                txtOsoite.text = "https://poyry-sahlykerho.nimenhuuto.com/calendar/ical"
+            }
+        }
+
+        Button {
+            text: "futis"
+            onClicked: {
+                txtLabel.text = "futis"
+                txtOsoite.text = "https://afryfutis.nimenhuuto.com/calendar/ical"
+            }
         }
 
     }

@@ -7,6 +7,14 @@
         <source>%1, testing filter</source>
         <translation>%1, suodatinten testaus</translation>
     </message>
+    <message>
+        <source>export to calendar</source>
+        <translation>vie kalenteriin</translation>
+    </message>
+    <message>
+        <source>File write error.</source>
+        <translation>Tiedoston kirjoitusvirhe.</translation>
+    </message>
 </context>
 <context>
     <name>Filters</name>
@@ -150,10 +158,6 @@
 <context>
     <name>FirstPage</name>
     <message>
-        <source>remove calendar settings</source>
-        <translation>poista kalenterin asetukset</translation>
-    </message>
-    <message>
         <source>Deleting</source>
         <translation>Poistaa</translation>
     </message>
@@ -206,11 +210,6 @@
         <translation>iCalendar-tiedoston osoite</translation>
     </message>
     <message>
-        <source>The app writes the filters in %1 in %2, but the modified %3 reads the file in %4. Thus, to make it work, you should create a link. 
-&lt;i&gt;ln -s %2%1 %4&lt;/i&gt;.</source>
-        <translation>Ohjelma kirjoittaa tiedoston %1 hakemistoon %2, mutta muutettu %3 lukee tiedoston hakemistosta %4. Joten, jotta homma toimisi, sinun pitäisi luoda linkki \n &lt;i&gt;ln -s %2%1 %4&lt;/i&gt;.</translation>
-    </message>
-    <message>
         <source>use both reminder types for normal events</source>
         <translation>käytä molempia muistutuksia tavallisille tapahtumille</translation>
     </message>
@@ -245,6 +244,14 @@
     <message>
         <source>set up filter</source>
         <translation>suodattimen määritys</translation>
+    </message>
+    <message>
+        <source>remove %1 settings</source>
+        <translation>poista asetukset (%1)</translation>
+    </message>
+    <message>
+        <source>The app writes the filters in %1 in %2,  but the modified %3 reads the file in %4.&lt;br&gt; Thus, to make it work, you should create a link: &lt;br&gt;&lt;i&gt;ln -s %2%1 %4&lt;/i&gt;.</source>
+        <translation>Ohjelma kirjoittaa suodattimet tiedostoon %1 hakemistossa %2, mutta muutettu %3 lukee hakemistosta %4.&lt;br&gt; Jotta homma toimisi, luo linkki: &lt;br&gt;&lt;i&gt;ln -s %2%1 %4&lt;/i&gt;.</translation>
     </message>
 </context>
 <context>

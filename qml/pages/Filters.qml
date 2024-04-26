@@ -8,11 +8,18 @@ Page {
     allowedOrientations: Orientation.All
 
     Component.onCompleted: {
-        console.log("calendar", calendarLbl, ", url", calendarUrl)
+        //console.log("calendar", calendarLbl, ", url", calendarUrl)
+        newFilters = JSON.parse(JSON.stringify(oldFilters))
         readCalendarFilters()
         settingUp = false
     }
     Component.onDestruction: {
+        if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) {
+            filtersModified = false
+        } else {
+            filtersModified = true
+        }
+
         closing()
     }
 
@@ -21,9 +28,10 @@ Page {
     property string calendarLbl: ""//calendarName.text
     property string calendarUrl: ""
     property int calId
-    property string icsFile: ""
-    property var jsonFilters: {"calendars": [] }
     property bool filtersModified: false
+    property string icsFile: ""
+    property var newFilters: {"calendars": [] }
+    property var oldFilters: {"calendars": [] }
     property string reminderFullDay: ""
     property string reminderMinutes: ""
     property bool settingUp: true
@@ -142,6 +150,7 @@ Page {
                 text: qsTr("reset")
                 onClicked: {
                     filterModel.clear()
+                    newFilters = JSON.parse(JSON.stringify(oldFilters))
                     readCalendarFilters()
                 }
             }
@@ -150,7 +159,7 @@ Page {
                 text: qsTr("test")
                 onClicked: {
                     var dialog = pageStack.push(Qt.resolvedUrl("FilterTest.qml"), {
-                                "jsonFilters": jsonFilters,
+                                "jsonFilters": newFilters,
                                 "calendar": calendarLbl,
                                 "icsFile": icsFile } )
                 }
@@ -160,7 +169,8 @@ Page {
                 text: qsTr("add")
                 enabled: filterValueTF.text != ""
                 onClicked: {
-                    newFilter()
+                    addFilter()
+                    composeJson()
                 }
             }
 
@@ -312,6 +322,7 @@ Page {
                                qsTr("leave out matching components")
                 onClicked: {
                     calendarComponents.modifyAction(cbFilterComponent.value, checked)
+                    composeJson()
                 }
 
                 function setValue(str) {
@@ -336,6 +347,7 @@ Page {
                         limit = 0
                     }
                     calendarComponents.modifyLimit(cbFilterComponent.value, limit)
+                    composeJson()
                 }
 
                 function setValue(str) {
@@ -423,8 +435,6 @@ Page {
                         i++;
                     }
 
-                    console.log("järjestysnumero", N)
-
                     return N;
                 }
             }
@@ -465,28 +475,24 @@ Page {
                         text: qsTr("string")
                         onClicked: {
                             cbPropertyType.ptype = cbPropertyType.pstring
-                            console.log("nyt tyyppi:", cbPropertyType.ptype, cbPropertyType.pTypeToString(cbPropertyType.ptype))
                         }
                     }
                     MenuItem {
                         text: qsTr("date")
                         onClicked: {
                             cbPropertyType.ptype = cbPropertyType.pdate
-                            console.log("nyt tyyppi:", cbPropertyType.ptype, cbPropertyType.pTypeToString(cbPropertyType.ptype))
                         }
                     }
                     MenuItem {
                         text: qsTr("time")
                         onClicked: {
                             cbPropertyType.ptype = cbPropertyType.ptime
-                            console.log("nyt tyyppi:", cbPropertyType.ptype, cbPropertyType.pTypeToString(cbPropertyType.ptype))
                         }
                     }
                     MenuItem {
                         text: qsTr("number")
                         onClicked: {
                             cbPropertyType.ptype = cbPropertyType.pnumber
-                            console.log("nyt tyyppi:", cbPropertyType.ptype, cbPropertyType.pTypeToString(cbPropertyType.ptype))
                         }
                     }
                 }
@@ -690,7 +696,6 @@ Page {
                             text: description
                             onClicked: {
                                 cbFilteringCriteria.setValue(comparison)
-                                console.log(cbFilteringCriteria.selectedComparison() + ", " + description + ", " + comparison)
                             }
                         }
                     }
@@ -714,7 +719,6 @@ Page {
                 function setValue(str) {
                     var result, tp = "";
                     result = -1;
-                    console.log(str, "type", cbPropertyType.ptype)
                     if (cbPropertyType.ptype === cbPropertyType.pstring) {
                         result = criteriaStrings.getIndex(str);
                     } else if (cbPropertyType.ptype === cbPropertyType.ptime ||
@@ -738,7 +742,8 @@ Page {
                 EnterKey.onClicked: {
                     focus = false
                     if (filterModel.count == 0) {
-                        newFilter()
+                        addFilter()
+                        composeJson()
                     }
                 }
 
@@ -746,9 +751,9 @@ Page {
             }
 
             SectionHeader{
-                text: viewFiltersFile.i === 0 ?    "<b>" + qsTr("original") + "</b> &nbsp; | &nbsp; <i>" + qsTr("filter") + "</i> &nbsp; | &nbsp; <i>" + qsTr("modified") + "</i>"
-                      : (viewFiltersFile.i === 1 ? "<i>" + qsTr("original") + "</i> &nbsp; | &nbsp; <b>" + qsTr("filter") + "</b> &nbsp; | &nbsp; <i>" + qsTr("modified") + "</i>"
-                        :                          "<i>" + qsTr("original") + "</i> &nbsp; | &nbsp; <i>" + qsTr("filter") + "</i> &nbsp; | &nbsp; <b>" + qsTr("modified") + "</b>")
+                text: viewFiltersFile.iContent === 0 ?    "<b>" + qsTr("original") + "</b> &nbsp; | &nbsp; <i>" + qsTr("filter") + "</i> &nbsp; | &nbsp; <i>" + qsTr("modified") + "</i>"
+                      : (viewFiltersFile.iContent === 1 ? "<i>" + qsTr("original") + "</i> &nbsp; | &nbsp; <b>" + qsTr("filter") + "</b> &nbsp; | &nbsp; <i>" + qsTr("modified") + "</i>"
+                        :                                 "<i>" + qsTr("original") + "</i> &nbsp; | &nbsp; <i>" + qsTr("filter") + "</i> &nbsp; | &nbsp; <b>" + qsTr("modified") + "</b>")
                 textFormat: Text.StyledText
             }
 
@@ -759,19 +764,18 @@ Page {
                 readOnly: true
                 text: icsFile
                 onClicked: {
-                    if (i === 0) {
+                    iContent++
+                    if (iContent === 0) {
                         text = icsFile
-                    } else if (i === 1){
-                        text = JSON.stringify(jsonFilters, null, 2)
+                    } else if (iContent === 1){
+                        text = JSON.stringify(newFilters, null, 2)
                     } else {
-                        text = icsFilter.filterIcs(calendarLbl, icsFile, JSON.stringify(jsonFilters))
-                        i = -1
+                        text = icsFilter.filterIcs(calendarLbl, icsFile, JSON.stringify(newFilters))
+                        iContent = -1
                     }
-
-                    i++
                 }
 
-                property int i: 0
+                property int iContent: 0
             }
 
             VerticalScrollDecorator {}
@@ -790,7 +794,6 @@ Page {
         }
 
         vcomponent = cbFilterComponent.value;
-        console.log("vcomponent " + vcomponent);
 
         if (filterNr >= 0) {
             filterModel.modifyFilter(filterNr, vcomponent, //action, propMatches,
@@ -809,13 +812,16 @@ Page {
     }
 
     function composeJson() {
+        // updating the contents of a json-object is not working
+        // a new json-component is created and the old one is removed
         var calN, cals, cmponent, crtr, flters, ic, ifl, ip, n, nc, prop, prperties, vals;
         calN = {"label": calendarLbl, "filters": [] };
         cmponent = {"component": "", "properties": []};
         prop = {"property": "", "values": []};
         crtr = {"criteria": "", "value": ""};
 
-        cals = jsonFilters.calendars;
+        cals = newFilters.calendars;
+        // search the filter for the current calendar
         nc = cals.length;
         n = 0;
         while (n < nc) {
@@ -827,6 +833,7 @@ Page {
             n++;
         }
 
+        //make a new json-object containing the filters for the current component
         flters = [];
         prperties = [];
         ic = 0;
@@ -897,8 +904,10 @@ Page {
             cals.push(calN);
         }
 
-        jsonFilters.calendars = cals;
-        viewFiltersFile.text = JSON.stringify(jsonFilters);
+        newFilters.calendars = cals;
+        if (viewFiltersFile.iContent === -1) {
+            viewFiltersFile.text = JSON.stringify(newFilters, null, 2);
+        }
         return;
     }
 
@@ -931,12 +940,6 @@ Page {
         return result;
     }
 
-    function newFilter() {
-        addFilter();
-        composeJson();
-        return;
-    }
-
     function readCalendarFilters(label) {
         var i, N, calN, fltr0, prop0;
 
@@ -946,11 +949,11 @@ Page {
 
         N = -1;
         i = 0;
-        while (i < jsonFilters.calendars.length) {
-            calN = jsonFilters.calendars[i];
+        while (i < newFilters.calendars.length) {
+            calN = newFilters.calendars[i];
             if (calN["label"] === label) {
                 N = i;
-                i = jsonFilters.calendars.length;
+                i = newFilters.calendars.length;
             }
             i++;
         }

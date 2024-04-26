@@ -2,16 +2,17 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>CoverPage</name>
-    <message>
-        <source>Webcal Filters</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>FilterTest</name>
     <message>
         <source>%1, testing filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>export to calendar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File write error.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -157,10 +158,6 @@
 <context>
     <name>FirstPage</name>
     <message>
-        <source>remove calendar settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Deleting</source>
         <translation type="unfinished"></translation>
     </message>
@@ -213,11 +210,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The app writes the filters in %1 in %2, but the modified %3 reads the file in %4. Thus, to make it work, you should create a link. 
-&lt;i&gt;ln -s %2%1 %4&lt;/i&gt;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>use both reminder types for normal events</source>
         <translation type="unfinished"></translation>
     </message>
@@ -251,6 +243,14 @@
     </message>
     <message>
         <source>set up filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>remove %1 settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The app writes the filters in %1 in %2,  but the modified %3 reads the file in %4.&lt;br&gt; Thus, to make it work, you should create a link: &lt;br&gt;&lt;i&gt;ln -s %2%1 %4&lt;/i&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

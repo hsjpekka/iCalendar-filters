@@ -10,28 +10,30 @@
 #   - translation filenames have to be changed
 
 # The name of your application
-TARGET = harbour-webcal-filters
+TARGET = harbour-icalendar-filters
 
 CONFIG += sailfishapp
 
 HEADERS += \
-    ../buteo-sync-plugin-webcal-filtered/src/icsfilter.h
+    ../buteo-sync-plugin-webcal-filtered/src/icsfilter.h \
+    src/fileoperations.h
 
 SOURCES += \
     ../buteo-sync-plugin-webcal-filtered/src/icsfilter.cpp \
-    src/harbour-iCalendar-filters.cpp
+    src/fileoperations.cpp \
+    src/harbour-icalendar-filters.cpp
 
 DISTFILES += \
-    harbour-iCalendar-filters.desktop \
+    harbour-icalendar-filters.desktop \
     qml/cover/CoverPage.qml \
-    qml/harbour-iCalendar-filters.qml \
+    qml/harbour-icalendar-filters.qml \
     qml/pages/FilterTest.qml \
     qml/pages/Filters.qml \
     qml/pages/FirstPage.qml \
     qml/components/IcalEventsView.qml \
-    rpm/harbour-webcal-filters.changes.in \
-    rpm/harbour-webcal-filters.changes.run.in \
-    rpm/harbour-webcal-filters.spec \
+    rpm/harbour-icalendar-filters.changes.in \
+    rpm/harbour-icalendar-filters.changes.run.in \
+    rpm/harbour-icalendar-filters.spec \
     translations/*.ts
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172
@@ -44,5 +46,5 @@ CONFIG += sailfishapp_i18n
 # planning to localize your app, remember to comment out the
 # following TRANSLATIONS line. And also do not forget to
 # modify the localized app name in the the .desktop file.
-TRANSLATIONS += translations/harbour-webcal-filters-de.ts \
-    translations/harbour-webcal-filters-fi.ts
+TRANSLATIONS += translations/harbour-icalendar-filters-de.ts \
+    translations/harbour-icalendar-filters-fi.ts

@@ -8,6 +8,7 @@ CoverBackground {
         text: "iCalendar Filters"
     }
 
+    /*
     CoverActionList {
         id: coverAction
 
@@ -18,5 +19,5 @@ CoverBackground {
         CoverAction {
             iconSource: "image://theme/icon-cover-pause"
         }
-    }
+    } //*/
 }

@@ -10,18 +10,17 @@ Page {
     Component.onCompleted: {
         setFiltersFile()
         readFilters()
+        cleanUpFilters()
 
         if (calendarList.count > 0) {
-            calendarSelector.currentIndex = 0
-            eventsView.setFilterType(filtersJson.calendars[0])
-            if (filtersJson.calendars[0].url > "") {
-                eventsView.fetchCalendar(filtersJson.calendars[0].url)
-            }
+            //calendarSelector.currentIndex = 0
+            iCurrent = 0
+            updateView()
         }
         settingUp = false
     }
 
-    property int iCurrent: -1
+    property alias iCurrent: calendarSelector.currentIndex
     property var filtersJson: emptyJson
     property bool settingUp: true
     property string shortLabel: ""
@@ -30,53 +29,26 @@ Page {
 
     signal filtersChanged()
 
+    onICurrentChanged: {
+        if (!settingUp) {
+            updateView()
+        }
+    }
+
     onFiltersChanged: {
-        //viewFiltersFile.update()
         if (!settingUp) {
             storeFilters()
         }
     }
-    onICurrentChanged: {
-        // show alarms
-        var cal, calLbl, cmp, i, isReject, nftrs;
-        settingUp = true
-        if (calendarList.count > 0) {
-            cal = calendarList.get(iCurrent)
-            calLbl = cal.calendarLabel
-            if (calLbl.length > 15) {
-                shortLabel = calLbl.substring(0,12) + "..."
-            } else {
-                shortLabel = calLbl
-            }
 
-            useBoth.checked = calendarList.areBothUsed(calLbl)
-
-            if (calendarList.isAdvanceSet(calLbl)) {
-                addReminderAdvance.checked = true
-                reminderAdvance.text = calendarList.alarmAdvance(calLbl)
-            } else {
-                addReminderAdvance.checked = false
-            }
-
-            if (calendarList.isTimeSet(calLbl)) {
-                addReminderTime.checked = true
-                reminderTime.text = calendarList.alarmTime(calLbl)
-            } else {
-                addReminderTime.checked = false
-            }
-
-            eventsView.clear();
-            if (filtersJson.calendars[iCurrent].url > "") {
-                txtUrl.text = filtersJson.calendars[iCurrent].url
-                txtUrl.readOnly = true
-                eventsView.fetchCalendar(filtersJson.calendars[iCurrent].url)
-            } else {
-                txtUrl.text = ""
-                txtUrl.readOnly = false
-            }
+    Timer {
+        id: timerChange
+        repeat: false
+        interval: 1000
+        running: false
+        onTriggered: {
+            calendarSelector.currentIndex = calendarList.count - 1
         }
-        settingUp = false
-
     }
 
     ListModel {
@@ -246,6 +218,7 @@ Page {
                                                 })
                     dialog.accepted.connect( function () {
                         remorse.execute(qsTr("Deleting", labelRemoved), function () {
+                            calendarSelector.currentIndex = -1
                             calendarList.removeCalendar(labelRemoved)
                             removeCalendarFromJson(labelRemoved)
                             page.filtersChanged()
@@ -268,13 +241,11 @@ Page {
                     dialog.accepted.connect( function () {
                         var result = calendarList.addCalendar(dialog.calendarLabel)
                         addCalendarToJson(dialog.calendarLabel, dialog.url)
-                        console.log("kalentereita", result, ", vanha valittu",calendarSelector.currentIndex)
                         if (result > 0) {
-                            page.iCurrent = result - 1
-                            calendarSelector.currentIndex = result-1
+                            timerChange.start()
                         }
-                        console.log("uusi valittu", calendarSelector.currentIndex)
                         page.filtersChanged()
+                        //printCalendarLabels()
                     })
                 }
             }
@@ -285,17 +256,19 @@ Page {
                 onClicked: {
                     var dialog, i, cal
                     i = findCalendarIndex()
+                    //printCalendarLabels()
                     if (i >= 0) {
                         cal = filtersJson.calendars[i]
                         dialog = pageStack.push(Qt.resolvedUrl("Filters.qml"), {
-                                            "jsonFilters": filtersJson,
+                                            "oldFilters": filtersJson,
                                             "calendarLbl": cal.label,
                                             "calendarUrl": cal.url,
                                             "icsFile": eventsView.icsOriginal } )
                         dialog.closing.connect( function() {
-                            //modifyCalendarFilters(calendarLbl, filters)
-                            filtersJson = dialog.jsonFilters
-                            page.filtersChanged()
+                            if (dialog.filtersModified) {
+                                filtersJson = dialog.newFilters
+                                page.filtersChanged()
+                            }
                         } )
                     }
                 }
@@ -320,13 +293,16 @@ Page {
                 id: userManual
                 x: Theme.horizontalPageMargin
                 width: parent.width - x - Theme.paddingMedium
-                text: qsTr("The app writes the filters in %1 in %2," +
+                text: qsTr("The app writes the filters in %1 in %2, " +
                            " but the modified %3 reads the file in " +
-                           "%4. Thus, to make " +
-                           "it work, you should create a link. \n" +
-                           "<i>ln -s %2%1 %4</i>.").arg("iCalendarFilters.json").arg("~/.config/null.hsjpekka/webcal-filters/").arg("buteo-sync-plugin-webcal").arg("~/.config/webcal-filters/")
+                           "%4.<br> Thus, to make " +
+                           "it work, you should create a link: <br>" +
+                           "<i>ln -s %2%1 %4</i>.").arg("iCalendarFilters.json").arg("~/.config/null.hsjpekka/icalendar-filters/").arg("buteo-sync-plugin-webcal").arg("~/.config/icalendar-filters/")
+                textFormat: Text.StyledText
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+
                 MouseArea {
+                    anchors.fill: parent
                     onClicked: {
                         parent.visible = !parent.visible
                     }
@@ -345,9 +321,6 @@ Page {
                             text: calendarLabel
                         }
                     }
-                }
-                onCurrentIndexChanged: {
-                    page.iCurrent = currentIndex
                 }
                 currentIndex: -1
 
@@ -496,19 +469,60 @@ Page {
 
             IcalEventsView {
                 id: eventsView
-                x: 2*Theme.horizontalPageMargin
+                x: Theme.horizontalPageMargin
                 width: parent.width - 1.5*x
                 //icsOriginal: icsFile
                 height: contentHeight
                 onCalendarFetched: {
+                    console.log("alkuperäinen haettu")
                     filterIcs(filtersJson)
+                }
+
+                function fetchCalendar(url) {
+                    if (url === undefined || url === "") {
+                        console.log("no calendar url");
+                        return -1;
+                    }
+
+                    fetchIcalFile(url, function (url, icalFile) {
+                        //icsOriginal = icalFile; // stores the latest file
+                        icsOriginalChange(icalFile);
+                        console.log(url, "\n", icsOriginal.substring(0,20), " ...")
+                        calendarFetched();
+                        return;
+                    });
+
+                    return 0;
+                }
+
+                function fetchIcalFile(url, whenReady){
+                    var xhttp = new XMLHttpRequest();
+
+                    xhttp.onreadystatechange = function () {
+                        if (xhttp.readyState) {
+                            console.log(" " + xhttp.readyState + " ~ " + xhttp.status + ", " + xhttp.statusText);
+                        }
+
+                        if (xhttp.readyState === 4) {
+                            if (xhttp.status === 200) {
+                                whenReady(url, xhttp.responseText);
+                            }
+                        }
+                        return;
+                    }
+
+                    console.log(url);
+                    xhttp.open("GET", url, true);
+                    xhttp.send();
+
+                    return;
                 }
 
                 function filterIcs(filterJson) {
                     if (filterJson) {
-                        icsModified = icsFilter.filterIcs(calendarSelector.value, icsOriginal, JSON.stringify(filterJson));
+                        icsModifiedChange(icsFilter.filterIcs(calendarSelector.value, icsOriginal, JSON.stringify(filterJson)));
                     } else {
-                        icsModified = icsFilter.filterIcs(calendarSelector.value, icsOriginal);
+                        icsModifiedChange(icsFilter.filterIcs(calendarSelector.value, icsOriginal));
                     }
 
                     return;
@@ -578,8 +592,41 @@ Page {
         return;
     }
 
+    function cleanUpFilters() {
+        var i, k, fltrs, lbl, unclean;
+
+        i = 0;
+        unclean = 0;
+        fltrs = emptyJson;
+        while (i < filtersJson.calendars.length) {
+            lbl = filtersJson.calendars[i].label;
+            k = findCalendarIndex(lbl);
+            if (k === i) { // store only the first set of data
+                fltrs.calendars.push(filtersJson.calendars[i]);
+            } else {
+                unclean++;
+            }
+
+            i++;
+        }
+        filtersJson = JSON.parse(JSON.stringify(fltrs));
+        if (filtersJson.calendars) {
+            k = filtersJson.calendars.length;
+        } else {
+            k = -1;
+        }
+
+        if (unclean > 0) {
+            console.log("multiple entries for a calendar found (" + unclean + ")");
+            storeFilters();
+        }
+
+        return k;
+    }
+
     function findCalendarIndex(label) {
         var i, k;
+        console.log("nimi", label)
         if (label === undefined || label === "") {
             label = calendarSelector.value
         }
@@ -589,21 +636,23 @@ Page {
         while (i < filtersJson.calendars.length) {
             if (filtersJson.calendars[i].label === label) {
                 k = i;
+                i = filtersJson.calendars.length;
             }
             i++;
         }
+        console.log("järjestys", k+1, "./", i-1)
         return k;
     }
 
-    function modifyCalendarFilters(calendarLbl, filters) {
-        var i;
-        i = findCalendarIndex(calendarLbl);
-        if (i >= 0) {
-            filtersJson.calendars[i]["filters"] = filters;
-        }
+    //function modifyCalendarFilters(calendarLbl, filters) {
+    //    var i;
+    //    i = findCalendarIndex(calendarLbl);
+    //    if (i >= 0) {
+    //        filtersJson.calendars[i]["filters"] = filters;
+    //    }
 
-        return i;
-    }
+    //    return i;
+    //}
 
     function modifyReminderAdvance() {
         var i, key, modCal, oldCal;
@@ -616,7 +665,7 @@ Page {
                 // don't copy reminder
                 oldCal = filtersJson.calendars[i];
                 for (key in oldCal) {
-                    console.log(key, oldCal.label)
+                    //console.log(key, oldCal.label)
                     if (key !== "reminder") {
                         modCal[key] = oldCal[key];
                     }
@@ -668,7 +717,7 @@ Page {
         if (i >= 0) {
             if (useBoth.checked) {
                 filtersJson.calendars[i]["both"] = "yes";
-                modifyReminderTime();
+                //modifyReminderTime();
             } else {
                 filtersJson.calendars[i]["both"] = "no";
             }
@@ -677,6 +726,16 @@ Page {
 
         return i;
     }
+
+    //function printCalendarLabels() {
+    //    var i;
+    //    i=0;
+    //    while (i < filtersJson.calendars.length) {
+    //        console.log("kalenteri", i, filtersJson.calendars[i].label);
+    //        i++;
+    //    }
+    //    return;
+    //}
 
     function readFilters() {
         // return -1 = no filters-file, 0 = no json-file, >0 = calendars
@@ -712,8 +771,9 @@ Page {
     function removeCalendarFromJson(label) {
         var i, k, djson;
         i = findCalendarIndex(label);
+        //console.log("removing nro", i, "calendar", label)
         if (i >= 0) {
-            djson = emptyJson;
+            djson = JSON.parse(JSON.stringify(emptyJson));
             k = 0;
             while (k < filtersJson.calendars.length) {
                 if (k !== i) {
@@ -721,7 +781,7 @@ Page {
                 }
                 k++;
             }
-            filtersJson = djson;
+            filtersJson = JSON.parse(JSON.stringify(djson));
         }
         return;
     }
@@ -732,15 +792,62 @@ Page {
         i = configPath.indexOf("/", 2); // /home/
         i = configPath.indexOf("/", i+1); // /home/nemo || defaultuser
         configPath = configPath.substring(0, i+1);
-        configPath += ".config/null.hsjpekka/webcal-filters/"
+        configPath += ".config/null.hsjpekka/icalendar-filters/"
         //"iCalendarFilters.json", "/home/defauluser/.config/webcal-client/")
-        console.log(configPath)
+        //console.log(configPath)
         return icsFilter.setFiltersFile("iCalendarFilters.json", configPath);
     }
 
     function storeFilters() {
-        var filtersFile;
+        var filtersFile, result;
         filtersFile = JSON.stringify(filtersJson, null, 2);
-        return icsFilter.overWriteFiltersFile(filtersFile);
+        result = icsFilter.overWriteFiltersFile(filtersFile);
+
+        return result;
+    }
+
+    function updateView() {
+        var cal, calLbl, cmp, i, isReject, nftrs;
+
+        if (calendarList.count > 0 && iCurrent >= 0) {
+            cal = calendarList.get(iCurrent);
+            calLbl = cal.calendarLabel;
+            if (calLbl.length > 15) {
+                shortLabel = calLbl.substring(0,12) + "...";
+            } else {
+                shortLabel = calLbl;
+            }
+
+            useBoth.checked = calendarList.areBothUsed(calLbl);
+
+            if (calendarList.isAdvanceSet(calLbl)) {
+                addReminderAdvance.checked = true;
+                reminderAdvance.text = calendarList.alarmAdvance(calLbl);
+                reminderAdvance.focus = false;
+            } else {
+                addReminderAdvance.checked = false;
+            }
+
+            if (calendarList.isTimeSet(calLbl)) {
+                addReminderTime.checked = true;
+                reminderTime.text = calendarList.alarmTime(calLbl);
+                reminderTime.focus = false;
+            } else {
+                addReminderTime.checked = false;
+            }
+
+            eventsView.clear();
+            if (filtersJson.calendars[iCurrent].url > "") {
+                txtUrl.text = filtersJson.calendars[iCurrent].url;
+                txtUrl.readOnly = true;
+                eventsView.setFilterType(filtersJson.calendars[iCurrent]);
+                eventsView.fetchCalendar(filtersJson.calendars[iCurrent].url);
+            } else {
+                txtUrl.text = "";
+                txtUrl.readOnly = false;
+            }
+        }
+
+        return;
     }
 }
