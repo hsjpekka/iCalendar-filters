@@ -474,7 +474,6 @@ Page {
                 //icsOriginal: icsFile
                 height: contentHeight
                 onCalendarFetched: {
-                    console.log("alkuperäinen haettu")
                     filterIcs(filtersJson)
                 }
 
@@ -626,7 +625,6 @@ Page {
 
     function findCalendarIndex(label) {
         var i, k;
-        console.log("nimi", label)
         if (label === undefined || label === "") {
             label = calendarSelector.value
         }
@@ -640,7 +638,6 @@ Page {
             }
             i++;
         }
-        console.log("järjestys", k+1, "./", i-1)
         return k;
     }
 
@@ -665,7 +662,6 @@ Page {
                 // don't copy reminder
                 oldCal = filtersJson.calendars[i];
                 for (key in oldCal) {
-                    //console.log(key, oldCal.label)
                     if (key !== "reminder") {
                         modCal[key] = oldCal[key];
                     }
@@ -727,16 +723,6 @@ Page {
         return i;
     }
 
-    //function printCalendarLabels() {
-    //    var i;
-    //    i=0;
-    //    while (i < filtersJson.calendars.length) {
-    //        console.log("kalenteri", i, filtersJson.calendars[i].label);
-    //        i++;
-    //    }
-    //    return;
-    //}
-
     function readFilters() {
         // return -1 = no filters-file, 0 = no json-file, >0 = calendars
         var filtersFile, i, cal, adv, time, d=[];
@@ -771,7 +757,7 @@ Page {
     function removeCalendarFromJson(label) {
         var i, k, djson;
         i = findCalendarIndex(label);
-        //console.log("removing nro", i, "calendar", label)
+        console.log("removing nro", i, "calendar", label)
         if (i >= 0) {
             djson = JSON.parse(JSON.stringify(emptyJson));
             k = 0;
@@ -793,8 +779,6 @@ Page {
         i = configPath.indexOf("/", i+1); // /home/nemo || defaultuser
         configPath = configPath.substring(0, i+1);
         configPath += ".config/null.hsjpekka/icalendar-filters/"
-        //"iCalendarFilters.json", "/home/defauluser/.config/webcal-client/")
-        //console.log(configPath)
         return icsFilter.setFiltersFile("iCalendarFilters.json", configPath);
     }
 
