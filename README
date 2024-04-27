@@ -1,5 +1,6 @@
-Creates filters that buteo-sync-plugin-webcal can use.
+Filters iCalendar-files and creates filters that buteo-sync-plugin-webcal can use.
  
-So far, the plugin does not support filters. To filter iCalendar-files, the plugin (libwebcal-client.so) in /usr/lib/buteo-plugins-qt5/oopp has to be replaced. The plugin that supports filters can be downloaded from https://github.com/hsjpekka/buteo-sync-plugin-webcal-filtered.
+Currently, buteo-sync-plugin-webcal does not support filters. To filter iCalendar-files, the plugin (libwebcal-client.so) in /usr/lib/buteo-plugins-qt5/oopp has to be replaced. The plugin that supports filters can be downloaded from https://github.com/hsjpekka/buteo-sync-plugin-webcal-filtered.
 
-harbour-webcal-filters modifies iCalendarFilters.json in ~/.config/null.hsjpekka/webcal-filters/. Thus, to use it effectively, change the iCalendar filter description file iCalendarFilters.json in ~/.config/webcal-client/ to a link pointing to ~/.config/null.hsjpekka/webcal-filters/iCalendarFilters.json.
+harbour-iCalendar-filters modifies iCalendarFilters.json in ~/.config/null.hsjpekka/webcal-filters/, but the buteo plugin reads its filters from ~/.config/webcal-client/. Thus, to use it effectively, link these files:
+ln -s  ~/.config/null.hsjpekka/webcal-filters/iCalendarFilters.json ~/.config/webcal-client/ 
