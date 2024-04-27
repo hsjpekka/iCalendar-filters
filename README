@@ -1,4 +1,4 @@
-#Filters iCalendar-files and creates filters that _buteo-sync-plugin-webcal_ can use.
+# Filters iCalendar-files and creates filters that _buteo-sync-plugin-webcal_ can use.
  
 Currently, buteo-sync-plugin-webcal does not support filters. To filter iCalendar-files, the plugin (_libwebcal-client.so_) in _/usr/lib/buteo-plugins-qt5/oopp_ has to be replaced. The plugin that supports filters can be downloaded from https://github.com/hsjpekka/buteo-sync-plugin-webcal-filtered.
 
