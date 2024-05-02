@@ -778,7 +778,7 @@ Page {
         i = configPath.indexOf("/", 2); // /home/
         i = configPath.indexOf("/", i+1); // /home/nemo || defaultuser
         configPath = configPath.substring(0, i+1);
-        configPath += ".config/null.hsjpekka/icalendar-filters/"
+        configPath += ".config/null.hsjpekka/harbour-icalendar-filters/"
         return icsFilter.setFiltersFile("iCalendarFilters.json", configPath);
     }
 
