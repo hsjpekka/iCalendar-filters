@@ -31,6 +31,7 @@ DISTFILES += \
     qml/pages/Filters.qml \
     qml/pages/FirstPage.qml \
     qml/components/IcalEventsView.qml \
+    qml/utils/globals.js \
     rpm/harbour-icalendar-filters.changes.in \
     rpm/harbour-icalendar-filters.changes.run.in \
     rpm/harbour-icalendar-filters.spec \
@@ -46,5 +47,5 @@ CONFIG += sailfishapp_i18n
 # planning to localize your app, remember to comment out the
 # following TRANSLATIONS line. And also do not forget to
 # modify the localized app name in the the .desktop file.
-TRANSLATIONS += translations/harbour-icalendar-filters-de.ts \
+TRANSLATIONS += \
     translations/harbour-icalendar-filters-fi.ts

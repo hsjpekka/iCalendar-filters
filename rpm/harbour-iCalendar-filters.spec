@@ -1,7 +1,7 @@
 Name:       harbour-icalendar-filters
 
 Summary:    Filter creator for webcal-client
-Version:    0.2
+Version:    0.3
 Release:    1
 License:    LICENSE
 URL:        http://example.org/
@@ -14,7 +14,8 @@ BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  desktop-file-utils
 
 %description
-Creates filters-file that buteo-sync-plugin-webcal can use when importing iCalendar files.
+Manually download iCalendar files and filter the components before importing to Calendar.
+The filters can be used by buteo-sync-plugin-webcal-filtered.
 
 
 %prep

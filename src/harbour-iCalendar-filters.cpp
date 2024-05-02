@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     fileOperations tmpIcs;
 
     view->engine()->rootContext()->setContextProperty("icsFilter", &filter);
-    view->engine()->rootContext()->setContextProperty("tmpIcs", &tmpIcs);
+    view->engine()->rootContext()->setContextProperty("fileOp", &tmpIcs);
 
     view->setSource(SailfishApp::pathToMainQml());
     view->show();

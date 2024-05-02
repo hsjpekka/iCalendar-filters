@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import "../components"
+import "../utils/globals.js" as Globals
 
 Page {
     id: page
@@ -9,8 +10,10 @@ Page {
 
     Component.onCompleted: {
         //console.log("calendar", calendarLbl, ", url", calendarUrl)
+        readPropertyList()
         newFilters = JSON.parse(JSON.stringify(oldFilters))
         readCalendarFilters()
+        setUpLists()
         settingUp = false
     }
     Component.onDestruction: {
@@ -28,12 +31,14 @@ Page {
     property string calendarLbl: ""//calendarName.text
     property string calendarUrl: ""
     property int calId
+    property var cmpPrp
     property bool filtersModified: false
     property string icsFile: ""
     property var newFilters: {"calendars": [] }
     property var oldFilters: {"calendars": [] }
     property string reminderFullDay: ""
     property string reminderMinutes: ""
+    property var settingsObj
     property bool settingUp: true
 
     readonly property bool isAccept: true
@@ -147,6 +152,18 @@ Page {
 
         PullDownMenu {
             MenuItem {
+                text: qsTr("modify filtering settings")
+                onClicked: {
+                    var dialog = pageStack.push(Qt.resolvedUrl("FilteringSettings.qml"), {
+                                                    "settingsObj": settingsObj
+                                                } )
+                    dialog.accepted.connect( function() {
+                        page.settingsObj = dialog.settingsObj
+                    } )
+                }
+            }
+
+            MenuItem {
                 text: qsTr("reset")
                 onClicked: {
                     filterModel.clear()
@@ -161,10 +178,12 @@ Page {
                     var dialog = pageStack.push(Qt.resolvedUrl("FilterTest.qml"), {
                                 "jsonFilters": newFilters,
                                 "calendar": calendarLbl,
-                                "icsFile": icsFile } )
+                                "icsFile": icsFile
+                            } )
                 }
             }
 
+            /*
             MenuItem {
                 text: qsTr("add")
                 enabled: filterValueTF.text != ""
@@ -173,7 +192,7 @@ Page {
                     composeJson()
                 }
             }
-
+            // */
         }
 
         Column {
@@ -296,6 +315,14 @@ Page {
                     return;
                 }
 
+                function removeComponent(cmp) {
+                    var i;
+                    i = getIndex(cmp);
+                    if (i >= 0 && i < calendarComponents.count) {
+                        calendarComponents.remove(i);
+                    }
+                    return i;
+                }
             }
 
             ComboBox {
@@ -307,6 +334,11 @@ Page {
                         MenuItem {
                             text: icalComponent
                         }
+                    }
+                }
+                onValueChanged: {
+                    if (value != "") {
+                        readPropertyList(value)
                     }
                 }
 
@@ -376,12 +408,37 @@ Page {
 
                 model: filterModel
                 footer: Component {
-                    Label {
-                        text: "-"
-                        width: listViewFilters.width
-                        horizontalAlignment: Text.AlignHCenter
-                        visible: filterModel.count == 0
-                        color: Theme.secondaryHighlightColor
+                    ListItem {
+                        id: footerItem
+                        contentHeight: Theme.itemSizeSmall
+                        menu: ContextMenu {
+                            MenuItem {
+                                text: qsTr("add")
+                                enabled: filterValueTF.text != ""
+                                onClicked: {
+                                    filterModel.addFilter()
+                                    composeJson()
+                                }
+                            }
+                        }
+                        onClicked: {
+                            quickDisplay = true
+                            footerItem.openMenu()
+                        }
+                        onMenuOpenChanged: {
+                            if (menuOpen && quickDisplay) {
+                                footerItem.closeMenu()
+                                quickDisplay = false
+                            }
+                        }
+
+                        Label {
+                            anchors.centerIn: parent
+                            text: filterValueTF.text != "" ? qsTr("press for new") : qsTr("set filtering value")
+                            color: Theme.secondaryColor
+                        }
+
+                        property bool quickDisplay: false
                     }
                 }
 
@@ -437,6 +494,64 @@ Page {
 
                     return N;
                 }
+
+                function removeProperty(prop) {
+                    var i;
+                    i = getIndex(prop);
+                    if (i >= 0 && i < eventProperties.count) {
+                        eventProperties.remove(i);
+                    }
+                    return i;
+                }
+            }
+
+            ListModel {
+                id: cmpProperties
+                ListElement {
+                    prop: "categories"
+                }
+                ListElement {
+                    prop: "dtstart"
+                }
+                ListElement {
+                    prop: "summary"
+                }
+
+                function addProperty(prop) {
+                    return append({"prop": prop});
+                }
+
+                function getIndex(name) {
+                    var i, N;
+                    N = -1;
+                    i = 0;
+                    while (i < cmpProperties.count && name !== undefined) {
+                        if (cmpProperties.get(i).prop === name) {
+                            N = i;
+                            i = cmpProperties.count;
+                        }
+                        i++;
+                    }
+
+                    return N;
+                }
+
+                function removeProperty(prop) {
+                    var i;
+                    i = getIndex(prop);
+                    if (i >= 0 && i < cmpProperties.count) {
+                        cmpProperties.remove(i);
+                    }
+                    return i;
+                }
+
+                function setDefaults() {
+                    cmpProperties.clear();
+                    addProperty("categories");
+                    addProperty("dtstart");
+                    addProperty("summary");
+                    return;
+                }
             }
 
             ComboBox {
@@ -445,7 +560,7 @@ Page {
                 enabled: eventProperties.count > 0
                 menu: ContextMenu {
                     Repeater {
-                        model: eventProperties
+                        model: cmpProperties
                         MenuItem {
                             text: prop
                         }
@@ -737,7 +852,7 @@ Page {
                 label: cbPropertyType.pdate == cbPropertyType.ptype? "dd.mm. || mm/dd"
                             : cbPropertyType.ptime == cbPropertyType.ptype? "hh:mm"
                             : qsTr("value")
-                placeholderText: qsTr("filtering value")
+                placeholderText: qsTr("set filtering value")
                 width: parent.width
                 EnterKey.onClicked: {
                     focus = false
@@ -786,6 +901,10 @@ Page {
     // adds propertydata to the list
     function addFilter(filterNr) { // if filterNr >= 0, modifies a filter
         var action, propMatches, valMatches, vcomponent;
+
+        if (filterValueTF.text === "") {
+            return;
+        }
 
         if (allOrAnyValue.checked) {
             valMatches = 100;
@@ -967,6 +1086,26 @@ Page {
         return;
     }
 
+    function readComponentList() {
+        var result = -1;
+        if (settingsObj === undefined) {
+            calendarComponents.clear();
+            calendarComponents.addComponent("vevent", false, 0);
+            calendarComponents.addComponent("vtodo", false, 0);
+            calendarComponents.addComponent("vfreebusy", false, 0);
+            result = 0;
+        } else {
+            for (let x in settingsObj) {
+                calendarComponents.addComponent(x, false, 0);
+                result++;
+            }
+            if (result >= 0) {
+                result++;
+            }
+        }
+        return result;
+    }
+
     function readFilters(fltrs) {
         var ic, ip, iprop, iv, ivals, n;
         ic=0;
@@ -991,6 +1130,38 @@ Page {
             ic++;
         }
         return n;
+    }
+
+    function readPropertyList(cmp) {
+        // read iCalendar component properties to fill cbFilterProperty
+        // defaults
+        // { "vevent": ["dtstart", "summary", "categories"],
+        //   "vtodo": -"-, "vfreetime": -"-, "vjournal": -"- }
+        //
+        var nr=-1;
+
+        if (settingsObj === undefined) {
+            return 0;
+        }
+
+        for (let k in settingsObj) { // copy the property list of the component
+            console.log("lissääkö komponenttia", k)
+            if (k === cmp) {
+                nr = 0;
+                if (Array.isArray(jsonObj[k]) && jsonObj[k].length > 0) {
+                    cmpProperties.clear();
+                    for (let i in jsonObj[k]) {
+                        cmpProperties.addProperty(jsonObj[k][i]);
+                        nr++;
+                        console.log("lissää", k, i, jsonObj[k][i], "<<")
+                    }
+                } else {
+                    cmpProperties.setDefaults();
+                }
+            }
+        }
+
+        return nr;
     }
 
     function setUpFields(filters) {

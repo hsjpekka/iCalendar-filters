@@ -12,12 +12,13 @@ Page {
         eventsView.filterIcs(jsonFilters)
     }
     Component.onDestruction: {
-        tmpIcs.removeTemporalFile()
+        fileOp.removeFile()
     }
 
     property string calendar: ""
     property string icsFile: ""
     property var jsonFilters: {"calendars": [] }
+    property bool exported: false
 
     SilicaFlickable {
         anchors.fill: parent
@@ -29,12 +30,13 @@ Page {
                 onClicked: {
                     var result
                     var regUnix = /\n/g, regWin = /\r\n/
+                    fileOp.setFileName("temporal.ics", "Downloads");
                     if (!regWin.test(eventsView.icsModified)) {
-                        result = tmpIcs.writeTxt( eventsView.icsModified.replace(regUnix, "\r\n") )
+                        result = fileOp.writeTxt( eventsView.icsModified.replace(regUnix, "\r\n") )
                     } else {
-                        result = tmpIcs.writeTxt( eventsView.icsModified )
+                        result = fileOp.writeTxt( eventsView.icsModified )
                     }
-                    if (result.indexOf("Error") >= 0) {
+                    if (result === undefined || result.length < 1) {
                         note.body = result
                         note.summary = qsTr("File write error.")
                     } else {

@@ -8,9 +8,9 @@ Page {
     allowedOrientations: Orientation.All
 
     Component.onCompleted: {
-        setFiltersFile()
-        readFilters()
-        cleanUpFilters()
+        //setFiltersFile()
+        //readFilters()
+        //cleanUpFilters()
 
         if (calendarList.count > 0) {
             //calendarSelector.currentIndex = 0
@@ -22,6 +22,7 @@ Page {
 
     property alias iCurrent: calendarSelector.currentIndex
     property var filtersJson: emptyJson
+    property var settingsObj
     property bool settingUp: true
     property string shortLabel: ""
 
@@ -263,7 +264,9 @@ Page {
                                             "oldFilters": filtersJson,
                                             "calendarLbl": cal.label,
                                             "calendarUrl": cal.url,
-                                            "icsFile": eventsView.icsOriginal } )
+                                            "icsFile": eventsView.icsOriginal,
+                                            "settingsObj": settingsObj
+                                        } )
                         dialog.closing.connect( function() {
                             if (dialog.filtersModified) {
                                 filtersJson = dialog.newFilters
@@ -591,37 +594,37 @@ Page {
         return;
     }
 
-    function cleanUpFilters() {
-        var i, k, fltrs, lbl, unclean;
+    //function cleanUpFilters() {
+    //    var i, k, fltrs, lbl, unclean;
 
-        i = 0;
-        unclean = 0;
-        fltrs = emptyJson;
-        while (i < filtersJson.calendars.length) {
-            lbl = filtersJson.calendars[i].label;
-            k = findCalendarIndex(lbl);
-            if (k === i) { // store only the first set of data
-                fltrs.calendars.push(filtersJson.calendars[i]);
-            } else {
-                unclean++;
-            }
+    //    i = 0;
+    //    unclean = 0;
+    //    fltrs = emptyJson;
+    //    while (i < filtersJson.calendars.length) {
+    //        lbl = filtersJson.calendars[i].label;
+    //        k = findCalendarIndex(lbl);
+    //        if (k === i) { // store only the first set of data
+    //            fltrs.calendars.push(filtersJson.calendars[i]);
+    //        } else {
+    //            unclean++;
+    //        }
 
-            i++;
-        }
-        filtersJson = JSON.parse(JSON.stringify(fltrs));
-        if (filtersJson.calendars) {
-            k = filtersJson.calendars.length;
-        } else {
-            k = -1;
-        }
+    //        i++;
+    //    }
+    //    filtersJson = JSON.parse(JSON.stringify(fltrs));
+    //    if (filtersJson.calendars) {
+    //        k = filtersJson.calendars.length;
+    //    } else {
+    //        k = -1;
+    //    }
 
-        if (unclean > 0) {
-            console.log("multiple entries for a calendar found (" + unclean + ")");
-            storeFilters();
-        }
+    //    if (unclean > 0) {
+    //        console.log("multiple entries for a calendar found (" + unclean + ")");
+    //        storeFilters();
+    //    }
 
-        return k;
-    }
+    //    return k;
+    //}
 
     function findCalendarIndex(label) {
         var i, k;
@@ -723,6 +726,7 @@ Page {
         return i;
     }
 
+    /*
     function readFilters() {
         // return -1 = no filters-file, 0 = no json-file, >0 = calendars
         var filtersFile, i, cal, adv, time, d=[];
@@ -752,7 +756,7 @@ Page {
         }
 
         return filtersJson.calendars.length;
-    }
+    }// */
 
     function removeCalendarFromJson(label) {
         var i, k, djson;
@@ -772,15 +776,15 @@ Page {
         return;
     }
 
-    function setFiltersFile() {
-        var configPath, i;
-        configPath = icsFilter.setFiltersFile();
-        i = configPath.indexOf("/", 2); // /home/
-        i = configPath.indexOf("/", i+1); // /home/nemo || defaultuser
-        configPath = configPath.substring(0, i+1);
-        configPath += ".config/null.hsjpekka/icalendar-filters/"
-        return icsFilter.setFiltersFile("iCalendarFilters.json", configPath);
-    }
+    //function setFiltersFile() {
+    //    var configPath, i;
+    //    configPath = icsFilter.setFiltersFile();
+    //    i = configPath.indexOf("/", 2); // /home/
+    //    i = configPath.indexOf("/", i+1); // /home/nemo || defaultuser
+    //    configPath = configPath.substring(0, i+1);
+    //    configPath += ".config/null.hsjpekka/icalendar-filters/"
+    //    return icsFilter.setFiltersFile("iCalendarFilters.json", configPath);
+    //}
 
     function storeFilters() {
         var filtersFile, result;
