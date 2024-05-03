@@ -8,5 +8,5 @@ Name=iCalendar-filters
 
 [X-Sailjail]
 OrganizationName=null.hsjpekka
-ApplicationName=icalendar-filters
+ApplicationName=harbour-icalendar-filters
 Permissions=Internet;Downloads;

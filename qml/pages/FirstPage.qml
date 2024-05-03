@@ -297,7 +297,7 @@ Page {
                            " but the modified %3 reads the file in " +
                            "%4.<br> Thus, to make " +
                            "it work, you should create a link: <br>" +
-                           "<i>ln -s %2%1 %4</i>.").arg("iCalendarFilters.json").arg("~/.config/null.hsjpekka/icalendar-filters/").arg("buteo-sync-plugin-webcal").arg("~/.config/icalendar-filters/")
+                           "<i>ln -s %2%1 %4</i>.").arg("iCalendarFilters.json").arg("~/.config/null.hsjpekka/harbour-icalendar-filters/").arg("buteo-sync-plugin-webcal").arg("~/.config/icalendar-filters/")
                 textFormat: Text.StyledText
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
@@ -778,7 +778,8 @@ Page {
         i = configPath.indexOf("/", 2); // /home/
         i = configPath.indexOf("/", i+1); // /home/nemo || defaultuser
         configPath = configPath.substring(0, i+1);
-        configPath += ".config/null.hsjpekka/harbour-icalendar-filters/"
+        configPath += ".config/null.hsjpekka/harbour-icalendar-filters/";
+        console.log(configPath)
         return icsFilter.setFiltersFile("iCalendarFilters.json", configPath);
     }
 
