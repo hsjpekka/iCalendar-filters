@@ -17,6 +17,45 @@
     </message>
 </context>
 <context>
+    <name>FilteringSettings</name>
+    <message>
+        <source>Filtering Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Calendar components</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>modify</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>component name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Component properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>property name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>add</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Filters</name>
     <message>
         <source>delete</source>
@@ -27,7 +66,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>add</source>
+        <source>reset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -35,7 +78,35 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>read in matching components</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>leave out matching components</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>all filters have to match</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>a single matching property is enough</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>set filtering value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filtering property</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -56,6 +127,14 @@
     </message>
     <message>
         <source>number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>all criteria have to match</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>a single matching criteria is enough</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -99,51 +178,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>filtering value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>filters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>read in matching components</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>leave out matching components</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>a single matching property is enough</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>test</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>filters for</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>filtering property</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>reset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>all criteria have to match</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>a single matching criteria is enough</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>original</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -151,7 +190,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>filter</source>
+        <source>entry type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>none selected</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -247,10 +290,6 @@
     </message>
     <message>
         <source>remove %1 settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The app writes the filters in %1 in %2,  but the modified %3 reads the file in %4.&lt;br&gt; Thus, to make it work, you should create a link: &lt;br&gt;&lt;i&gt;ln -s %2%1 %4&lt;/i&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

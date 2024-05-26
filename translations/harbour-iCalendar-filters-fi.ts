@@ -17,6 +17,45 @@
     </message>
 </context>
 <context>
+    <name>FilteringSettings</name>
+    <message>
+        <source>Filtering Settings</source>
+        <translation>Suodattimen asetukset</translation>
+    </message>
+    <message>
+        <source>Calendar components</source>
+        <translation>Kalenterin merkinnät</translation>
+    </message>
+    <message>
+        <source>delete</source>
+        <translation>poista</translation>
+    </message>
+    <message>
+        <source>modify</source>
+        <translation>muokkaa</translation>
+    </message>
+    <message>
+        <source>component name</source>
+        <translation>merkintä</translation>
+    </message>
+    <message>
+        <source>Component properties</source>
+        <translation>merkinnän ominaisuudet</translation>
+    </message>
+    <message>
+        <source>property name</source>
+        <translation>ominaisuus</translation>
+    </message>
+    <message>
+        <source>action</source>
+        <translation>toiminta</translation>
+    </message>
+    <message>
+        <source>add</source>
+        <translation>lisää</translation>
+    </message>
+</context>
+<context>
     <name>Filters</name>
     <message>
         <source>delete</source>
@@ -27,16 +66,48 @@
         <translation>muokkaa</translation>
     </message>
     <message>
+        <source>reset</source>
+        <translation>palauta</translation>
+    </message>
+    <message>
+        <source>test</source>
+        <translation>kokeile</translation>
+    </message>
+    <message>
+        <source>filters for %1</source>
+        <translation>%1 - suodattimet</translation>
+    </message>
+    <message>
+        <source>read in matching components</source>
+        <translation>lue vastaavat merkinnät</translation>
+    </message>
+    <message>
+        <source>leave out matching components</source>
+        <translation>hylkää vastaavat merkinnät</translation>
+    </message>
+    <message>
+        <source>all filters have to match</source>
+        <translation>kaikkien suodattimien on vastattava</translation>
+    </message>
+    <message>
+        <source>a single matching property is enough</source>
+        <translation>yksi vastaava ominaisuus riittää</translation>
+    </message>
+    <message>
+        <source>filters</source>
+        <translation>suodattimet</translation>
+    </message>
+    <message>
         <source>add</source>
         <translation>lisää</translation>
     </message>
     <message>
-        <source>filters for %1</source>
-        <translation>%1 suodattimet</translation>
+        <source>set filtering value</source>
+        <translation>suodattimen arvo</translation>
     </message>
     <message>
-        <source>all filters have to match</source>
-        <translation>kaikkien ehtojen on toteuduttava</translation>
+        <source>filtering property</source>
+        <translation>suodatettava ominaisuus</translation>
     </message>
     <message>
         <source>type of property</source>
@@ -48,23 +119,31 @@
     </message>
     <message>
         <source>date</source>
-        <translation>päivämäärä</translation>
+        <translation>päiväys</translation>
     </message>
     <message>
         <source>time</source>
-        <translation>kellonaika</translation>
+        <translation>kello</translation>
     </message>
     <message>
         <source>number</source>
         <translation>numero</translation>
     </message>
     <message>
+        <source>all criteria have to match</source>
+        <translation>kaikkien arvojen on vastattava</translation>
+    </message>
+    <message>
+        <source>a single matching criteria is enough</source>
+        <translation>yksi vastaava arvo riittää</translation>
+    </message>
+    <message>
         <source>equal to</source>
-        <translation>sama kuin</translation>
+        <translation>yhtä suuri</translation>
     </message>
     <message>
         <source>not equal to</source>
-        <translation>eri kuin</translation>
+        <translation>erisuuri</translation>
     </message>
     <message>
         <source>contains</source>
@@ -84,11 +163,11 @@
     </message>
     <message>
         <source>larger than or equal to</source>
-        <translation>suurempi tai yhtäsuuri</translation>
+        <translation>suurempi kuin</translation>
     </message>
     <message>
         <source>smaller than or equal to</source>
-        <translation>pienempi tai yhtäsuuri</translation>
+        <translation>pienempi kuin</translation>
     </message>
     <message>
         <source>criteria</source>
@@ -99,60 +178,24 @@
         <translation>arvo</translation>
     </message>
     <message>
-        <source>filtering value</source>
-        <translation>suodattimen arvo</translation>
-    </message>
-    <message>
-        <source>filters</source>
-        <translation>suodattimet</translation>
-    </message>
-    <message>
-        <source>read in matching components</source>
-        <translation>hyväksy suodattimeen sopivat</translation>
-    </message>
-    <message>
-        <source>leave out matching components</source>
-        <translation>poista suodattimeen sopivat</translation>
-    </message>
-    <message>
-        <source>a single matching property is enough</source>
-        <translation>yhden ominaisuuden sopiminen riittää</translation>
-    </message>
-    <message>
-        <source>test</source>
-        <translation>kokeile</translation>
-    </message>
-    <message>
-        <source>filters for</source>
-        <translation>suodatettava</translation>
-    </message>
-    <message>
-        <source>filtering property</source>
-        <translation>suodatettava ominaisuus</translation>
-    </message>
-    <message>
-        <source>reset</source>
-        <translation>palauta</translation>
-    </message>
-    <message>
-        <source>all criteria have to match</source>
-        <translation>kaikkien ehtojen on täytyttävä</translation>
-    </message>
-    <message>
-        <source>a single matching criteria is enough</source>
-        <translation>yhden ehdon täyttyminen riittää</translation>
-    </message>
-    <message>
         <source>original</source>
         <translation>alkuperäinen</translation>
+    </message>
+    <message>
+        <source>filter</source>
+        <translation>suodatin</translation>
     </message>
     <message>
         <source>modified</source>
         <translation>muokattu</translation>
     </message>
     <message>
-        <source>filter</source>
-        <translation>suodatin</translation>
+        <source>entry type</source>
+        <translation>merkintä</translation>
+    </message>
+    <message>
+        <source>none selected</source>
+        <translation>ei valintaa</translation>
     </message>
 </context>
 <context>
@@ -248,10 +291,6 @@
     <message>
         <source>remove %1 settings</source>
         <translation>poista asetukset (%1)</translation>
-    </message>
-    <message>
-        <source>The app writes the filters in %1 in %2,  but the modified %3 reads the file in %4.&lt;br&gt; Thus, to make it work, you should create a link: &lt;br&gt;&lt;i&gt;ln -s %2%1 %4&lt;/i&gt;.</source>
-        <translation>Ohjelma kirjoittaa suodattimet tiedostoon %1 hakemistossa %2, mutta muutettu %3 lukee hakemistosta %4.&lt;br&gt; Jotta homma toimisi, luo linkki: &lt;br&gt;&lt;i&gt;ln -s %2%1 %4&lt;/i&gt;.</translation>
     </message>
 </context>
 <context>
