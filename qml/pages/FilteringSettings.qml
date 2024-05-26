@@ -25,14 +25,37 @@ import "../utils/globals.js" as Globals
 Dialog {
     id: page
     Component.onCompleted: {
+        console.log("isoin", Theme.opacityOverlay, "suuri", Theme.opacityHigh, "pieni", Theme.opacityLow, "olematon", Theme.opacityFaint)
+        console.log(JSON.stringify(settingsObj))
         if (settingsObj && settingsObj.filteringProperties) {
             filterProps = settingsObj.filteringProperties
-            for (let i in filterProps) {
+            //var i=0, cArr
+            //cArr = filterProps.keys()
+            //while (i < cArr.length) {
+            //    cmpList.addComponent(cArr[i])
+            //    i++
+            //}
+
+            var i
+            for (i in filterProps) {
                 cmpList.addComponent(i)
             }
             //settingUp = false
+            newFilterProps = filterProps
             cmpView.currentIndex = 0
+        } else {
+            console.log("miksei asetuksia")
+            console.log(JSON.stringify(settingsObj))
         }
+    }
+    onAccepted: {
+        if (JSON.stringify(filterProps) === JSON.stringify(newFilterProps)) {
+            isModified = false
+        } else {
+            isModified = true
+        }
+
+        settingsObj.filteringProperties = newFilterProps
     }
 
     property var filterProps//: Globals.settingsObj.filteringProperties
@@ -40,341 +63,462 @@ Dialog {
     //    "vtodo": [-"-], "vfreetime": [-"-], "vjournal": [-"-]
     //  }
     //property bool settingUp: true
+    property bool isModified: false
+    property var newFilterProps
     property var settingsObj
 
-    Column {
-        id: column
-        width: parent.width
+    SilicaFlickable {
+        anchors.fill: parent
+        contentHeight: column.height
 
-        PageHeader {
-            title: qsTr("Filtering Settings")
-        }
+        Column {
+            id: column
+            width: parent.width
 
-        SectionHeader {
-            text: qsTr("Calendar components")
-        }
-
-        ListModel {
-            id: cmpList
-
-            function addComponent(cmp) {
-                var i;
-                i = find(cmp);
-                if (i < 0) {
-                    cmpList.append({"cmp": cmp});
-                }
-                return i;
+            DialogHeader {
+                title: qsTr("Filtering Settings")
             }
 
-            function find(cmp) {
-                var i, n;
-                i = 0;
-                n = -1;
-                while (i < cmpList.count) {
-                    if (cmpList.get(i).cmp === cmp) {
-                        n = i;
+            SectionHeader {
+                text: qsTr("Calendar components")
+            }
+
+            ListModel {
+                id: cmpList
+
+                function addComponent(cmp) {
+                    var i;
+                    i = find(cmp);
+                    if (i < 0) {
+                        cmpList.append({"cmp": cmp});
                     }
-                    i++;
+                    return i;
                 }
 
-                return n;
-            }
-
-            function getValue(i) {
-                var result;
-                if (i>=0 && i < count) {
-                    result = get(i).cmp;
-                }
-                return result;
-            }
-
-            function removeComponent(cmp) {
-                var i;
-                i = find(cmp);
-                if (i >= 0) {
-                    cmpList.remove(i);
-                }
-                return i;
-            }
-
-            function setComponent(ind, cmp) {
-                var i;
-                i = find(cmp);
-                if (i >= 0) {
-                    cmpList.set(ind, {"cmp": cmp});
-                }
-                return i;
-            }
-        }
-
-        SilicaListView {
-            id: cmpView
-            x: Theme.horizontalPageMargin
-            width: parent.width - 2*x
-            height: 4*Theme.itemSizeSmall
-            spacing: 0// Theme.paddingSmall
-            clip: false//
-
-            model: cmpList
-            footer: Component {
-                Label {
-                    anchors.centerIn: parent
-                    text: "-"
-                    visible: cmpList.count < 1
-                    color: Theme.secondaryColor
-                }
-            }
-
-            delegate: Component {
-                id: cmpDelegate
-                ListItem {
-                    contentHeight: Theme.itemSizeSmall
-                    menu: ContextMenu {
-                        MenuItem {
-                            text: qsTr("delete")
-                            onClicked: {
-                                if (cmpList.count > 0) {
-                                    if (index > 0) {
-                                        cmpView.currentIndex = index -1
-                                    } else {
-                                        cmpView.currentIndex = index
-                                    }
-                                }
-                                cmpList.remove(index)
-                            }
+                function find(cmp) {
+                    var i, n;
+                    i = 0;
+                    n = -1;
+                    while (i < cmpList.count) {
+                        if (cmpList.get(i).cmp === cmp) {
+                            n = i;
                         }
-                        MenuItem {
-                            text: qsTr("modify")
-                            onClicked: {
-                                cmpList.set(index, txtComponent.text)
-                            }
-                        }
-                    }
-                    onClicked: {
-                        cmpView.currentIndex = index
+                        i++;
                     }
 
+                    return n;
+                }
+
+                function getValue(i) {
+                    var result;
+                    if (i>=0 && i < count) {
+                        result = get(i).cmp;
+                    }
+                    return result;
+                }
+
+                function removeComponent(cmp) {
+                    var i;
+                    i = find(cmp);
+                    if (i >= 0) {
+                        cmpList.remove(i);
+                    }
+                    return i;
+                }
+
+                function setComponent(ind, cmp) {
+                    var i;
+                    i = find(cmp);
+                    if (i >= 0) {
+                        cmpList.set(ind, {"cmp": cmp});
+                    }
+                    return i;
+                }
+            }
+
+            SilicaListView {
+                id: cmpView
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2*x
+                height: 3*Theme.itemSizeSmall
+                spacing: 0// Theme.paddingSmall
+                clip: true//
+
+                model: cmpList
+                footer: Component {
                     Label {
-                        anchors.centerIn: parent
-                        text: cmp
+                        //anchors.centerIn: parent
+                        text: "-"
+                        visible: cmpList.count < 1
                         color: Theme.secondaryColor
                     }
                 }
-            }
 
-            highlight: Rectangle {
-                color: Theme.highlightBackgroundColor
-                height: cmpView.currentItem? cmpView.currentItem.height : 0
-                width: cmpView.width
-                radius: Theme.paddingMedium
-                opacity: Theme.opacityLow
-            }
-
-            highlightFollowsCurrentItem: true
-
-            onCurrentIndexChanged: {
-                console.log("valittu vaihtui", currentIndex)
-                prpList.clear()
-                var selectedComponent = cmpList.getValue(currentIndex)
-                for (let i in filterProps) {
-                    if (filterProps[i].component === selectedComponent) {
-                        for (let k in filterProps[i].properties) {
-                            prpList.addProperty(filterProps[i].properties[k].property)
-                        }
-                    }
-                }
-            }
-        }
-
-        TextField {
-            id: txtComponent
-            placeholderText: qsTr("component name")
-            label: qsTr("component name")
-        }
-
-        Button {
-            text: qsTr("add component")
-            enabled: txtComponent.text > ""
-            x: Theme.horizontalPageMargin
-            width: parent.width - 2*x
-            onClicked: {
-                cmpList.addComponent(txtComponent.text)
-
-            }
-        }
-
-        SectionHeader {
-            text: qsTr("Component properties")
-        }
-
-        ListModel {
-            id: prpList
-
-            function addProperty(prop) {
-                var i;
-                i = find(prop);
-                if (i < 0) {
-                    prpList.append({"prop": prop});
-                }
-                return i;
-            }
-
-            function getValue(i) {
-                if (i < count && i >= 0) {
-                    return get(i).prop;
-                }
-                return;
-            }
-
-            function find(prop) {
-                var i, n;
-                i = 0;
-                n = -1;
-                while (i < prpList.count) {
-                    if (prpList.get(i).prop === prop) {
-                        n = i;
-                    }
-                    i++;
-                }
-
-                return n;
-            }
-
-            function removeProperty(prop) {
-                var i;
-                i = find(prop);
-                if (i >= 0) {
-                    prpList.remove(i);
-                }
-                return i;
-            }
-        }
-
-        SilicaListView {
-            id: prpView
-            x: Theme.horizontalPageMargin
-            width: parent.width - 2*x
-            height: 4*Theme.itemSizeSmall
-            spacing: 0// Theme.paddingSmall
-            clip: false//
-
-            model: prpList
-            footer: Component {
-                Label {
-                    anchors.centerIn: parent
-                    text: "-"
-                    visible: prpList.count < 1
-                    color: Theme.secondaryColor
-                }
-            }
-
-            delegate: Component {
-                id: propertyDelegate
-                ListItem {
-                    contentHeight: Theme.itemSizeSmall
-                    menu: ContextMenu {
-                        MenuItem {
-                            text: qsTr("delete")
-                            onClicked: {
-                                if (prpList.count > 0) {
-                                    if (index > 0) {
-                                        prpView.currentIndex = index -1
-                                    } else {
-                                        prpView.currentIndex = index
+                delegate: Component {
+                    id: cmpDelegate
+                    ListItem {
+                        contentHeight: Theme.itemSizeSmall
+                        menu: ContextMenu {
+                            MenuItem {
+                                text: qsTr("delete")
+                                onClicked: {
+                                    if (cmpList.count > 0) {
+                                        if (index > 0) {
+                                            cmpView.currentIndex = index -1
+                                        } else {
+                                            cmpView.currentIndex = index
+                                        }
                                     }
+                                    cmpList.remove(index)
+                                    composeFilteringProps()
                                 }
-                                prpList.remove(index)
+                            }
+                            MenuItem {
+                                text: qsTr("modify")
+                                onClicked: {
+                                    cmpList.set(index, txtComponent.text)
+                                }
                             }
                         }
-                        MenuItem {
-                            text: qsTr("modify")
-                            onClicked: {
-                                prpList.set(index, txtProperty.text)
-                            }
+                        onClicked: {
+                            cmpView.currentIndex = index
+                        }
+
+                        Label {
+                            anchors.centerIn: parent
+                            text: cmp
+                            color: Theme.secondaryColor
                         }
                     }
-                    onClicked: {
-                        prpView.currentIndex = index
+                }
+
+                highlight: Rectangle {
+                    color: Theme.highlightBackgroundColor
+                    height: cmpView.currentItem? cmpView.currentItem.height : 0
+                    width: cmpView.width
+                    radius: Theme.paddingMedium
+                    opacity: Theme.opacityLow
+                }
+
+                highlightFollowsCurrentItem: true
+
+                onCurrentIndexChanged: {
+                    console.log("valittu vaihtui", currentIndex)
+                    prpList.clear()
+                    var selectedComponent = cmpList.getValue(currentIndex)
+                    var pArr
+                    pArr = newFilterProps[selectedComponent]
+                    if (pArr) {
+                        var i = 0;
+                        while(i < pArr.length) {
+                            prpList.addProperty(pArr[i])
+                            i++
+                        }
+                    }
+                }
+            }
+
+            TextField {
+                id: txtComponent
+                placeholderText: qsTr("component name")
+                label: qsTr("component name")
+                EnterKey.onClicked: {
+                    focus = false
+                }
+            }
+
+            ComboBox {
+                id: cbCmpAction
+                label: qsTr("action")
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2*x
+                opacity: txtComponent.text > ""? 1.0 : Theme.opacityOverlay
+                //labelColor: txtComponent.text > ""? Theme.primaryColor : Theme.secondaryColor
+                menu: ContextMenu {
+                    MenuItem {
+                        text: qsTr("add")
+                        enabled: txtComponent.text > ""
+                        onClicked: {
+                            cmpList.addProperty(txtComponent.text)
+                            txtComponent.text = ""
+                            cmpView.currentIndex = -1
+                            cbCmpAction.currentIndex = -1
+                            cbCmpAction.value = ""
+                            composeFilteringProps()
+                        }
+                    }
+                    MenuItem {
+                        text: qsTr("modify")
+                        enabled: txtComponent.text > "" && cmpView.currentIndex >= 0
+                        onClicked: {
+                            cmpList.set(cmpView.currentIndex, txtComponent.text)
+                            txtComponent.text = ""
+                            //cmpView.currentIndex = -1
+                            cbCmpAction.currentIndex = -1
+                            cbCmpAction.value = ""
+                            composeFilteringProps()
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: parent.height
+                    color: "transparent"
+                    border.width: 2
+                    border.color: Theme.backgroundGlowColor//Theme.secondaryColor
+                    radius: Theme.paddingMedium
+                }
+            }
+
+            //Button {
+            //    text: qsTr("add component")
+            //    enabled: txtComponent.text > ""
+            //    x: Theme.horizontalPageMargin
+            //    width: parent.width - 2*x
+            //    onClicked: {
+            //        cmpList.addComponent(txtComponent.text)
+            //    }
+            //}
+
+            SectionHeader {
+                text: qsTr("Component properties")
+            }
+
+            ListModel {
+                id: prpList
+
+                function addProperty(prop) {
+                    var i;
+                    i = find(prop);
+                    if (i < 0) {
+                        prpList.append({"prop": prop});
+                    }
+                    return i;
+                }
+
+                function getValue(i) {
+                    if (i < count && i >= 0) {
+                        return get(i).prop;
+                    }
+                    return;
+                }
+
+                function find(prop) {
+                    var i, n;
+                    i = 0;
+                    n = -1;
+                    while (i < prpList.count) {
+                        if (prpList.get(i).prop === prop) {
+                            n = i;
+                        }
+                        i++;
                     }
 
+                    return n;
+                }
+
+                function removeProperty(prop) {
+                    var i;
+                    i = find(prop);
+                    if (i >= 0) {
+                        prpList.remove(i);
+                    }
+                    return i;
+                }
+            }
+
+            SilicaListView {
+                id: prpView
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2*x
+                height: 3*Theme.itemSizeSmall
+                spacing: 0// Theme.paddingSmall
+                clip: true//
+
+                model: prpList
+                footer: Component {
                     Label {
-                        anchors.centerIn: parent
-                        text: prop
+                        //anchors.centerIn: parent
+                        text: "-"
+                        visible: prpList.count < 1
                         color: Theme.secondaryColor
                     }
                 }
-            }
 
-            highlight: Rectangle {
-                color: Theme.highlightBackgroundColor
-                height: prpView.currentItem? prpView.currentItem.height : 0
-                width: prpView.width
-                radius: Theme.paddingMedium
-                opacity: Theme.opacityLow
-            }
+                delegate: Component {
+                    id: propertyDelegate
+                    ListItem {
+                        contentHeight: Theme.itemSizeSmall
+                        menu: ContextMenu {
+                            MenuItem {
+                                text: qsTr("delete")
+                                onClicked: {
+                                    if (prpList.count > 0) {
+                                        if (index > 0) {
+                                            prpView.currentIndex = index -1
+                                        } else {
+                                            prpView.currentIndex = index
+                                        }
+                                    }
+                                    prpList.remove(index)
+                                    composeFilteringProps()
+                                }
+                            }
+                            //MenuItem {
+                            //    text: qsTr("modify")
+                            //    onClicked: {
+                            //        prpList.set(index, txtProperty.text)
+                            //    }
+                            //}
+                        }
+                        onClicked: {
+                            prpView.currentIndex = index
+                        }
 
-            highlightFollowsCurrentItem: true
-
-            onCurrentIndexChanged: {
-                if (currentIndex >= 0 && currentIndex < count) {
-                    txtProperty.text = prpList.getValue(currentIndex)
+                        Label {
+                            anchors.centerIn: parent
+                            text: prop
+                            color: Theme.secondaryColor
+                        }
+                    }
                 }
 
-            }
-        }
+                highlight: Rectangle {
+                    color: Theme.highlightBackgroundColor
+                    height: prpView.currentItem? prpView.currentItem.height : 0
+                    width: prpView.width
+                    radius: Theme.paddingMedium
+                    opacity: Theme.opacityLow
+                }
 
-        TextField {
-            id: txtProperty
-            placeholderText: qsTr("property name")
-            label: qsTr("property name")
-            EnterKey.onClicked: {
-                focus = false
-            }
-        }
+                highlightFollowsCurrentItem: true
 
-        Button {
-            text: qsTr("add property")
-            enabled: txtProperty.text > ""
-            x: Theme.horizontalPageMargin
-            width: parent.width - 2*x
-            onClicked: {
-                prpList.addProperty(txtProperty.text)
-            }
-        }
+                onCurrentIndexChanged: {
+                    if (currentIndex >= 0 && currentIndex < count) {
+                        txtProperty.text = prpList.getValue(currentIndex)
+                    }
 
+                }
+            }
+
+            TextField {
+                id: txtProperty
+                placeholderText: qsTr("property name")
+                label: qsTr("property name")
+                EnterKey.onClicked: {
+                    focus = false
+                }
+            }
+
+            ComboBox {
+                id: cbPrpAction
+                label: qsTr("modify") + " | " + qsTr("add")
+                opacity: txtProperty.text > ""? 1 : 0.5*(Theme.opacityHigh + Theme.opacityOverlay)
+                //enabled: txtProperty.text > ""
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2*x
+                menu: ContextMenu {
+                    MenuItem {
+                        text: qsTr("add")
+                        enabled: txtProperty.text > ""
+                        onClicked: {
+                            prpList.addProperty(txtProperty.text)
+                            txtProperty.text = ""
+                            prpView.currentIndex = -1
+                            cbPrpAction.currentIndex = -1
+                            cbPrpAction.value = ""
+                            composeFilteringProps()
+                        }
+                    }
+                    MenuItem {
+                        text: qsTr("modify")
+                        enabled: txtProperty.text > "" && prpView.currentIndex >= 0
+                        onClicked: {
+                            prpList.set(prpView.currentIndex, txtProperty.text)
+                            txtProperty.text = ""
+                            //prpView.currentIndex = -1
+                            cbPrpAction.currentIndex = -1
+                            cbPrpAction.value = ""
+                            composeFilteringProps()
+                        }
+                    }
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: "transparent"
+                    border.width: 3
+                    border.color: Theme.backgroundGlowColor //Theme.secondaryColor
+                    radius: 0.5*Theme.fontSizeTiny
+                }
+            }
+
+            Rectangle {
+                color: "transparent"
+                height: Theme.paddingMedium
+                width: 1
+            }
+
+        }
     }
 
     function addToCPList(cmp, prp) {
-        var arr, ic, isCmp, isProp;
+        var arr, c, ic, isCmp, isProp, p;
         isCmp = false;
         isProp = false;
-        for (let c in filterProps) {
+        for (c in newFilterProps) {
             if (c === cmp) {
                 isCmp = true;
                 ic = c;
             }
         }
         if (!isCmp) {
-            filterProps[cmp] = [];
+            newFilterProps[cmp] = [];
         }
 
         if (prp) {
-            for (let p in filterProps[ic]) {
-                if (filterProps[ic][p] === prp) {
+            for (p in newFilterProps[ic]) {
+                if (newFilterProps[ic][p] === prp) {
                     isProp = true;
                 }
             }
             if (!isProp) {
-                arr = filterProps[c];
+                arr = newFilterProps[c];
                 if (Array.isArray(arr)) {
                     if (arr.length === 0) {
                         arr = [];
                     }
                     arr.push(prp);
                 }
-                filterProps[c][p] = arr;
+                newFilterProps[c][p] = arr;
             }
         }
+
+        return;
+    }
+
+    function composeFilteringProps() {
+        var cmp, fProps, ic, ip, pArr;
+        fProps = {};
+        ic = 0;
+        while (ic < cmpList.count) {
+            cmp = cmpList.getValue(ic);
+            if (ic === cmpView.currentIndex) {
+                pArr = [];
+                ip = 0;
+                while (ip < prpList.count) {
+                    pArr.push(prpList.getValue(ip));
+                    ip++;
+                }
+                fProps[cmp] = pArr;
+            } else {
+                fProps[cmp] = newFilterProps[cmp];
+            }
+            ic++;
+        }
+        console.log(JSON.stringify(newFilterProps), "  >>>  ", JSON.stringify(fProps))
+        newFilterProps = fProps;
 
         return;
     }

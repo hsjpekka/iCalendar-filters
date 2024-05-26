@@ -23,7 +23,7 @@ QString fileOperations::error()
 
 QString fileOperations::readTxt()
 {
-    QString result, str;
+    QString result;
     QFile iFile;
     QTextStream input;
 
@@ -34,18 +34,18 @@ QString fileOperations::readTxt()
         errorStr.append(filePath + fileName);
         errorStr.append(": ");
         errorStr.append(iFile.errorString());
-        qWarning() << "Error in opening " << filePath << fileName;
+        qWarning() << errorStr;
         return result;
     }
 
     input.setDevice(&iFile);
-    str = input.readAll();
+    result = input.readAll();
     if (input.status() != QTextStream::Ok) {
         errorStr = "Error in reading ";
         errorStr.append(filePath + fileName);
-        errorStr.append(": status ");
+        errorStr.append(". Status: ");
         errorStr.append(input.status());
-        qWarning() << "Error in reading the temporary file." << "Status" << input.status();
+        qWarning() << errorStr;
     }
     iFile.close();
 

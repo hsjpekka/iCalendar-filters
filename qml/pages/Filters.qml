@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import Nemo.Notifications 1.0
 import "../components"
 import "../utils/globals.js" as Globals
 
@@ -9,14 +10,14 @@ Page {
     allowedOrientations: Orientation.All
 
     Component.onCompleted: {
-        //console.log("calendar", calendarLbl, ", url", calendarUrl)
+        readComponentList()
         readPropertyList()
         newFilters = JSON.parse(JSON.stringify(oldFilters))
         readCalendarFilters()
-        setUpLists()
         settingUp = false
     }
     Component.onDestruction: {
+        composeFilter()
         if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) {
             filtersModified = false
         } else {
@@ -43,107 +44,8 @@ Page {
 
     readonly property bool isAccept: true
 
-    ListModel {
-        id: filterModel
-        //{"icsComponent", "icsProperty", "icsPropType",
-        //"icsValMatches", "icsCriteria", "icsValue"}
-
-        function addFilter(comp, prop, propType,//, reject, propMatches, prop, propType,
-                           valMatches, crit, val) {
-            checkPropertyChanges(comp, prop, valMatches);
-            if (comp === undefined || prop === undefined ||
-                    crit === undefined || val === undefined ) {
-                return;
-            }
-            if (propType === undefined) {
-                propType = "string";
-            }
-            if (valMatches === undefined) {
-                valMatches = 0;
-            }
-
-            append({"icsComponent": comp,
-                       "icsProperty": prop,
-                       "icsPropType": propType, "icsValMatches": valMatches,
-                       "icsCriteria": crit, "icsValue": val
-                   });
-            return;
-        }
-
-        function checkPropertyChanges(comp, prop, valMatches){
-            var i=0, current;
-            while (i < count) {
-                current = get(i);
-                if (comp === current.icsComponent && prop === current.icsProperty) {
-                    if (current.icsValMatches !== valMatches){
-                        setProperty(i, "icsValMatches", valMatches);
-                    }
-                }
-                i++;
-            }
-            return;
-        }
-
-        function modifyFilter(i, comp, prop, //reject, propMatches, prop,
-                              propType, valMatches, crit, val) {
-            checkPropertyChanges(comp, prop, valMatches);
-            if (i >= 0 && i < count) {
-                set(i, {"icsComponent": comp,
-                        "icsProperty": prop, "icsPropType": propType,
-                        "icsValMatches": valMatches,
-                        "icsCriteria": crit, "icsValue": val
-                    });
-            } else {
-                console.log("index out of filterModel range");
-            }
-
-        }
-    }
-
-    Component {
-        id: filterDelegate
-        ListItem {
-            contentHeight: Theme.itemSizeSmall
-            menu: ContextMenu {
-                MenuItem {
-                    text: qsTr("delete")
-                    onClicked: {
-                        filterModel.remove(index)
-                        composeJson()
-                    }
-                }
-                MenuItem {
-                    text: qsTr("modify")
-                    onClicked: {
-                        addFilter(index)
-                        composeJson()
-                    }
-                }
-            }
-            onClicked: {
-                // click to select and unselect the item
-                settingUp = true
-                cbFilterComponent.setValue(icsComponent) //currentIndex = calendarComponents.getIndex(icsComponent)
-                cbFilterProperty.setValue(icsProperty) //cbFilterProperty.currentIndex = eventProperties.getIndex(icsProperty)
-                cbPropertyType.setValue(icsPropType)
-                allOrAnyValue.setValue(icsValMatches) //allOrAnyValue.checked = icsValMatches > 0.5
-                cbFilteringCriteria.setValue(icsCriteria)//cbFilteringCriteria.selectedComparison = icsCriteria
-                filterValueTF.text = icsValue
-                settingUp = false
-                if (listViewFilters.currentIndex === index) {
-                    listViewFilters.currentIndex = -1
-                } else {
-                    listViewFilters.currentIndex = index
-                }
-            }
-
-            Label {
-                anchors.centerIn: parent
-                text: icsComponent + "." + icsProperty + " " +
-                      icsCriteria + " " + icsValue
-                color: Theme.secondaryColor
-            }
-        }
+    Notification {
+        id: nPopUp
     }
 
     SilicaFlickable {
@@ -152,13 +54,33 @@ Page {
 
         PullDownMenu {
             MenuItem {
-                text: qsTr("modify filtering settings")
+                text: qsTr("modify filter settings")
                 onClicked: {
+                    //console.log(JSON.stringify(settingsObj))
                     var dialog = pageStack.push(Qt.resolvedUrl("FilteringSettings.qml"), {
                                                     "settingsObj": settingsObj
                                                 } )
                     dialog.accepted.connect( function() {
-                        page.settingsObj = dialog.settingsObj
+                        var result
+                        //console.log(JSON.stringify(page.settingsObj))
+                        //console.log(JSON.stringify(dialog.settingsObj))
+                        if (dialog.isModified) {
+                            page.settingsObj = JSON.parse(JSON.stringify(dialog.settingsObj))
+                            console.log("merkinnät")
+                            readComponentList()
+                            console.log("ominaisuudet")
+                            if (cbFilterComponent.currentIndex >= 0) {
+                                readPropertyList(cbFilterComponent.value)
+                            }
+                            fileOp.setFileName(Globals.settingsFileName, Globals.settingsFilePath);
+                            result = fileOp.writeTxt(JSON.stringify(page.settingsObj, undefined, 2));
+                            if (result === undefined || result === "") {
+                                nPopUp.body = fileOp.error();
+                                nPopUp.summary = qsTr("Config-file write error.")
+                            }
+                        } else {
+                            console.log("ei muokkauksia")
+                        }
                     } )
                 }
             }
@@ -168,7 +90,7 @@ Page {
                 onClicked: {
                     filterModel.clear()
                     newFilters = JSON.parse(JSON.stringify(oldFilters))
-                    readCalendarFilters()
+                    readCalendarFilters()                    
                 }
             }
 
@@ -182,17 +104,6 @@ Page {
                             } )
                 }
             }
-
-            /*
-            MenuItem {
-                text: qsTr("add")
-                enabled: filterValueTF.text != ""
-                onClicked: {
-                    addFilter()
-                    composeJson()
-                }
-            }
-            // */
         }
 
         Column {
@@ -327,7 +238,7 @@ Page {
 
             ComboBox {
                 id: cbFilterComponent
-                label: qsTr("filters for")
+                label: qsTr("entry type")
                 menu: ContextMenu {
                     Repeater {
                         model: calendarComponents
@@ -337,13 +248,14 @@ Page {
                     }
                 }
                 onValueChanged: {
-                    if (value != "") {
+                    if (value != "" && !settingUp) {
                         readPropertyList(value)
                     }
                 }
 
                 function setValue(str) {
                     currentIndex = calendarComponents.getIndex(str);
+                    //value = calendarComponents.get(currentIndex).icalComponent
                     return currentIndex;
                 }
             }
@@ -354,7 +266,7 @@ Page {
                                qsTr("leave out matching components")
                 onClicked: {
                     calendarComponents.modifyAction(cbFilterComponent.value, checked)
-                    composeJson()
+                    composeFilter()
                 }
 
                 function setValue(str) {
@@ -379,7 +291,7 @@ Page {
                         limit = 0
                     }
                     calendarComponents.modifyLimit(cbFilterComponent.value, limit)
-                    composeJson()
+                    composeFilter()
                 }
 
                 function setValue(str) {
@@ -392,71 +304,7 @@ Page {
                 }
             }
 
-            SectionHeader{
-                id: shFilters
-                text: qsTr("filters")
-            }
-
-            SilicaListView {
-                id: listViewFilters
-                x: Theme.horizontalPageMargin
-                width: parent.width - 2*x
-                height: count > 3 ? 4*Theme.itemSizeSmall : count > 1?
-                                        count*Theme.itemSizeSmall : 2*Theme.itemSizeSmall
-                spacing: 0// Theme.paddingSmall
-                clip: false//
-
-                model: filterModel
-                footer: Component {
-                    ListItem {
-                        id: footerItem
-                        contentHeight: Theme.itemSizeSmall
-                        menu: ContextMenu {
-                            MenuItem {
-                                text: qsTr("add")
-                                enabled: filterValueTF.text != ""
-                                onClicked: {
-                                    filterModel.addFilter()
-                                    composeJson()
-                                }
-                            }
-                        }
-                        onClicked: {
-                            quickDisplay = true
-                            footerItem.openMenu()
-                        }
-                        onMenuOpenChanged: {
-                            if (menuOpen && quickDisplay) {
-                                footerItem.closeMenu()
-                                quickDisplay = false
-                            }
-                        }
-
-                        Label {
-                            anchors.centerIn: parent
-                            text: filterValueTF.text != "" ? qsTr("press for new") : qsTr("set filtering value")
-                            color: Theme.secondaryColor
-                        }
-
-                        property bool quickDisplay: false
-                    }
-                }
-
-                delegate: filterDelegate
-
-                highlight: Rectangle {
-                    color: Theme.highlightBackgroundColor
-                    height: listViewFilters.currentItem? listViewFilters.currentItem.height : 0
-                    width: listViewFilters.width
-                    radius: Theme.paddingMedium
-                    opacity: Theme.opacityLow
-                }
-
-                highlightFollowsCurrentItem: true
-
-                property int lastClicked: -1
-            }
-
+            /*
             ListModel {
                 id: eventProperties
                 // class / created / description / geo /
@@ -504,6 +352,7 @@ Page {
                     return i;
                 }
             }
+            // */
 
             ListModel {
                 id: cmpProperties
@@ -525,10 +374,10 @@ Page {
                     var i, N;
                     N = -1;
                     i = 0;
-                    while (i < cmpProperties.count && name !== undefined) {
-                        if (cmpProperties.get(i).prop === name) {
+                    while (i < count && name !== undefined) {
+                        if (get(i).prop === name) {
                             N = i;
-                            i = cmpProperties.count;
+                            i = count;
                         }
                         i++;
                     }
@@ -557,7 +406,7 @@ Page {
             ComboBox {
                 id: cbFilterProperty
                 label: qsTr("filtering property")
-                enabled: eventProperties.count > 0
+                enabled: cmpProperties.count > 0
                 menu: ContextMenu {
                     Repeater {
                         model: cmpProperties
@@ -577,7 +426,7 @@ Page {
                 }
 
                 function setValue(str) {
-                    currentIndex = eventProperties.getIndex(str);
+                    currentIndex = cmpProperties.getIndex(str);
                     return currentIndex;
                 }
             }
@@ -617,6 +466,16 @@ Page {
                 readonly property int pdate: 2
                 readonly property int ptime: 3
                 readonly property int pnumber: 4
+                onPtypeChanged: {
+                    filterValueTF.text = ""
+                    if (ptype === pstring) {
+                        cbFilteringCriteria.setValue("s")
+                    } else if (ptype === pdate || ptype === ptime) {
+                        cbFilteringCriteria.setValue(">=")
+                    } else if (ptype === pnumber) {
+                        cbFilteringCriteria.setValue("=")
+                    }
+                }
 
                 function getIndex(nro) {
                     var result;
@@ -684,6 +543,9 @@ Page {
                 id: allOrAnyValue
                 text: checked? qsTr("all criteria have to match") :
                                qsTr("a single matching criteria is enough")
+                onCheckedChanged: {
+                    composeFilter()
+                }
 
                 function setValue(fraction) {
                     if (fraction*1.0 > 0.5) {
@@ -854,15 +716,181 @@ Page {
                             : qsTr("value")
                 placeholderText: qsTr("set filtering value")
                 width: parent.width
+                EnterKey.iconSource: filterModel.count == 0? "image://theme/icon-m-enter-accept" : "image://theme/icon-m-enter-next"
                 EnterKey.onClicked: {
                     focus = false
                     if (filterModel.count == 0) {
                         addFilter()
-                        composeJson()
+                        composeFilter()
                     }
                 }
 
                 hideLabelOnEmptyField: false
+            }
+
+            ComboBox {
+                id: cbAction
+                label: qsTr("modify") + " | " + qsTr("add")
+                menu: ContextMenu {
+                    MenuItem {
+                        text: cbFilterProperty.currentIndex >= 0? qsTr("modify") : qsTr("none selected")
+                        enabled: cbFilterProperty.currentIndex >= 0 && filterValueTF.text > ""
+                        onClicked: {
+                            addFilter(listViewFilters.currentIndex)
+                            composeFilter()
+                            cbAction.currentIndex = -1
+                            cbAction.value = ""
+                        }
+                    }
+                    MenuItem {
+                        text: qsTr("add")
+                        enabled: filterValueTF.text > ""
+                        onClicked: {
+                            addFilter()
+                            composeFilter()
+                            cbAction.currentIndex = -1
+                            cbAction.value = ""
+                            listViewFilters.currentIndex = -1
+                        }
+                    }
+                }
+
+                Component.onCompleted: {
+                    currentIndex = -1
+                    value = ""
+                }
+            }
+
+            SectionHeader{
+                id: shFilters
+                text: qsTr("filters")
+            }
+
+            ListModel {
+                id: filterModel
+                //{"icsComponent", "icsProperty", "icsPropType",
+                //"icsValMatches", "icsCriteria", "icsValue"}
+
+                function addFilter(comp, prop, propType,//, reject, propMatches, prop, propType,
+                                   valMatches, crit, val) {
+                    console.log("component", comp, "property", prop,
+                                "type", propType, "valueMatches",
+                                valMatches, "compare", crit,
+                                "value", val)
+                    checkPropertyChanges(comp, prop, valMatches);
+                    if (comp === undefined || prop === undefined ||
+                            crit === undefined || val === undefined ) {
+                        return;
+                    }
+                    if (propType === undefined) {
+                        propType = "string";
+                    }
+                    if (valMatches === undefined) {
+                        valMatches = 0;
+                    }
+
+                    append({"icsComponent": comp, "icsProperty": prop,
+                               "icsPropType": propType, "icsValMatches": valMatches,
+                               "icsCriteria": crit, "icsValue": val
+                           });
+                    return;
+                }
+
+                function checkPropertyChanges(comp, prop, valMatches){
+                    var i=0, current;
+                    while (i < count) {
+                        current = get(i);
+                        if (comp === current.icsComponent && prop === current.icsProperty) {
+                            if (current.icsValMatches !== valMatches){
+                                setProperty(i, "icsValMatches", valMatches);
+                            }
+                        }
+                        i++;
+                    }
+                    return;
+                }
+
+                function modifyFilter(i, comp, prop, //reject, propMatches, prop,
+                                      propType, valMatches, crit, val) {
+                    checkPropertyChanges(comp, prop, valMatches);
+                    if (i >= 0 && i < count) {
+                        set(i, {"icsComponent": comp,
+                                "icsProperty": prop, "icsPropType": propType,
+                                "icsValMatches": valMatches,
+                                "icsCriteria": crit, "icsValue": val
+                            });
+                    } else {
+                        console.log("index out of filterModel range");
+                    }
+
+                }
+            }
+
+            SilicaListView {
+                id: listViewFilters
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2*x
+                height: count > 3 ? 4*Theme.itemSizeSmall : count > 1?
+                                        count*Theme.itemSizeSmall : 2*Theme.itemSizeSmall
+                spacing: 0// Theme.paddingSmall
+                clip: false//
+
+                model: filterModel
+                delegate: filterDelegate
+
+                highlight: Rectangle {
+                    color: Theme.highlightBackgroundColor
+                    height: listViewFilters.currentItem? listViewFilters.currentItem.height : 0
+                    width: listViewFilters.width
+                    radius: Theme.paddingMedium
+                    opacity: Theme.opacityLow
+                }
+
+                highlightFollowsCurrentItem: true
+
+                property int lastClicked: -1
+
+                Component {
+                    id: filterDelegate
+                    ListItem {
+                        contentHeight: Theme.itemSizeSmall
+                        menu: ContextMenu {
+                            MenuItem {
+                                text: qsTr("delete")
+                                onClicked: {
+                                    console.log("poistetaan", index)
+                                    filterModel.remove(index)
+                                    listViewFilters.currentIndex = -1
+                                    composeFilter()
+                                }
+                            }
+                        }
+                        onClicked: {
+                            // click to select and unselect the item
+                            settingUp = true
+                            console.log(icsComponent, icsProperty, icsPropType, index, listViewFilters.currentIndex)
+                            cbFilterComponent.setValue(icsComponent) //currentIndex = calendarComponents.getIndex(icsComponent)
+                            cbFilterProperty.setValue(icsProperty) //cbFilterProperty.currentIndex = eventProperties.getIndex(icsProperty)
+                            cbPropertyType.setValue(icsPropType)
+                            allOrAnyValue.setValue(icsValMatches) //allOrAnyValue.checked = icsValMatches > 0.5
+                            cbFilteringCriteria.setValue(icsCriteria)//cbFilteringCriteria.selectedComparison = icsCriteria
+                            filterValueTF.text = icsValue
+                            settingUp = false
+                            if (listViewFilters.currentIndex === index) {
+                                listViewFilters.currentIndex = -1
+                            } else {
+                                listViewFilters.currentIndex = index
+                            }
+                        }
+
+                        Label {
+                            anchors.centerIn: parent
+                            text: icsComponent + "." + icsProperty + " " +
+                                  icsCriteria + " " + icsValue
+                            color: Theme.secondaryColor
+                        }
+                    }
+                }
             }
 
             SectionHeader{
@@ -883,6 +911,7 @@ Page {
                     if (iContent === 0) {
                         text = icsFile
                     } else if (iContent === 1){
+                        composeFilter()
                         text = JSON.stringify(newFilters, null, 2)
                     } else {
                         text = icsFilter.filterIcs(calendarLbl, icsFile, JSON.stringify(newFilters))
@@ -930,7 +959,7 @@ Page {
         return;
     }
 
-    function composeJson() {
+    function composeFilter() {
         // updating the contents of a json-object is not working
         // a new json-component is created and the old one is removed
         var calN, cals, cmponent, crtr, flters, ic, ifl, ip, n, nc, prop, prperties, vals;
@@ -1024,9 +1053,9 @@ Page {
         }
 
         newFilters.calendars = cals;
-        if (viewFiltersFile.iContent === -1) {
-            viewFiltersFile.text = JSON.stringify(newFilters, null, 2);
-        }
+        //if (viewFiltersFile.iContent === -1) {
+        //    viewFiltersFile.text = JSON.stringify(newFilters, null, 2);
+        //}
         return;
     }
 
@@ -1087,22 +1116,43 @@ Page {
     }
 
     function readComponentList() {
-        var result = -1;
+        var cbValue, currentCmp, i, k, kArr, result = -1;
+        if (cbFilterComponent.currentIndex >= 0) {
+            currentCmp = cbFilterComponent.value;
+        }
+
+        console.log("nykyinen", currentCmp)
+        calendarComponents.clear();
         if (settingsObj === undefined) {
-            calendarComponents.clear();
             calendarComponents.addComponent("vevent", false, 0);
             calendarComponents.addComponent("vtodo", false, 0);
             calendarComponents.addComponent("vfreebusy", false, 0);
             result = 0;
         } else {
-            for (let x in settingsObj) {
-                calendarComponents.addComponent(x, false, 0);
+            for (k in settingsObj.filteringProperties) {
+                calendarComponents.addComponent(k, false, 0);
                 result++;
             }
             if (result >= 0) {
                 result++;
             }
         }
+
+        if (currentCmp) {
+            i = 0;
+            while (i < calendarComponents.count) {
+                if (calendarComponents.get(i).icalComponent === currentCmp) {
+                    cbFilterComponent.currentIndex = i;
+                    i = calendarComponents.count;
+                }
+                i++;
+            }
+        } else {
+            if (calendarComponents.count > 0) {
+                cbFilterComponent.currentIndex = 0;
+            }
+        }
+
         return result;
     }
 
@@ -1138,27 +1188,54 @@ Page {
         // { "vevent": ["dtstart", "summary", "categories"],
         //   "vtodo": -"-, "vfreetime": -"-, "vjournal": -"- }
         //
-        var nr=-1;
+        var cArr, i, j, pArr, nr=-1;
+
+        console.log(cmp)
 
         if (settingsObj === undefined) {
             return 0;
         }
 
-        for (let k in settingsObj) { // copy the property list of the component
-            console.log("lissääkö komponenttia", k)
-            if (k === cmp) {
+        cArr = Object.keys(settingsObj.filteringProperties);
+        if (cmp === undefined) {
+            if (cbFilterComponent.value > "") {
+                cmp = cbFilterComponent.value;
+            } else if ( cArr.length > 0) {
+                cmp = cArr[0];
+            } else {
+                console.log("poistuu", cArr)
+                return 0;
+            }
+        }
+
+        console.log(cmp)
+        console.log("välitulostus")
+        for (i in settingsObj.filteringProperties) {
+            if (i === cmp) {
                 nr = 0;
-                if (Array.isArray(jsonObj[k]) && jsonObj[k].length > 0) {
+                pArr = settingsObj.filteringProperties[i];
+                console.log(cmp, ":", pArr)
+                if (Array.isArray(pArr)) {
                     cmpProperties.clear();
-                    for (let i in jsonObj[k]) {
-                        cmpProperties.addProperty(jsonObj[k][i]);
+                    j = 0;
+                    while (j < pArr.length) {
+                        console.log("addProperty", j, pArr[j])
+                        cmpProperties.addProperty(pArr[j]);
                         nr++;
-                        console.log("lissää", k, i, jsonObj[k][i], "<<")
+                        j++;
                     }
+
+                    //for (i of pArr) {
+                    //    cmpProperties.addProperty(pArr[i]);
+                    //    nr++;
+                    //    //    console.log("lissää", k, i, jsonObj[k][i], "<<")
+                    //}
                 } else {
                     cmpProperties.setDefaults();
                 }
-            }
+            } //else {
+                //console.log(i, cmp)
+            //}
         }
 
         return nr;

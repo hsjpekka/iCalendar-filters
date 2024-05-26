@@ -12,7 +12,9 @@ Page {
         eventsView.filterIcs(jsonFilters)
     }
     Component.onDestruction: {
-        fileOp.removeFile()
+        if (exported) {
+            fileOp.removeFile()
+        }
     }
 
     property string calendar: ""
@@ -37,10 +39,11 @@ Page {
                         result = fileOp.writeTxt( eventsView.icsModified )
                     }
                     if (result === undefined || result.length < 1) {
-                        note.body = result
+                        note.body = fileOp.error()
                         note.summary = qsTr("File write error.")
                     } else {
                         Qt.openUrlExternally(result)
+                        exported = true
                     }
                 }
                 Notification {
@@ -66,6 +69,7 @@ Page {
                 //settingUp: true
 
                 function filterIcs(filterJson) {
+                    console.log(JSON.stringify(filterJson))
                     if (filterJson) {
                         //icsModified = icsFilter.filterIcs(calendar, icsOriginal, JSON.stringify(filterJson));
                         icsModifiedChange(icsFilter.filterIcs(calendar, icsOriginal, JSON.stringify(filterJson)));

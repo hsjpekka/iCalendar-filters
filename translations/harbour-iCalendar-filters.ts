@@ -17,6 +17,196 @@
     </message>
 </context>
 <context>
+    <name>FilteringSettings</name>
+    <message>
+        <source>Filtering Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Calendar components</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>modify</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>component name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Component properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>property name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>add</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Filters</name>
+    <message>
+        <source>delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>modify</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>reset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filters for %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>read in matching components</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>leave out matching components</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>all filters have to match</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>a single matching property is enough</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>set filtering value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filtering property</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>type of property</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>all criteria have to match</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>a single matching criteria is enough</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>equal to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>not equal to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>contains</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>doesn&apos;t contain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>earliest at</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>latest at</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>larger than or equal to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>smaller than or equal to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>criteria</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>original</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>modified</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>entry type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>none selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Config-file write error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>modify filter settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>FirstPage</name>
     <message>
         <source>Deleting</source>
@@ -108,10 +298,6 @@
     </message>
     <message>
         <source>remove %1 settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The app writes the filters in %1 in %2,  but the modified %3 reads the file in %4.&lt;br&gt; Thus, to make it work, you should create a link: &lt;br&gt;&lt;i&gt;ln -s %2%1 %4&lt;/i&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

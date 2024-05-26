@@ -11,21 +11,26 @@ ApplicationWindow {
         var i
         setFiltersFile()
         i = readFilters()
-        console.log("kalentereita", i)
+        console.log("kalentereita", i, Object.keys(settingsObj.filteringProperties))
         if (i > 0) {
-            cleanUpFilters()
+            cleanUpFiltersFile()
         }
         readSettings()
-        initialPage = pageStack.push(Qt.resolvedUrl("FirstPage.qml"), {
+        initialPage = pageStack.push(Qt.resolvedUrl("pages/FirstPage.qml"), {
                                          "filtersObj": filtersObj,
                                          "settingsObj": settingsObj
                                      } )
     }
 
-    property var filtersObj
-    property var settingsObj
+    property var filtersObj: { "calendars": [] };
+    property var settingsObj: { "filteringProperties": {
+        "vevent": ["dtstart", "summary", "categories"],
+        "vtodo": ["dtstart", "summary", "categories"],
+        "vjournal": ["dtstart", "summary", "categories"],
+        "vfreebusy": ["dtstart", "summary", "categories"]
+        } };
 
-    function cleanUpFilters() {
+    function cleanUpFiltersFile() {
         var i, k, fltrs, lbl, unclean, cleared;
         var emptyArray = [], emptyJson = { "calendars": emptyArray };
 
@@ -59,15 +64,16 @@ ApplicationWindow {
 
     function readFilters() {
         // return -1 = no filters-file, 0 = no json-file, >0 = calendars
-        var filtersFile, i, cal, adv, time, d=[];
+        var filtersStr, i, cal, adv, time, d=[];
 
-        filtersFile = icsFilter.readFiltersFile();
+        filtersStr = icsFilter.readFiltersFile();
         //viewFiltersFile.text = filtersFile;
+        console.log(filtersStr);
 
-        if (filtersFile.length > 1){
-            filtersObj = JSON.parse(filtersFile);
+        if (filtersStr.length > 1){
+            filtersObj = JSON.parse(filtersStr);
         }
-        if (!filtersObj || ! filtersObj.calendars) {
+        if (!filtersObj || !filtersObj.calendars) {
             return -1;
         }
 
@@ -85,7 +91,9 @@ ApplicationWindow {
         var jsonStr, jsonObj;
         fileOp.setFileName(Globals.settingsFileName, Globals.settingsFilePath);
         jsonStr = fileOp.readTxt();
-        jsonObj = JSON.parse(jsonStr);
+        if (jsonStr > "") {
+            jsonObj = JSON.parse(jsonStr);
+        }
 
         console.log("settings:", jsonStr)
 
@@ -115,17 +123,15 @@ ApplicationWindow {
         var cName, filters, filterSettings, pName, ic;
         var cal, c, sc, p, sp;
 
-        if (!settingsObj || !settingsObj.filteringProperties
-                || settingsObj.filteringProperties.keys().length === 0) {
-            filterSettings = {
-                "vevent": ["dtstart", "summary", "categories"],
-                "vtodo": ["dtstart", "summary", "categories"],
-                "vfreetime": ["dtstart", "summary", "categories"],
-                "vjournal": ["dtstart", "summary", "categories"]
-            }
-        } else {
-            filterSettings = settingsObj.filteringProperties;
+        if (!fObj) {
+            fObj = settingsObj;
+        } else if (!fObj.filteringProperties
+                || Object.keys(fObj.filteringProperties).length === 0) {
+            fObj["filteringProperties"] = settingsObj.filteringProperties;
         }
+
+        filterSettings = fObj.filteringProperties;
+        //console.log(JSON.stringify(filterSettings))
 
         // add properties from the existing filter
         for (cal in fObj) {
