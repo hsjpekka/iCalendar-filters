@@ -47,10 +47,6 @@
         <translation>ominaisuus</translation>
     </message>
     <message>
-        <source>action</source>
-        <translation>toiminta</translation>
-    </message>
-    <message>
         <source>add</source>
         <translation>lisää</translation>
     </message>

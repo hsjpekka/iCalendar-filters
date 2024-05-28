@@ -47,10 +47,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>action</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>add</source>
         <translation type="unfinished"></translation>
     </message>
