@@ -601,6 +601,16 @@ Page {
         return k;
     }
 
+    //function modifyCalendarFilters(calendarLbl, filters) {
+    //    var i;
+    //    i = findCalendarIndex(calendarLbl);
+    //    if (i >= 0) {
+    //        filtersObj.calendars[i]["filters"] = filters;
+    //    }
+
+    //    return i;
+    //}
+
     function modifyReminderAdvance() {
         var i, key, modCal, oldCal;
         modCal = {"label": ""};
@@ -674,9 +684,28 @@ Page {
         return i;
     }
 
+    //*
     function readFilters() {
         // return -1 = no filters-file, 0 = no json-file, >0 = calendars
-        var i, cal;
+        var filtersFile, i, cal, adv, time, d=[];
+
+        //filtersFile = icsFilter.readFiltersFile();
+        //viewFiltersFile.text = filtersFile;
+
+        //if (filtersObj.calendars.length > 0){
+        //    //filtersObj = JSON.parse(filtersFile);
+        //    userManual.visible = false;
+        //} else {
+        //    userManual.visible = true;
+        //    return -1;
+        //}
+
+        //if (!filtersObj.calendars) {
+        //    userManual.visible = true;
+        //    return 0;
+        //} else {
+        //    userManual.visible = false;
+        //}
 
         i = 0;
         while (i < filtersObj.calendars.length) {
@@ -687,7 +716,7 @@ Page {
         }
 
         return filtersObj.calendars.length;
-    }
+    }// */
 
     function removeCalendarFromJson(label) {
         var i, k, djson;
@@ -710,6 +739,7 @@ Page {
     function storeFilters() {
         var filtersStr, result;
         filtersStr = JSON.stringify(filtersObj, null, 2);
+        console.log("tallettaa", filtersStr.substring(0, 15))
         result = icsFilter.overWriteFiltersFile(filtersStr);
 
         return result;

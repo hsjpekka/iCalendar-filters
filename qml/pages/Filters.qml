@@ -22,8 +22,6 @@ Page {
             filtersModified = true
         }
 
-        console.log(filtersModified)
-
         closing()
     }
 

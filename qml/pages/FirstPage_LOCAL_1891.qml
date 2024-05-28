@@ -8,9 +8,12 @@ Page {
     allowedOrientations: Orientation.All
 
     Component.onCompleted: {
+        setFiltersFile()
         readFilters()
+        cleanUpFilters()
 
         if (calendarList.count > 0) {
+            //calendarSelector.currentIndex = 0
             iCurrent = 0
             updateView()
         }
@@ -18,7 +21,7 @@ Page {
     }
 
     property alias iCurrent: calendarSelector.currentIndex
-    property var filtersObj: emptyJson
+    property var filtersJson: emptyJson
     property bool settingUp: true
     property string shortLabel: ""
 
@@ -51,7 +54,7 @@ Page {
     ListModel {
         id: calendarList
         // { calendarLabel: "", alarmAdvance: "120", alarmTime: "18:10", both: "yes" }
-        // advance & time: "" = not set, > 0 = before (previous day), < 0 = after
+        // advance & time: "" = not set, > 0 = before, < 0 = after
 
         // adds or modifies calendar <label>
         // returns the count if adding, or the index if modifying
@@ -205,7 +208,7 @@ Page {
         PullDownMenu {
             MenuItem {
                 text: qsTr("remove %1 settings").arg(shortLabel)
-                enabled: calendarList.count > 0 && iCurrent >= 0
+                visible: calendarList.count > 0 && iCurrent >= 0
                 onClicked: {
                     var labelRemoved = calendarSelector.value
                     var dialog = pageStack.push(Qt.resolvedUrl("NewCalendar.qml"),
@@ -233,6 +236,7 @@ Page {
             MenuItem {
                 text: qsTr("new calendar")
                 onClicked: {
+                    //var dialog = pageStack.animatorPush(Qt.resolvedUrl("NewCalendar.qml"))
                     var dialog = pageStack.push(Qt.resolvedUrl("NewCalendar.qml"))
                     dialog.accepted.connect( function () {
                         var result = calendarList.addCalendar(dialog.calendarLabel)
@@ -241,29 +245,29 @@ Page {
                             timerChange.start()
                         }
                         page.filtersChanged()
+                        //printCalendarLabels()
                     })
                 }
             }
 
             MenuItem {
                 text: qsTr("set up filter")
-                enabled: calendarList.count > 0 && iCurrent >= 0
+                visible: calendarList.count > 0 && iCurrent >= 0
                 onClicked: {
                     var dialog, i, cal
                     i = findCalendarIndex()
+                    //printCalendarLabels()
                     if (i >= 0) {
-                        cal = filtersObj.calendars[i]
+                        cal = filtersJson.calendars[i]
                         dialog = pageStack.push(Qt.resolvedUrl("Filters.qml"), {
-                                            "oldFilters": filtersObj,
+                                            "oldFilters": filtersJson,
                                             "calendarLbl": cal.label,
                                             "calendarUrl": cal.url,
-                                            "icsFile": eventsView.icsOriginal
-                                        } )
+                                            "icsFile": eventsView.icsOriginal } )
                         dialog.closing.connect( function() {
                             if (dialog.filtersModified) {
-                                filtersObj = dialog.newFilters
+                                filtersJson = dialog.newFilters
                                 page.filtersChanged()
-                                updateView()
                             }
                         } )
                     }
@@ -283,6 +287,26 @@ Page {
 
             PageHeader {
                 title: qsTr("iCalendars")
+            }
+
+            Label {
+                id: userManual
+                x: Theme.horizontalPageMargin
+                width: parent.width - x - Theme.paddingMedium
+                text: qsTr("The app writes the filters in %1 in %2, " +
+                           " but the modified %3 reads the file in " +
+                           "%4.<br> Thus, to make " +
+                           "it work, you should create a link: <br>" +
+                           "<i>ln -s %2%1 %4</i>.").arg("iCalendarFilters.json").arg("~/.config/null.hsjpekka/harbour-icalendar-filters/").arg("buteo-sync-plugin-webcal").arg("~/.config/icalendar-filters/")
+                textFormat: Text.StyledText
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        parent.visible = !parent.visible
+                    }
+                }
             }
 
             ComboBox {
@@ -356,26 +380,14 @@ Page {
                 visible: addReminderAdvance.checked
                 EnterKey.onClicked: focus = false
                 onTextChanged: {
-                    // check if +/- has been pressed
-                    changeSign()
-                }
-                onFocusChanged: {
-                    if (!focus) {
-                        modifyReminderAdvance()
-                    }
-                }
-
-                function changeSign() {
-                    // without changeSign(), pressing +/- adds the sign,
-                    // but does not put it as the first character
-                    // move '-' to the beginning of the string and remove '+'
-                    // if the only +/- is '-' as the first character, don't do anything
-                    var nbr, sign, str, strs, txt;
+                    // by default, pressing +/- adds the sign, but does not put it as the first character
                     if (text.indexOf("+") >= 0 ||
                             text.indexOf("-", 1) >= 0) {
-                        // the sign after the latest pressing of +/-
+                        var nbr, sign, strs, txt;
+
+                        // the sign after the latest +/-
                         if (text.charAt(0) === "-") {
-                            sign = 1 // -NNNN and '+/-'
+                            sign = 1
                             txt = text.substring(1)
                         } else {
                             sign = -1
@@ -392,20 +404,13 @@ Page {
                             strs = txt.split("-")
                         }
 
-                        for (str in strs) {
-                            nbr += str + "";
-                        }
-                        console.log(nbr);
-
                         if (strs.length >= 2) {
                             txt = strs[0] + strs[1]
                         } else if (strs.length === 1) {
                             txt = strs[0]
                         }
-                        //if (!isNaN(txt*1.0)) {
-                        //    _editor.text = sign*txt*1.0
-                        if (!isNaN(nbr*1.0)) {
-                            _editor.text = sign*nbr*1.0
+                        if (!isNaN(txt*1.0)) {
+                            _editor.text = sign*txt*1.0
                         } else {
                             if (sign < 0) {
                                 _editor.text = "-"
@@ -414,7 +419,11 @@ Page {
                             }
                         }
                     }
-                    return;
+                }
+                onFocusChanged: {
+                    if (!focus) {
+                        modifyReminderAdvance()
+                    }
                 }
             } // reminderAdvance
 
@@ -465,7 +474,7 @@ Page {
                 //icsOriginal: icsFile
                 height: contentHeight
                 onCalendarFetched: {
-                    filterIcs(filtersObj)
+                    filterIcs(filtersJson)
                 }
 
                 function fetchCalendar(url) {
@@ -475,6 +484,7 @@ Page {
                     }
 
                     fetchIcalFile(url, function (url, icalFile) {
+                        //icsOriginal = icalFile; // stores the latest file
                         icsOriginalChange(icalFile);
                         console.log(url, "\n", icsOriginal.substring(0,20), " ...")
                         calendarFetched();
@@ -548,8 +558,8 @@ Page {
 
     function addCalendarToJson(newCalendar, calendarUrl) {
         var k, record;
-        if (!filtersObj.calendars) {
-            filtersObj["calendars"] = [];
+        if (!filtersJson.calendars) {
+            filtersJson["calendars"] = [];
         }
         record = {"label": newCalendar, "url": calendarUrl };
         if (addReminderAdvance.checked && reminderAdvance.text > "") {
@@ -566,21 +576,51 @@ Page {
 
         k = findCalendarIndex(newCalendar);
         if (k === -1) {
-            filtersObj.calendars.push(record);
-            k = filtersObj.calendars.length;
+            filtersJson.calendars.push(record);
+            k = filtersJson.calendars.length;
         } else {
-            filtersObj.calendars[k] = record;
+            filtersJson.calendars[k] = record;
         }
 
         return k;
     }
 
     function addCalendarUrl(iCal, url) {
-        filtersObj.calendars[iCal]["url"] = url;
+        filtersJson.calendars[iCal]["url"] = url;
         storeFilters();
-        eventsView.fetchCalendar(url);
-
         return;
+    }
+
+    function cleanUpFilters() {
+        var i, k, fltrs, lbl, unclean;
+
+        i = 0;
+        unclean = 0;
+        fltrs = emptyJson;
+        while (i < filtersJson.calendars.length) {
+            lbl = filtersJson.calendars[i].label;
+            k = findCalendarIndex(lbl);
+            if (k === i) { // store only the first set of data
+                fltrs.calendars.push(filtersJson.calendars[i]);
+            } else {
+                unclean++;
+            }
+
+            i++;
+        }
+        filtersJson = JSON.parse(JSON.stringify(fltrs));
+        if (filtersJson.calendars) {
+            k = filtersJson.calendars.length;
+        } else {
+            k = -1;
+        }
+
+        if (unclean > 0) {
+            console.log("multiple entries for a calendar found (" + unclean + ")");
+            storeFilters();
+        }
+
+        return k;
     }
 
     function findCalendarIndex(label) {
@@ -591,37 +631,46 @@ Page {
 
         k = -1;
         i = 0;
-        while (i < filtersObj.calendars.length) {
-            if (filtersObj.calendars[i].label === label) {
+        while (i < filtersJson.calendars.length) {
+            if (filtersJson.calendars[i].label === label) {
                 k = i;
-                i = filtersObj.calendars.length;
+                i = filtersJson.calendars.length;
             }
             i++;
         }
         return k;
     }
 
+    //function modifyCalendarFilters(calendarLbl, filters) {
+    //    var i;
+    //    i = findCalendarIndex(calendarLbl);
+    //    if (i >= 0) {
+    //        filtersJson.calendars[i]["filters"] = filters;
+    //    }
+
+    //    return i;
+    //}
+
     function modifyReminderAdvance() {
         var i, key, modCal, oldCal;
         modCal = {"label": ""};
         i = findCalendarIndex();
         if (i >= 0) {
-            // don't copy dayreminder
-            oldCal = filtersObj.calendars[i];
-            for (key in oldCal) {
-                if (key !== "reminder") {
-                    modCal[key] = oldCal[key];
+            if (addReminderAdvance.checked && reminderAdvance.text > "") {
+                filtersJson.calendars[i]["reminder"] = reminderAdvance.text*1.0;
+            } else if (!addReminderAdvance.checked) {
+                // don't copy reminder
+                oldCal = filtersJson.calendars[i];
+                for (key in oldCal) {
+                    if (key !== "reminder") {
+                        modCal[key] = oldCal[key];
+                    }
                 }
-            }
-            if (addReminderAdvance.checked) {
-                if (reminderAdvance.text > "") {
-                    modCal["reminder"] = reminderAdvance.text*1.0;
-                } else {
-                    i = -1;
-                }
+                filtersJson.calendars[i] = modCal;
+            } else {
+                i = -1;
             }
             if (i >= 0) {
-                filtersObj.calendars[i] = modCal;
                 filtersChanged();
             }
         }
@@ -634,22 +683,22 @@ Page {
         modCal = {"label": ""};
         i = findCalendarIndex();
         if (i >= 0) {
-            // don't copy dayreminder
-            oldCal = filtersObj.calendars[i];
-            for (key in oldCal) {
-                if (key !== "dayreminder") {
-                    modCal[key] = oldCal[key];
+            if (addReminderTime.checked &&
+                    reminderTime.acceptableInput) {
+                filtersJson.calendars[i]["dayreminder"] = reminderTime.text;
+            } else if (!addReminderTime.checked) {
+                // don't copy dayreminder
+                oldCal = filtersJson.calendars[i];
+                for (key in oldCal) {
+                    if (key !== "dayreminder") {
+                        modCal[key] = oldCal[key];
+                    }
                 }
-            }
-            if (addReminderTime.checked) {
-                if (reminderTime.acceptableInput) {
-                    modCal["dayreminder"] = reminderTime.text;
-                } else {
-                    i = -1;
-                }
+                filtersJson.calendars[i] = modCal;
+            } else {
+                i = -1;
             }
             if (i >= 0) {
-                filtersObj.calendars[i] = modCal;
                 filtersChanged();
             }
         }
@@ -658,15 +707,15 @@ Page {
     }
 
     function modifyUseBoth() {
-        var i;//, key, modCal, oldCal;
-        //modCal = {"label": ""};
+        var i, key, modCal, oldCal;
+        modCal = {"label": ""};
         i = findCalendarIndex();
         if (i >= 0) {
             if (useBoth.checked) {
-                filtersObj.calendars[i]["both"] = "yes";
+                filtersJson.calendars[i]["both"] = "yes";
                 //modifyReminderTime();
             } else {
-                filtersObj.calendars[i]["both"] = "no";
+                filtersJson.calendars[i]["both"] = "no";
             }
             filtersChanged();
         }
@@ -676,17 +725,33 @@ Page {
 
     function readFilters() {
         // return -1 = no filters-file, 0 = no json-file, >0 = calendars
-        var i, cal;
+        var filtersFile, i, cal, adv, time, d=[];
+
+        filtersFile = icsFilter.readFiltersFile();
+        //viewFiltersFile.text = filtersFile;
+
+        if (filtersFile.length > 1){
+            filtersJson = JSON.parse(filtersFile);
+            userManual.visible = false;
+        } else {
+            userManual.visible = true;
+            return -1;
+        }
+
+        if (!filtersJson.calendars) {
+            userManual.visible = true;
+            return 0;
+        }
 
         i = 0;
-        while (i < filtersObj.calendars.length) {
-            cal = filtersObj.calendars[i];
+        while (i < filtersJson.calendars.length) {
+            cal = filtersJson.calendars[i];
             calendarList.addCalendar(cal.label, cal.reminder,
                                      cal.dayreminder, cal.bothReminders);
             i++;
         }
 
-        return filtersObj.calendars.length;
+        return filtersJson.calendars.length;
     }
 
     function removeCalendarFromJson(label) {
@@ -696,21 +761,32 @@ Page {
         if (i >= 0) {
             djson = JSON.parse(JSON.stringify(emptyJson));
             k = 0;
-            while (k < filtersObj.calendars.length) {
+            while (k < filtersJson.calendars.length) {
                 if (k !== i) {
-                    djson.calendars.push(filtersObj.calendars[k]);
+                    djson.calendars.push(filtersJson.calendars[k]);
                 }
                 k++;
             }
-            filtersObj = JSON.parse(JSON.stringify(djson));
+            filtersJson = JSON.parse(JSON.stringify(djson));
         }
         return;
     }
 
+    function setFiltersFile() {
+        var configPath, i;
+        configPath = icsFilter.setFiltersFile();
+        i = configPath.indexOf("/", 2); // /home/
+        i = configPath.indexOf("/", i+1); // /home/nemo || defaultuser
+        configPath = configPath.substring(0, i+1);
+        configPath += ".config/null.hsjpekka/harbour-icalendar-filters/";
+        console.log(configPath)
+        return icsFilter.setFiltersFile("iCalendarFilters.json", configPath);
+    }
+
     function storeFilters() {
-        var filtersStr, result;
-        filtersStr = JSON.stringify(filtersObj, null, 2);
-        result = icsFilter.overWriteFiltersFile(filtersStr);
+        var filtersFile, result;
+        filtersFile = JSON.stringify(filtersJson, null, 2);
+        result = icsFilter.overWriteFiltersFile(filtersFile);
 
         return result;
     }
@@ -746,11 +822,11 @@ Page {
             }
 
             eventsView.clear();
-            if (filtersObj.calendars[iCurrent].url > "") {
-                txtUrl.text = filtersObj.calendars[iCurrent].url;
+            if (filtersJson.calendars[iCurrent].url > "") {
+                txtUrl.text = filtersJson.calendars[iCurrent].url;
                 txtUrl.readOnly = true;
-                eventsView.setFilterType(filtersObj.calendars[iCurrent]);
-                eventsView.fetchCalendar(filtersObj.calendars[iCurrent].url);
+                eventsView.setFilterType(filtersJson.calendars[iCurrent]);
+                eventsView.fetchCalendar(filtersJson.calendars[iCurrent].url);
             } else {
                 txtUrl.text = "";
                 txtUrl.readOnly = false;

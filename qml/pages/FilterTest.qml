@@ -65,8 +65,6 @@ Page {
                 x: Theme.horizontalPageMargin
                 width: parent.width - 1.5*x
                 height: page.height - y
-                icsOriginal: icsFile
-                //settingUp: true
 
                 function filterIcs(filterJson) {
                     console.log(JSON.stringify(filterJson))

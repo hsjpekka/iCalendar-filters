@@ -23,7 +23,6 @@ SilicaListView{
     property string icsModified: ""
     readonly property bool filterDefault: false // by default rejects events that match filters
 
-
     ListModel {
         id: filterActionList
         ListElement {
@@ -46,9 +45,9 @@ SilicaListView{
             if (j < 0) {
                 append({ "vcomponent": vcomp.toLowerCase(), "isReject": isR})
             } else {
-                set(i, { "isReject": isR });
+                set(j, { "isReject": isR });
             }
-            return i;
+            return j;
         }
 
         function getIndex(vcomp) {
@@ -222,7 +221,7 @@ SilicaListView{
     }
 
     // finds the next component, returns the line number
-    // returns -line numbe''''r if end of calendar reached
+    // returns -line number if end of calendar reached
     function componentSearch(lineArray, i0) {
         var i, N, reCalBegin, reCalEnd, reCmp;
         N = -1;
@@ -247,15 +246,15 @@ SilicaListView{
     // stores the component in the listmodel
     // returns the line number of <end:vcomponent>
     function componentStore(lineArray, i0, isOrig) {
-        var cmp, edate, edesc, etime, eventDate, i, iN, isReject, keyValue, p, props, endExp, s, strs;
-        isReject = true;
+        var cmp, edate, edesc, etime, eventDate, i, iN, keyValue, p, props, endExp, s, strs;
+
         if (i0 >= lineArray.length) {
             return -1;
         }
         // set the end of the component
         strs = lineArray[i0].split(":");//begin:vcomponent
         if (strs.length < 2) {
-            console.log("not 'begin:vcomponent', but:_" + lineArray[i0] + "_");
+            console.log("not 'begin:vcomponent', but: " + lineArray[i0] + "");
             return i0;
         }
         cmp = strs[1].trim();
@@ -443,7 +442,7 @@ SilicaListView{
     }
 
     function setActionDefault(cmp, isReject) {
-        return filterActionList.add(cmp, isReject);
+        return filterActionList.add(cmp, !isReject);
     }
 
     //if a line starts with a white space, combine the line and the previous line
