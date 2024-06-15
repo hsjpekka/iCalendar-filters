@@ -43,6 +43,7 @@ Page {
     property var oldFiltersObj: {"calendars": [] }
     property string reminderFullDay: ""
     property string reminderMinutes: ""
+    property var settingsObj
     property bool settingUp: true
 
     readonly property bool isAccept: true
@@ -91,7 +92,7 @@ Page {
                 onClicked: {
                     filterModel.clear()
                     newFiltersObj = JSON.parse(JSON.stringify(oldFiltersObj))
-                    readCalendarFilters()                    
+                    readCalendarFilters()
                 }
             }
 
@@ -133,6 +134,20 @@ Page {
                     icalComponent: "vfreebusy"
                     isPass: false
                     limit: 0
+                }
+
+                function addComponent(cmp, passOrBlock, percent) {
+                    var result;
+                    if (getIndex(cmp) < 0) {
+                        append({"icalComponent": cmp,
+                                   "isPass": passOrBlock,
+                                   "limit": percent});
+                        result = 0;
+                    } else {
+                        console.log("component " + cmp + " exists, not added");
+                        result = -1;
+                    }
+                    return result;
                 }
 
                 function getIndex(cmp) {
@@ -213,6 +228,14 @@ Page {
                     return;
                 }
 
+                function removeComponent(cmp) {
+                    var i;
+                    i = getIndex(cmp);
+                    if (i >= 0 && i < calendarComponents.count) {
+                        calendarComponents.remove(i);
+                    }
+                    return i;
+                }
             }
 
             ComboBox {
@@ -373,6 +396,13 @@ Page {
                     return i;
                 }
 
+                function setDefaults() {
+                    cmpProperties.clear();
+                    addProperty("categories");
+                    addProperty("dtstart");
+                    addProperty("summary");
+                    return;
+                }
             }
 
             ComboBox {
@@ -709,6 +739,7 @@ Page {
                         enabled: listViewFilters.currentIndex >= 0 && filterValueTF.text > ""
                         onClicked: {
                             addFilter(listViewFilters.currentIndex)
+                            composeFilter()
                             cbAction.currentIndex = -1
                             cbAction.value = ""
                         }
@@ -741,9 +772,6 @@ Page {
                 id: filterModel
                 //{"icsComponent", "icsProperty", "icsPropType",
                 //"icsValMatches", "icsCriteria", "icsValue"}
-                onCountChanged: {
-                    composeFilter()
-                }
 
                 function addFilter(comp, prop, propType,//, reject, propMatches, prop, propType,
                                    valMatches, crit, val) {
@@ -871,13 +899,6 @@ Page {
                       : (viewFiltersFile.iContent === 1 ? "<i>" + qsTr("original") + "</i> &nbsp; | &nbsp; <b>" + qsTr("filter") + "</b> &nbsp; | &nbsp; <i>" + qsTr("modified") + "</i>"
                         :                                 "<i>" + qsTr("original") + "</i> &nbsp; | &nbsp; <i>" + qsTr("filter") + "</i> &nbsp; | &nbsp; <b>" + qsTr("modified") + "</b>")
                 textFormat: Text.StyledText
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        viewFiltersFile.changeText()
-                    }
-                }
             }
 
             TextArea {
@@ -887,15 +908,9 @@ Page {
                 readOnly: true
                 text: icsFile
                 onClicked: {
-                    changeText()
-                }
-
-                property int iContent: 0
-
-                function changeText() {
-                    iContent++;
+                    iContent++
                     if (iContent === 0) {
-                        text = icsFile;
+                        text = icsFile
                     } else if (iContent === 1){
                         composeFilter()
                         text = JSON.stringify(newFiltersObj, null, 2)
@@ -903,8 +918,9 @@ Page {
                         text = icsFilter.filterIcs(calendarLbl, icsFile, JSON.stringify(newFiltersObj))
                         iContent = -1
                     }
-                    return;
                 }
+
+                property int iContent: 0
             }
 
             VerticalScrollDecorator {}

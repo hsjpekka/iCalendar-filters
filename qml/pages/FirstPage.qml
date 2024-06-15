@@ -23,6 +23,7 @@ Page {
 
     property alias iCurrent: calendarSelector.currentIndex
     property var filtersObj: emptyJson
+    property var settingsObj
     property bool settingUp: true
     property string shortLabel: ""
 
@@ -482,7 +483,7 @@ Page {
                         for (str in strs) {
                             nbr += str + "";
                         }
-                        console.log(nbr);
+                        //console.log(nbr);
 
                         if (strs.length >= 2) {
                             txt = strs[0] + strs[1]
@@ -726,7 +727,7 @@ Page {
             }
         }
 
-        console.log(modCal["reminder"], filtersObj.calendars[i].reminder);
+        //console.log(modCal["reminder"], filtersObj.calendars[i].reminder);
 
         return i;
     }
@@ -756,14 +757,14 @@ Page {
             }
         }
 
-        console.log(modCal["dayreminder"], filtersObj.calendars[i].dayreminder);
+        //console.log(modCal["dayreminder"], filtersObj.calendars[i].dayreminder);
 
         return i;
     }
 
     function modifyUseBoth() {
-        var i;//, key, modCal, oldCal;
-        //modCal = {"label": ""};
+        var i;
+
         i = findCalendarIndex();
         if (i >= 0) {
             if (useBoth.checked) {
@@ -780,7 +781,7 @@ Page {
 
     function readFilters() {
         // return -1 = no filters-file, 0 = no json-file, >0 = calendars
-        var i, cal;
+        var filtersFile, i, cal, adv, time, d=[];
 
         i = 0;
         while (i < filtersObj.calendars.length) {
@@ -810,14 +811,6 @@ Page {
         }
         return;
     }
-
-    //function storeFilters() {
-    //    var filtersStr, result;
-    //    filtersStr = JSON.stringify(filtersObj, null, 2);
-    //    console.log("tallettaa", filtersStr.substring(0, 15))
-    //    result = icsFilter.overWriteFiltersFile(filtersStr);
-    //    return result;
-    //}
 
     function updateView() {
         var cal, calLbl, cmp, i, isReject, nftrs, regExp;
@@ -861,8 +854,6 @@ Page {
                 txtUrl.text = "";
                 txtUrl.readOnly = false;
             }
-        } else {
-            console.log("kalenterit", filtersObj.calendars.count, iCurrent)
         }
 
         return;
@@ -913,4 +904,5 @@ Page {
 
         return;
     }//*/
+
 }
