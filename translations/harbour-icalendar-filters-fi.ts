@@ -190,16 +190,16 @@
         <translation>merkintä</translation>
     </message>
     <message>
-        <source>none selected</source>
-        <translation>ei valintaa</translation>
-    </message>
-    <message>
         <source>Config-file write error.</source>
         <translation>Asetustiedoston kirjoitusvirhe.</translation>
     </message>
     <message>
         <source>select filter</source>
         <translation>valitse suodatin</translation>
+    </message>
+    <message>
+        <source>modify filter settings</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
