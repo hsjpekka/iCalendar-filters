@@ -1,10 +1,10 @@
 Name:       harbour-icalendar-filters
 
 Summary:    Filter creator for webcal-client
-Version:    0.3
+Version:    1.0
 Release:    1
 License:    LICENSE
-URL:        http://example.org/
+URL:        https://github.com/hsjpekka/iCalendar-filters
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   sailfishsilica-qt5 >= 0.10.9
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2

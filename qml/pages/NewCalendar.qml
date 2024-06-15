@@ -4,14 +4,12 @@ import Sailfish.Silica 1.0
 Dialog {
     id: page
     property string calendarLabel
-    property bool create: true
+    property string action: acCreate
     property string url: ""
 
-    Component.onCompleted: {
-        if (create) {
-            txtLabel.focus = true
-        }
-    }
+    readonly property string acCreate: "create"
+    readonly property string acDelete: "delete"
+    readonly property string acModify: "modify"
 
     onAccepted: {
         calendarLabel = txtLabel.text
@@ -23,17 +21,18 @@ Dialog {
         width: parent.width
 
         DialogHeader {
-            title: create? qsTr("Create calendar entry") :
-                           qsTr("Delete calendar entry?")
+            title: action === acCreate? qsTr("Create calendar entry") :
+                           action === acDelete? qsTr("Delete calendar entry?") :
+                                                qsTr("Modify calendar entry")
         }
 
         TextField {
             id: txtLabel
-            text: calendarLabel
+            text: action === acCreate? "" : calendarLabel
             placeholderText: qsTr("calendar label")
-            label: create? qsTr("write exactly as in Jolla Calendar") :
+            label: action === acCreate? qsTr("write exactly as in Jolla Calendar") :
                            qsTr("calendar label")
-            readOnly: !create
+            readOnly: action === acDelete
             EnterKey.onClicked: {
                 //focus = false
                 txtOsoite.focus = true
@@ -43,8 +42,8 @@ Dialog {
         TextField {
             id: txtOsoite
             width: parent.width
-            readOnly: !create
-            text: create? "" : url
+            readOnly: action === acDelete
+            text: action === acCreate? "" : url
             placeholderText: qsTr("https://address.of.the/calendar")
             label: qsTr("address of the iCalendar-file")
             validator: RegExpValidator {
@@ -57,5 +56,33 @@ Dialog {
             //property int i: 0
         }
 
+        ComboBox {
+            id: cbAction
+            label: qsTr("action")
+            menu: ContextMenu {
+                MenuItem {
+                    text: cbAction.strCreate
+                }
+                MenuItem {
+                    text: cbAction.strDelete
+                }
+                MenuItem {
+                    text: cbAction.strModify
+                }
+            }
+            onValueChanged: {
+                if (value === strCreate) {
+                    action = acCreate
+                } else if (value === strDelete) {
+                    action = acDelete
+                } else {
+                    action = acModify
+                }
+            }
+
+            readonly property string strCreate: qsTr("create")
+            readonly property string strDelete: qsTr("delete")
+            readonly property string strModify: qsTr("modify")
+        }
     }
 }

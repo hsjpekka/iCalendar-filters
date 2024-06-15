@@ -11,7 +11,6 @@ ApplicationWindow {
         var i
         setFiltersFile()
         i = readFilters()
-        console.log("kalentereita", i, Object.keys(settingsObj.filteringProperties))
         if (i > 0) {
             cleanUpFiltersFile()
         }
@@ -20,6 +19,10 @@ ApplicationWindow {
                                          "filtersObj": filtersObj,
                                          "settingsObj": settingsObj
                                      } )
+        initialPage.storeFilters.connect( function(){
+            filtersObj = initialPage.filtersObj
+            storeFilters()
+        })
     }
 
     property var filtersObj: { "calendars": [] };
@@ -68,7 +71,7 @@ ApplicationWindow {
 
         filtersStr = icsFilter.readFiltersFile();
         //viewFiltersFile.text = filtersFile;
-        console.log(filtersStr);
+        //console.log(filtersStr);
 
         if (filtersStr.length > 1){
             filtersObj = JSON.parse(filtersStr);

@@ -12,17 +12,21 @@ Page {
     Component.onCompleted: {
         readComponentList()
         readPropertyList()
-        newFilters = JSON.parse(JSON.stringify(oldFilters))
+        calendarLbl = filtersObj.calendars[calId].label
+        calendarUrl = filtersObj.calendars[calId].url
+        //oldFilters = filtersObj.calendars[calId].filters
+        newFiltersObj = JSON.parse(JSON.stringify(oldFiltersObj))
         readCalendarFilters()
         settingUp = false
     }
     Component.onDestruction: {
         composeFilter()
-        if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) {
+        if (JSON.stringify(newFiltersObj) === JSON.stringify(oldFiltersObj)) {
             filtersModified = false
         } else {
             filtersModified = true
         }
+        console.log("filtersModified = ", filtersModified)
 
         closing()
     }
@@ -32,11 +36,11 @@ Page {
     property string calendarLbl: ""//calendarName.text
     property string calendarUrl: ""
     property int calId
-    property var cmpPrp
+    //property var cmpPrp
     property bool filtersModified: false
     property string icsFile: ""
-    property var newFilters: {"calendars": [] }
-    property var oldFilters: {"calendars": [] }
+    property var newFiltersObj: {"calendars": [] }
+    property var oldFiltersObj: {"calendars": [] }
     property string reminderFullDay: ""
     property string reminderMinutes: ""
     property var settingsObj
@@ -66,9 +70,7 @@ Page {
                         //console.log(JSON.stringify(dialog.settingsObj))
                         if (dialog.isModified) {
                             page.settingsObj = JSON.parse(JSON.stringify(dialog.settingsObj))
-                            console.log("merkinnät")
                             readComponentList()
-                            console.log("ominaisuudet")
                             if (cbFilterComponent.currentIndex >= 0) {
                                 readPropertyList(cbFilterComponent.value)
                             }
@@ -89,7 +91,7 @@ Page {
                 text: qsTr("reset")
                 onClicked: {
                     filterModel.clear()
-                    newFilters = JSON.parse(JSON.stringify(oldFilters))
+                    newFiltersObj = JSON.parse(JSON.stringify(oldFiltersObj))
                     readCalendarFilters()                    
                 }
             }
@@ -98,7 +100,7 @@ Page {
                 text: qsTr("test")
                 onClicked: {
                     var dialog = pageStack.push(Qt.resolvedUrl("FilterTest.qml"), {
-                                "jsonFilters": newFilters,
+                                "jsonFilters": newFiltersObj,
                                 "calendar": calendarLbl,
                                 "icsFile": icsFile
                             } )
@@ -733,8 +735,8 @@ Page {
                 label: qsTr("modify") + " | " + qsTr("add")
                 menu: ContextMenu {
                     MenuItem {
-                        text: cbFilterProperty.currentIndex >= 0? qsTr("modify") : qsTr("none selected")
-                        enabled: cbFilterProperty.currentIndex >= 0 && filterValueTF.text > ""
+                        text: listViewFilters.currentIndex >= 0? qsTr("modify") : qsTr("select filter")
+                        enabled: listViewFilters.currentIndex >= 0 && filterValueTF.text > ""
                         onClicked: {
                             addFilter(listViewFilters.currentIndex)
                             composeFilter()
@@ -773,10 +775,10 @@ Page {
 
                 function addFilter(comp, prop, propType,//, reject, propMatches, prop, propType,
                                    valMatches, crit, val) {
-                    console.log("component", comp, "property", prop,
-                                "type", propType, "valueMatches",
-                                valMatches, "compare", crit,
-                                "value", val)
+                    //console.log("component", comp, "property", prop,
+                    //            "type", propType, "valueMatches",
+                    //            valMatches, "compare", crit,
+                    //            "value", val)
                     checkPropertyChanges(comp, prop, valMatches);
                     if (comp === undefined || prop === undefined ||
                             crit === undefined || val === undefined ) {
@@ -858,17 +860,16 @@ Page {
                             MenuItem {
                                 text: qsTr("delete")
                                 onClicked: {
-                                    console.log("poistetaan", index)
                                     filterModel.remove(index)
                                     listViewFilters.currentIndex = -1
-                                    composeFilter()
+                                    page.composeFilter()
                                 }
                             }
                         }
                         onClicked: {
                             // click to select and unselect the item
                             settingUp = true
-                            console.log(icsComponent, icsProperty, icsPropType, index, listViewFilters.currentIndex)
+                            //console.log(icsComponent, icsProperty, icsPropType, index, listViewFilters.currentIndex)
                             cbFilterComponent.setValue(icsComponent) //currentIndex = calendarComponents.getIndex(icsComponent)
                             cbFilterProperty.setValue(icsProperty) //cbFilterProperty.currentIndex = eventProperties.getIndex(icsProperty)
                             cbPropertyType.setValue(icsPropType)
@@ -912,9 +913,9 @@ Page {
                         text = icsFile
                     } else if (iContent === 1){
                         composeFilter()
-                        text = JSON.stringify(newFilters, null, 2)
+                        text = JSON.stringify(newFiltersObj, null, 2)
                     } else {
-                        text = icsFilter.filterIcs(calendarLbl, icsFile, JSON.stringify(newFilters))
+                        text = icsFilter.filterIcs(calendarLbl, icsFile, JSON.stringify(newFiltersObj))
                         iContent = -1
                     }
                 }
@@ -963,23 +964,31 @@ Page {
         // updating the contents of a json-object is not working
         // a new json-component is created and the old one is removed
         var calN, cals, cmponent, crtr, flters, ic, ifl, ip, n, nc, prop, prperties, vals;
-        calN = {"label": calendarLbl, "filters": [] };
+        //calN = {"label": calendarLbl, "filters": [] };
         cmponent = {"component": "", "properties": []};
         prop = {"property": "", "values": []};
         crtr = {"criteria": "", "value": ""};
 
-        cals = newFilters.calendars;
+        /*
+        cals = newFiltersObj.calendars;
         // search the filter for the current calendar
-        nc = cals.length;
+        nc = newFiltersObj.calendars.length;
         n = 0;
         while (n < nc) {
-            if (cals[n].label > "" && calendarLbl.toLocaleLowerCase().match(cals[n].label.toLocaleLowerCase())) {
+            if (newFiltersObj.calendars[n].label > "" && calendarLbl.toLocaleLowerCase().match(cals[n].label.toLocaleLowerCase())) {
                 //calN = cals[n];
                 nc = n;
                 n = cals.length;
             }
             n++;
         }
+
+        if (n < nc) {
+            calN = cals[nc];
+        } else {
+            console.log("calendar", calendarLbl, "not found")
+        }
+        //*/
 
         //make a new json-object containing the filters for the current component
         flters = [];
@@ -1040,8 +1049,10 @@ Page {
             flters = JSON.parse(JSON.stringify(flters));
         }
 
-        calN["filters"] = flters;
+        newFiltersObj.calendars[calId]["filters"] = flters;
+        //calN["filters"] = flters;
 
+        /*
         if (nc < cals.length) {
             if (cals[nc].url > "") {
                 calN["url"] = cals[nc].url;
@@ -1051,8 +1062,9 @@ Page {
         } else {
             cals.push(calN);
         }
+        //*/
 
-        newFilters.calendars = cals;
+        //newFilters.calendars = cals;
         //if (viewFiltersFile.iContent === -1) {
         //    viewFiltersFile.text = JSON.stringify(newFilters, null, 2);
         //}
@@ -1097,11 +1109,11 @@ Page {
 
         N = -1;
         i = 0;
-        while (i < newFilters.calendars.length) {
-            calN = newFilters.calendars[i];
+        while (i < newFiltersObj.calendars.length) {
+            calN = newFiltersObj.calendars[i];
             if (calN["label"] === label) {
                 N = i;
-                i = newFilters.calendars.length;
+                i = newFiltersObj.calendars.length;
             }
             i++;
         }
@@ -1121,7 +1133,6 @@ Page {
             currentCmp = cbFilterComponent.value;
         }
 
-        console.log("nykyinen", currentCmp)
         calendarComponents.clear();
         if (settingsObj === undefined) {
             calendarComponents.addComponent("vevent", false, 0);
@@ -1190,9 +1201,8 @@ Page {
         //
         var cArr, i, j, pArr, nr=-1;
 
-        console.log(cmp)
-
         if (settingsObj === undefined) {
+            console.log("no settingsObj");
             return 0;
         }
 
@@ -1203,39 +1213,30 @@ Page {
             } else if ( cArr.length > 0) {
                 cmp = cArr[0];
             } else {
-                console.log("poistuu", cArr)
+                console.log("no cmp, no cArr[]", cArr);
                 return 0;
             }
         }
 
-        console.log(cmp)
-        console.log("välitulostus")
         for (i in settingsObj.filteringProperties) {
             if (i === cmp) {
                 nr = 0;
                 pArr = settingsObj.filteringProperties[i];
-                console.log(cmp, ":", pArr)
+                console.log(cmp, ":", pArr);
                 if (Array.isArray(pArr)) {
                     cmpProperties.clear();
                     j = 0;
                     while (j < pArr.length) {
-                        console.log("addProperty", j, pArr[j])
+                        //console.log("addProperty", j, pArr[j])
                         cmpProperties.addProperty(pArr[j]);
                         nr++;
                         j++;
                     }
 
-                    //for (i of pArr) {
-                    //    cmpProperties.addProperty(pArr[i]);
-                    //    nr++;
-                    //    //    console.log("lissää", k, i, jsonObj[k][i], "<<")
-                    //}
                 } else {
                     cmpProperties.setDefaults();
                 }
-            } //else {
-                //console.log(i, cmp)
-            //}
+            }
         }
 
         return nr;

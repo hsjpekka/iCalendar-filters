@@ -265,22 +265,13 @@ Dialog {
                 }
             }
 
-            //Button {
-            //    text: qsTr("add component")
-            //    enabled: txtComponent.text > ""
-            //    x: Theme.horizontalPageMargin
-            //    width: parent.width - 2*x
-            //    onClicked: {
-            //        cmpList.addComponent(txtComponent.text)
-            //    }
-            //}
-
             SectionHeader {
                 text: qsTr("Component properties")
             }
 
             ListModel {
                 id: prpList
+                // ListElement { "prop": string }
 
                 function addCmpProps(cmp, defs) {
                     var pArr, i = 0;
@@ -294,8 +285,8 @@ Dialog {
                         }
                     } else if (defs === true) {
                         // add default values
-                        addProperty("dstart");
-                        addToCPList(cmp, "dstart");
+                        addProperty("dtstart");
+                        addToCPList(cmp, "dtstart");
                         addProperty("summary");
                         addToCPList(cmp, "summary");
                         addProperty("categories");
@@ -308,7 +299,7 @@ Dialog {
                     var i;
                     i = find(prop);
                     if (i < 0) {
-                        prpList.append({"prop": prop});
+                        append({"prop": prop});
                     }
                     return i;
                 }
@@ -341,6 +332,15 @@ Dialog {
                         prpList.remove(i);
                     }
                     return i;
+                }
+
+                function setProperty(ind, prop) {
+                    var result = -1;
+                    if (ind >= 0 && ind < count) {
+                        set(ind, {"prop": prop});
+                        result = 0;
+                    }
+                    return result;
                 }
             }
 
@@ -451,7 +451,7 @@ Dialog {
                         text: qsTr("modify")
                         enabled: txtProperty.text > "" && prpView.currentIndex >= 0
                         onClicked: {
-                            prpList.set(prpView.currentIndex, txtProperty.text)
+                            prpList.setProperty(prpView.currentIndex, txtProperty.text)
                             txtProperty.text = ""
                             //prpView.currentIndex = -1
                             cbPrpAction.currentIndex = -1

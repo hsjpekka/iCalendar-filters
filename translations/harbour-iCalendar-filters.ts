@@ -190,15 +190,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>none selected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Config-file write error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>modify filter settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>select filter</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -285,15 +285,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>new calendar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>set up filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>remove %1 settings</source>
+        <source>manage calendars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>export to calendar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File write error.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -321,6 +325,26 @@
     </message>
     <message>
         <source>address of the iCalendar-file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Modify calendar entry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>create</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>modify</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
