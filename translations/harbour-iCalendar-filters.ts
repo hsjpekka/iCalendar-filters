@@ -47,10 +47,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>action</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>add</source>
         <translation type="unfinished"></translation>
     </message>
@@ -194,7 +190,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>none selected</source>
+        <source>Config-file write error.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -241,6 +237,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+<<<<<<< HEAD
         <source>components</source>
         <translation type="unfinished"></translation>
     </message>
@@ -290,6 +287,13 @@
     </message>
     <message>
         <source>remove %1 settings</source>
+=======
+        <source>modify filter settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>select filter</source>
+>>>>>>> propertyfilters
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -498,14 +502,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>new calendar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>set up filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>manage calendars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>export to calendar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+<<<<<<< HEAD
         <source>iCalendars</source>
         <translation type="unfinished"></translation>
     </message>
@@ -590,6 +599,9 @@
     <name>FirstPage_REMOTE_1891</name>
     <message>
         <source>remove %1 settings</source>
+=======
+        <source>File write error.</source>
+>>>>>>> propertyfilters
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -705,6 +717,26 @@
     </message>
     <message>
         <source>address of the iCalendar-file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Modify calendar entry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>create</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>modify</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import Nemo.Notifications 1.0
 import "../components"
 
 Page {
@@ -17,14 +18,15 @@ Page {
         settingUp = false
     }
 
+    signal filtersChanged()
+    signal storeFilters()
+
     property alias iCurrent: calendarSelector.currentIndex
     property var filtersObj: emptyJson
     property bool settingUp: true
     property string shortLabel: ""
 
     readonly property var emptyJson: {"calendars": [] }
-
-    signal filtersChanged()
 
     onICurrentChanged: {
         if (!settingUp) {
@@ -149,6 +151,17 @@ Page {
             return result;
         }
 
+        function modifyCalendar(currentLabel, newLabel, newUrl) {
+            var i = findCalendar(currentLabel);
+            if (i < 0 || i >= count) {
+                return -1;
+            }
+            set(i, {calendarLabel: newLabel});
+            filtersObj.calendars[iCurrent].label = newLabel;
+            filtersObj.calendars[iCurrent].url = newUrl;
+            return i;
+        }
+
         function removeCalendar(label) {
             var i;
             i = calendarList.findCalendar(label);
@@ -204,6 +217,53 @@ Page {
 
         PullDownMenu {
             MenuItem {
+                text: qsTr("manage calendars")
+                onClicked: {
+                    var labelCurrent = calendarSelector.value
+                    var dialog = pageStack.push(Qt.resolvedUrl("NewCalendar.qml"),
+                                                {"calendarLabel": labelCurrent,
+                                                 "url": txtUrl.text
+                                                })
+                    dialog.accepted.connect( function () {
+                        if (dialog.action === dialog.acCreate) {
+                            newCalendar(dialog.calendarLabel, dialog.url)
+                        } else if (dialog.action === dialog.acDelete) {
+                            removeCalendar(dialog.label)
+                        } else {
+                            modifyCalendar(labelCurrent, dialog.calendarLabel, dialog.url)
+                        }
+                    })
+                }
+
+                function newCalendar(labelNew, urlNew) {
+                    var result = calendarList.addCalendar(dialog.calendarLabel);
+                    addCalendarToJson(dialog.calendarLabel, dialog.url);
+                    if (result > 0) {
+                        timerChange.start();
+                    }
+                    page.filtersChanged();
+                    return;
+                }
+
+                function removeCalendar(labelRemoved) {
+                    remorse.execute(qsTr("Deleting", labelRemoved), function () {
+                        calendarSelector.currentIndex = -1;
+                        calendarList.removeCalendar(labelRemoved);
+                        removeCalendarFromJson(labelRemoved);
+                        page.filtersChanged();
+                        txtUrl.text = "";
+                        useBoth.checked = false;
+                        addReminderAdvance.checked = false;
+                        addReminderTime.checked = false;
+                        eventsView.clear();
+                        return;
+                    });
+                    return;
+                }
+            }
+
+            /*
+            MenuItem {
                 text: qsTr("remove %1 settings").arg(shortLabel)
                 enabled: calendarList.count > 0 && iCurrent >= 0
                 onClicked: {
@@ -244,6 +304,31 @@ Page {
                     })
                 }
             }
+            //*/
+
+            MenuItem {
+                text: qsTr("export to calendar")
+                onClicked: {
+                    var result
+                    var regUnix = /\n/g, regWin = /\r\n/
+                    fileOp.setFileName("temporal.ics", "Downloads");
+                    if (!regWin.test(eventsView.icsModified)) {
+                        result = fileOp.writeTxt( eventsView.icsModified.replace(regUnix, "\r\n") )
+                    } else {
+                        result = fileOp.writeTxt( eventsView.icsModified )
+                    }
+                    if (result === undefined || result.length < 1) {
+                        note.body = fileOp.error()
+                        note.summary = qsTr("File write error.")
+                    } else {
+                        Qt.openUrlExternally(result)
+                        exported = true
+                    }
+                }
+                Notification {
+                    id: note
+                }
+            }
 
             MenuItem {
                 text: qsTr("set up filter")
@@ -254,14 +339,16 @@ Page {
                     if (i >= 0) {
                         cal = filtersObj.calendars[i]
                         dialog = pageStack.push(Qt.resolvedUrl("Filters.qml"), {
-                                            "oldFilters": filtersObj,
-                                            "calendarLbl": cal.label,
-                                            "calendarUrl": cal.url,
-                                            "icsFile": eventsView.icsOriginal
+                                            "oldFiltersObj": filtersObj,
+                                            "calId": i,
+                                            //"calendarLbl": cal.label,
+                                            //"calendarUrl": cal.url,
+                                            "icsFile": eventsView.icsOriginal,
+                                            "settingsObj": settingsObj
                                         } )
                         dialog.closing.connect( function() {
                             if (dialog.filtersModified) {
-                                filtersObj = dialog.newFilters
+                                filtersObj = dialog.newFiltersObj
                                 page.filtersChanged()
                                 updateView()
                             }
@@ -326,7 +413,7 @@ Page {
 
             TextSwitch {
                 id: useBoth
-                checked: true
+                checked: false
                 text: checked? qsTr("use both reminder types for normal events") :
                                qsTr("use only relative reminder type for normal events")
                 onCheckedChanged: {
@@ -577,7 +664,7 @@ Page {
 
     function addCalendarUrl(iCal, url) {
         filtersObj.calendars[iCal]["url"] = url;
-        storeFilters();
+        filtersChanged();// storeFilters();
         eventsView.fetchCalendar(url);
 
         return;
@@ -599,6 +686,19 @@ Page {
             i++;
         }
         return k;
+    }
+
+    function modifyCalendar(currentLabel, newLabel, newUrl) {
+        var ic = findCalendarIndex(currentLabel);
+        if (newLabel > "") {
+            filtersObj.calendars[ic].label = newLabel;
+        }
+        if (newUrl > "") {
+            filtersObj.calendars[ic].url = newUrl;
+        }
+        filtersChanged();
+        updateView();
+        return;
     }
 
     function modifyReminderAdvance() {
@@ -625,6 +725,8 @@ Page {
                 filtersChanged();
             }
         }
+
+        console.log(modCal["reminder"], filtersObj.calendars[i].reminder);
 
         return i;
     }
@@ -653,6 +755,8 @@ Page {
                 filtersChanged();
             }
         }
+
+        console.log(modCal["dayreminder"], filtersObj.calendars[i].dayreminder);
 
         return i;
     }
@@ -707,15 +811,65 @@ Page {
         return;
     }
 
-    function storeFilters() {
-        var filtersStr, result;
-        filtersStr = JSON.stringify(filtersObj, null, 2);
-        result = icsFilter.overWriteFiltersFile(filtersStr);
-
-        return result;
-    }
+    //function storeFilters() {
+    //    var filtersStr, result;
+    //    filtersStr = JSON.stringify(filtersObj, null, 2);
+    //    console.log("tallettaa", filtersStr.substring(0, 15))
+    //    result = icsFilter.overWriteFiltersFile(filtersStr);
+    //    return result;
+    //}
 
     function updateView() {
+        var cal, calLbl, cmp, i, isReject, nftrs, regExp;
+
+        if (filtersObj.calendars.length > 0 && iCurrent >= 0) {
+            cal = filtersObj.calendars[iCurrent];
+            calLbl = cal.label;
+            if (calLbl.length > 15) {
+                shortLabel = calLbl.substring(0,12) + "...";
+            } else {
+                shortLabel = calLbl;
+            }
+
+            if (cal.bothREminders && cal.bothREminders.toLowerCase() === "yes") {
+                useBoth.checked = regExp.test(cal.bothREminders);
+            }
+
+            if (cal.reminder && cal.reminder !== "") {
+                addReminderAdvance.checked = true;
+                reminderAdvance.text = cal.reminder;
+                reminderAdvance.focus = false;
+            } else {
+                addReminderAdvance.checked = false;
+            }
+
+            if (cal.dayreminder && cal.dayreminder !== "") {
+                addReminderTime.checked = true;
+                reminderTime.text = cal.dayreminder;
+                reminderTime.focus = false;
+            } else {
+                addReminderTime.checked = false;
+            }
+
+            eventsView.clear();
+            if (cal.url > "") {
+                txtUrl.text = cal.url;
+                txtUrl.readOnly = true;
+                eventsView.setFilterType(cal);
+                eventsView.fetchCalendar(cal.url);
+            } else {
+                txtUrl.text = "";
+                txtUrl.readOnly = false;
+            }
+        } else {
+            console.log("kalenterit", filtersObj.calendars.count, iCurrent)
+        }
+
+        return;
+    }
+
+    /*
+    function updateView2() {
         var cal, calLbl, cmp, i, isReject, nftrs;
 
         if (calendarList.count > 0 && iCurrent >= 0) {
@@ -758,5 +912,5 @@ Page {
         }
 
         return;
-    }
+    }//*/
 }

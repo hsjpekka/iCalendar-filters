@@ -47,10 +47,6 @@
         <translation>ominaisuus</translation>
     </message>
     <message>
-        <source>action</source>
-        <translation>toiminta</translation>
-    </message>
-    <message>
         <source>add</source>
         <translation>lisää</translation>
     </message>
@@ -197,6 +193,14 @@
         <source>none selected</source>
         <translation>ei valintaa</translation>
     </message>
+    <message>
+        <source>Config-file write error.</source>
+        <translation>Asetustiedoston kirjoitusvirhe.</translation>
+    </message>
+    <message>
+        <source>select filter</source>
+        <translation>valitse suodatin</translation>
+    </message>
 </context>
 <context>
     <name>FirstPage</name>
@@ -281,16 +285,20 @@
         <translation>lisää muistutuksen aika koko päivän tapahtumiin</translation>
     </message>
     <message>
-        <source>new calendar</source>
-        <translation>lisää kalenteri</translation>
-    </message>
-    <message>
         <source>set up filter</source>
         <translation>suodattimen määritys</translation>
     </message>
     <message>
-        <source>remove %1 settings</source>
-        <translation>poista asetukset (%1)</translation>
+        <source>manage calendars</source>
+        <translation>hallitse kalentereita</translation>
+    </message>
+    <message>
+        <source>export to calendar</source>
+        <translation>vie kalenteriin</translation>
+    </message>
+    <message>
+        <source>File write error.</source>
+        <translation>Tiedoston kirjoitusvirhe.</translation>
     </message>
 </context>
 <context>
@@ -706,6 +714,26 @@
     <message>
         <source>address of the iCalendar-file</source>
         <translation>iCalendar-tiedoston osoite</translation>
+    </message>
+    <message>
+        <source>Modify calendar entry</source>
+        <translation>Muokkaa kalenterin tietoja</translation>
+    </message>
+    <message>
+        <source>action</source>
+        <translation>toiminto</translation>
+    </message>
+    <message>
+        <source>create</source>
+        <translation>luo</translation>
+    </message>
+    <message>
+        <source>delete</source>
+        <translation>poista</translation>
+    </message>
+    <message>
+        <source>modify</source>
+        <translation>muokkaa</translation>
     </message>
 </context>
 </TS>

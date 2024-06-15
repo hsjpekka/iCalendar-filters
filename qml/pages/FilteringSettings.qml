@@ -127,13 +127,14 @@ Dialog {
                 }
 
                 function setComponent(ind, cmp) {
-                    var i;
-                    i = find(cmp);
-                    if (i >= 0) {
+                    var result = -1;
+                    if (ind >= 0 && ind < cmpList.count) {
                         cmpList.set(ind, {"cmp": cmp});
+                        result = 0;
                     }
-                    return i;
+                    return result;
                 }
+
             }
 
             SilicaListView {
@@ -204,17 +205,8 @@ Dialog {
 
                 onCurrentIndexChanged: {
                     console.log("valittu vaihtui", currentIndex)
-                    prpList.clear()
                     var selectedComponent = cmpList.getValue(currentIndex)
-                    var pArr
-                    pArr = newFilterProps[selectedComponent]
-                    if (pArr) {
-                        var i = 0;
-                        while(i < pArr.length) {
-                            prpList.addProperty(pArr[i])
-                            i++
-                        }
-                    }
+                    prpList.addCmpProps(selectedComponent, false)
                 }
             }
 
@@ -229,7 +221,7 @@ Dialog {
 
             ComboBox {
                 id: cbCmpAction
-                label: qsTr("action")
+                label: qsTr("modify") + " | " + qsTr("add")
                 x: Theme.horizontalPageMargin
                 width: parent.width - 2*x
                 opacity: txtComponent.text > ""? 1.0 : Theme.opacityOverlay
@@ -239,11 +231,13 @@ Dialog {
                         text: qsTr("add")
                         enabled: txtComponent.text > ""
                         onClicked: {
-                            cmpList.addProperty(txtComponent.text)
-                            txtComponent.text = ""
+                            cmpList.addComponent(txtComponent.text)
+                            prpList.addCmpProps(txtComponent.text, true)
                             cmpView.currentIndex = -1
                             cbCmpAction.currentIndex = -1
                             cbCmpAction.value = ""
+                            txtComponent.text = ""
+
                             composeFilteringProps()
                         }
                     }
@@ -271,28 +265,41 @@ Dialog {
                 }
             }
 
-            //Button {
-            //    text: qsTr("add component")
-            //    enabled: txtComponent.text > ""
-            //    x: Theme.horizontalPageMargin
-            //    width: parent.width - 2*x
-            //    onClicked: {
-            //        cmpList.addComponent(txtComponent.text)
-            //    }
-            //}
-
             SectionHeader {
                 text: qsTr("Component properties")
             }
 
             ListModel {
                 id: prpList
+                // ListElement { "prop": string }
+
+                function addCmpProps(cmp, defs) {
+                    var pArr, i = 0;
+                    clear();
+                    console.log(cmp)
+                    pArr = newFilterProps[cmp];
+                    if (pArr && pArr.length > 0) {
+                        while(i < pArr.length) {
+                            addProperty(pArr[i]);
+                            i++;
+                        }
+                    } else if (defs === true) {
+                        // add default values
+                        addProperty("dtstart");
+                        addToCPList(cmp, "dtstart");
+                        addProperty("summary");
+                        addToCPList(cmp, "summary");
+                        addProperty("categories");
+                        addToCPList(cmp, "categories");
+                    }
+                    return;
+                }
 
                 function addProperty(prop) {
                     var i;
                     i = find(prop);
                     if (i < 0) {
-                        prpList.append({"prop": prop});
+                        append({"prop": prop});
                     }
                     return i;
                 }
@@ -325,6 +332,15 @@ Dialog {
                         prpList.remove(i);
                     }
                     return i;
+                }
+
+                function setProperty(ind, prop) {
+                    var result = -1;
+                    if (ind >= 0 && ind < count) {
+                        set(ind, {"prop": prop});
+                        result = 0;
+                    }
+                    return result;
                 }
             }
 
@@ -435,7 +451,7 @@ Dialog {
                         text: qsTr("modify")
                         enabled: txtProperty.text > "" && prpView.currentIndex >= 0
                         onClicked: {
-                            prpList.set(prpView.currentIndex, txtProperty.text)
+                            prpList.setProperty(prpView.currentIndex, txtProperty.text)
                             txtProperty.text = ""
                             //prpView.currentIndex = -1
                             cbPrpAction.currentIndex = -1
@@ -484,14 +500,12 @@ Dialog {
                 }
             }
             if (!isProp) {
-                arr = newFilterProps[c];
-                if (Array.isArray(arr)) {
-                    if (arr.length === 0) {
-                        arr = [];
-                    }
-                    arr.push(prp);
+                arr = newFilterProps[cmp];
+                if (!arr || !Array.isArray(arr)) {
+                    arr = [];
                 }
-                newFilterProps[c][p] = arr;
+                arr.push(prp);
+                newFilterProps[cmp][p] = arr;
             }
         }
 
