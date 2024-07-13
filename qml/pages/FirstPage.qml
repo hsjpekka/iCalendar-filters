@@ -218,9 +218,11 @@ Page {
         PullDownMenu {
             MenuItem {
                 text: qsTr("manage calendars")
+                property var dialog
+
                 onClicked: {
                     var labelCurrent = calendarSelector.value
-                    var dialog = pageStack.push(Qt.resolvedUrl("NewCalendar.qml"),
+                    dialog = pageStack.push(Qt.resolvedUrl("NewCalendar.qml"),
                                                 {"calendarLabel": labelCurrent,
                                                  "url": txtUrl.text
                                                 })
