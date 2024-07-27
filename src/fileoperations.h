@@ -7,7 +7,7 @@ class fileOperations: public QObject
 {
     Q_OBJECT
 public:
-    fileOperations();
+    explicit fileOperations(QObject *parent = nullptr);
     Q_INVOKABLE QString error();
     Q_INVOKABLE QString readTxt();
     Q_INVOKABLE QString writeTxt(QString text);

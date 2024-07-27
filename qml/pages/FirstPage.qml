@@ -229,7 +229,8 @@ Page {
                         if (dialog.action === dialog.acCreate) {
                             newCalendar(dialog.calendarLabel, dialog.url)
                         } else if (dialog.action === dialog.acDelete) {
-                            removeCalendar(dialog.label)
+                            console.log(dialog.calendarLabel, "pois")
+                            removeCalendar(dialog.calendarLabel)
                         } else {
                             modifyCalendar(labelCurrent, dialog.calendarLabel, dialog.url)
                         }
@@ -237,8 +238,8 @@ Page {
                 }
 
                 function newCalendar(labelNew, urlNew) {
-                    var result = calendarList.addCalendar(dialog.calendarLabel);
-                    addCalendarToJson(dialog.calendarLabel, dialog.url);
+                    var result = calendarList.addCalendar(labelNew);
+                    addCalendarToJson(labelNew, urlNew);
                     if (result > 0) {
                         timerChange.start();
                     }
@@ -247,7 +248,7 @@ Page {
                 }
 
                 function removeCalendar(labelRemoved) {
-                    remorse.execute(qsTr("Deleting", labelRemoved), function () {
+                    remorse.execute(qsTr("Deleting %1").arg(labelRemoved), function () {
                         calendarSelector.currentIndex = -1;
                         calendarList.removeCalendar(labelRemoved);
                         removeCalendarFromJson(labelRemoved);

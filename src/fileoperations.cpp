@@ -1,12 +1,10 @@
 #include "fileoperations.h"
 #include <QDebug>
 #include <QFile>
-#include <QDir>
 #include <QTextStream>
 
-fileOperations::fileOperations()
+fileOperations::fileOperations(QObject *parent) : QObject(parent)
 {
-    //filePath = QDir().homePath() + "/.config/null.hsjpekka/icalendar-filters/";
     filePath = defaultPath();
     fileName = defaultName;
 }
