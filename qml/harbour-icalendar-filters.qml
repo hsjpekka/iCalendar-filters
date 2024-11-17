@@ -9,7 +9,7 @@ ApplicationWindow {
     allowedOrientations: defaultAllowedOrientations
     Component.onCompleted: {
         var i
-        setFiltersFile()
+        //setFiltersFile()
         i = readFilters()
         if (i > 0) {
             cleanUpFiltersFile()
@@ -69,9 +69,9 @@ ApplicationWindow {
         // return -1 = no filters-file, 0 = no json-file, >0 = calendars
         var filtersStr, i, cal, adv, time, d=[];
 
-        filtersStr = icsFilter.readFiltersFile();
-        //viewFiltersFile.text = filtersFile;
-        //console.log(filtersStr);
+        Globals.settingsFilePath = fileOp.getConfigPath();
+        fileOp.setFileName(Globals.filtersFileName, Globals.settingsFilePath);
+        filtersStr = fileOp.readTxt();
 
         if (filtersStr.length > 1){
             filtersObj = JSON.parse(filtersStr);
@@ -92,7 +92,10 @@ ApplicationWindow {
         // }
         //
         var jsonStr, jsonObj;
+        //console.log(icsFilter.setFiltersFile())
+        Globals.settingsFilePath = fileOp.getConfigPath();
         fileOp.setFileName(Globals.settingsFileName, Globals.settingsFilePath);
+        //fileOp.setFileName(icsFilter.setFiltersFile());
         jsonStr = fileOp.readTxt();
         if (jsonStr > "") {
             jsonObj = JSON.parse(jsonStr);
@@ -103,6 +106,7 @@ ApplicationWindow {
         return;
     }
 
+    /*
     function setFiltersFile() {
         var configPath, i;
         configPath = icsFilter.setFiltersFile();
@@ -112,6 +116,7 @@ ApplicationWindow {
         configPath += Globals.settingsFilePath;
         return icsFilter.setFiltersFile(Globals.filtersFileName, configPath);
     }
+    // */
 
     function setUpLists(fObj) {
         // defaults
@@ -174,7 +179,7 @@ ApplicationWindow {
     function storeFilters() {
         var filtersFile, result;
         filtersFile = JSON.stringify(filtersObj, null, 2);
-        result = icsFilter.overWriteFiltersFile(filtersFile);
+        result = fileOp.writeTxt(filtersFile, Globals.filtersFileName, Globals.settingsFilePath);
 
         return result;
     }

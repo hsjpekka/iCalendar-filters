@@ -10,7 +10,7 @@
 #include <QQmlContext>
 
 #include "../buteo-sync-plugin-webcal-filtered/src/icsfilter.h"
-#include "fileoperations.h"
+#include "../buteo-sync-plugin-webcal-filtered/src/fileoperations.h"
 
 int main(int argc, char *argv[])
 {

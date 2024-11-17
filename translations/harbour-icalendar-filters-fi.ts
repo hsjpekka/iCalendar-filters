@@ -127,11 +127,11 @@
     </message>
     <message>
         <source>all criteria have to match</source>
-        <translation>kaikkien arvojen on vastattava</translation>
+        <translation>kaikkien ehtojen on täytyttävä</translation>
     </message>
     <message>
         <source>a single matching criteria is enough</source>
-        <translation>yksi vastaava arvo riittää</translation>
+        <translation>yhden ehdon täyttyminen riittää</translation>
     </message>
     <message>
         <source>equal to</source>

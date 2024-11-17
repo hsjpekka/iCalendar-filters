@@ -16,11 +16,11 @@ CONFIG += sailfishapp
 
 HEADERS += \
     ../buteo-sync-plugin-webcal-filtered/src/icsfilter.h \
-    src/fileoperations.h
+    ../buteo-sync-plugin-webcal-filtered/src/fileoperations.h
 
 SOURCES += \
     ../buteo-sync-plugin-webcal-filtered/src/icsfilter.cpp \
-    src/fileoperations.cpp \
+    ../buteo-sync-plugin-webcal-filtered/src/fileoperations.cpp \
     src/harbour-icalendar-filters.cpp
 
 DISTFILES += \

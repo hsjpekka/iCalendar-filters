@@ -13,7 +13,7 @@ Page {
     }
     Component.onDestruction: {
         if (exported) {
-            fileOp.removeFile()
+            fileOp.removeFile("temporal.ics", "Downloads")
         }
     }
 
