@@ -34,7 +34,9 @@ DISTFILES += \
     qml/utils/globals.js \
     rpm/harbour-icalendar-filters.changes.in \
     rpm/harbour-icalendar-filters.changes.run.in \
-    rpm/harbour-icalendar-filters.spec \
+    rpm/harbour-icalendar-filters.spec
+
+OTHER_FILES += \
     translations/*.ts
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172
@@ -48,4 +50,6 @@ CONFIG += sailfishapp_i18n
 # following TRANSLATIONS line. And also do not forget to
 # modify the localized app name in the the .desktop file.
 TRANSLATIONS += \
-    translations/harbour-icalendar-filters-fi.ts
+    translations/$${TARGET}-fi.ts \
+    translations/$${TARGET}-C.ts
+

@@ -769,10 +769,10 @@ Page {
         i = findCalendarIndex();
         if (i >= 0) {
             if (useBoth.checked) {
-                filtersObj.calendars[i]["both"] = "yes";
+                filtersObj.calendars[i]["bothReminders"] = "yes";
                 //modifyReminderTime();
             } else {
-                filtersObj.calendars[i]["both"] = "no";
+                filtersObj.calendars[i]["bothReminders"] = "no";
             }
             filtersChanged();
         }
@@ -825,8 +825,10 @@ Page {
                 shortLabel = calLbl;
             }
 
-            if (cal.bothREminders && cal.bothREminders.toLowerCase() === "yes") {
-                useBoth.checked = regExp.test(cal.bothREminders);
+            if (cal.bothReminders && cal.bothReminders.toLowerCase() === "yes") {
+                useBoth.checked = true;
+            } else {
+                useBoth.checked = false;
             }
 
             if (cal.reminder && cal.reminder !== "") {
