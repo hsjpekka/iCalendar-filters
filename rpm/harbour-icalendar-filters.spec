@@ -1,6 +1,6 @@
 Name:       harbour-icalendar-filters
 
-Summary:    Filter creator for webcal-client
+Summary:    Filter iCalendars
 Version:    1.1.0
 Release:    1
 License:    LICENSE

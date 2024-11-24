@@ -28,6 +28,7 @@ Page {
     property string shortLabel: ""
 
     readonly property var emptyJson: {"calendars": [] }
+    readonly property string version: "1.1.0"
 
     onICurrentChanged: {
         if (!settingUp) {
@@ -264,50 +265,6 @@ Page {
                 }
             }
 
-            /*
-            MenuItem {
-                text: qsTr("remove %1 settings").arg(shortLabel)
-                enabled: calendarList.count > 0 && iCurrent >= 0
-                onClicked: {
-                    var labelRemoved = calendarSelector.value
-                    var dialog = pageStack.push(Qt.resolvedUrl("NewCalendar.qml"),
-                                                {"create" : false,
-                                                 "calendarLabel": labelRemoved,
-                                                 "url": txtUrl.text
-                                                })
-                    dialog.accepted.connect( function () {
-                        remorse.execute(qsTr("Deleting", labelRemoved), function () {
-                            calendarSelector.currentIndex = -1
-                            calendarList.removeCalendar(labelRemoved)
-                            removeCalendarFromJson(labelRemoved)
-                            page.filtersChanged()
-                            txtUrl.text = ""
-                            useBoth.checked = false
-                            addReminderAdvance.checked = false
-                            addReminderTime.checked = false
-                            eventsView.clear()
-                        } )
-
-                    } )
-                }
-            }
-
-            MenuItem {
-                text: qsTr("new calendar")
-                onClicked: {
-                    var dialog = pageStack.push(Qt.resolvedUrl("NewCalendar.qml"))
-                    dialog.accepted.connect( function () {
-                        var result = calendarList.addCalendar(dialog.calendarLabel)
-                        addCalendarToJson(dialog.calendarLabel, dialog.url)
-                        if (result > 0) {
-                            timerChange.start()
-                        }
-                        page.filtersChanged()
-                    })
-                }
-            }
-            //*/
-
             MenuItem {
                 text: qsTr("export to calendar")
                 onClicked: {
@@ -364,13 +321,25 @@ Page {
             id: remorse
         }
 
+        Label {
+            text: version
+            color: Theme.secondaryHighlightColor
+            font.pixelSize: Theme.fontSizeExtraSmall
+            anchors {
+                right: parent.right
+                rightMargin: Theme.horizontalPageMargin
+            }
+            y: header.height - height
+        }
+
         Column {
             id: column
 
             width: parent.width
-            spacing: Theme.paddingLarge
+            spacing: Theme.paddingMedium
 
             PageHeader {
+                id: header
                 title: qsTr("iCalendars")
             }
 
@@ -861,51 +830,5 @@ Page {
 
         return;
     }
-
-    /*
-    function updateView2() {
-        var cal, calLbl, cmp, i, isReject, nftrs;
-
-        if (calendarList.count > 0 && iCurrent >= 0) {
-            cal = calendarList.get(iCurrent);
-            calLbl = cal.calendarLabel;
-            if (calLbl.length > 15) {
-                shortLabel = calLbl.substring(0,12) + "...";
-            } else {
-                shortLabel = calLbl;
-            }
-
-            useBoth.checked = calendarList.areBothUsed(calLbl);
-
-            if (calendarList.isAdvanceSet(calLbl)) {
-                addReminderAdvance.checked = true;
-                reminderAdvance.text = calendarList.alarmAdvance(calLbl);
-                reminderAdvance.focus = false;
-            } else {
-                addReminderAdvance.checked = false;
-            }
-
-            if (calendarList.isTimeSet(calLbl)) {
-                addReminderTime.checked = true;
-                reminderTime.text = calendarList.alarmTime(calLbl);
-                reminderTime.focus = false;
-            } else {
-                addReminderTime.checked = false;
-            }
-
-            eventsView.clear();
-            if (filtersObj.calendars[iCurrent].url > "") {
-                txtUrl.text = filtersObj.calendars[iCurrent].url;
-                txtUrl.readOnly = true;
-                eventsView.setFilterType(filtersObj.calendars[iCurrent]);
-                eventsView.fetchCalendar(filtersObj.calendars[iCurrent].url);
-            } else {
-                txtUrl.text = "";
-                txtUrl.readOnly = false;
-            }
-        }
-
-        return;
-    }//*/
 
 }
