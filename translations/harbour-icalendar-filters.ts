@@ -347,5 +347,17 @@
         <source>modify</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>remote server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>local file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>choose file</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

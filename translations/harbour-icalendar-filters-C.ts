@@ -199,7 +199,7 @@
     </message>
     <message>
         <source>select filter</source>
-        <translation>valiste suodin</translation>
+        <translation>valitse suodin</translation>
     </message>
 </context>
 <context>
@@ -346,6 +346,18 @@
     <message>
         <source>modify</source>
         <translation>muokkaa</translation>
+    </message>
+    <message>
+        <source>remote server</source>
+        <translation>ulkoinen palvelin</translation>
+    </message>
+    <message>
+        <source>local file</source>
+        <translation>paikallinen tiedosto</translation>
+    </message>
+    <message>
+        <source>choose file</source>
+        <translation>valitse tiedosto</translation>
     </message>
 </context>
 </TS>
