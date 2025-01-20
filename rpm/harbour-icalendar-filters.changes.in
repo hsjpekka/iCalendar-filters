@@ -12,6 +12,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sun Nov 24 2024 hsjpekka <hsjpekka@gmail.com> 1.1.1-1
+- fix full day event import
+
 * Sun Nov 24 2024 hsjpekka <hsjpekka@gmail.com> 1.1.0-1
 - support local icalendar-files
 - on manage calendars page, the default action is modify unless no calendar is selected

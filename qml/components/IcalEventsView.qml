@@ -300,6 +300,7 @@ SilicaListView{
                 } else {
                     etime = "";
                 }
+                console.log(strs[0], strs.length, edate)
             } else if (p === "summary" ||
                        (p === "description" && edesc === "")) {
                 edesc = props[i].value;
@@ -417,7 +418,7 @@ SilicaListView{
                 }
             }
             if (i > 0) {
-                result = line.substring(i);
+                result = line.substring(i + 1);
             }
         }
         return result;

@@ -1,7 +1,7 @@
 Name:       harbour-icalendar-filters
 
 Summary:    Filter iCalendars
-Version:    1.1.0
+Version:    1.1.1
 Release:    1
 License:    LICENSE
 URL:        https://github.com/hsjpekka/iCalendar-filters

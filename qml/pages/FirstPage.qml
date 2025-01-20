@@ -329,7 +329,7 @@ Page {
                 right: parent.right
                 rightMargin: Theme.horizontalPageMargin
             }
-            y: header.height - height
+            y: header.y + header.height - height
         }
 
         Column {
@@ -544,10 +544,18 @@ Page {
 
                 function fetchIcalFile(url, whenReady){
                     var xhttp = new XMLHttpRequest();
+                    if (url.charAt(0) === '/') {
+                        url = "file://" + url;
+                    }
 
                     xhttp.onreadystatechange = function () {
                         if (xhttp.readyState) {
-                            console.log(" " + xhttp.readyState + " ~ " + xhttp.status + ", " + xhttp.statusText);
+                            var str = " " + xhttp.readyState;
+                            if (xhttp.status)
+                                str += " ~ " + xhttp.status;
+                            if (xhttp.statusText)
+                                str += ", " + xhttp.statusText;
+                            console.log(str);
                         }
 
                         if (xhttp.readyState === 4) {
