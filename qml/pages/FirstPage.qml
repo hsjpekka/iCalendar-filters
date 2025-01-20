@@ -28,7 +28,7 @@ Page {
     property string shortLabel: ""
 
     readonly property var emptyJson: {"calendars": [] }
-    readonly property string version: "1.1.0"
+    readonly property string version: "1.1.1"
 
     onICurrentChanged: {
         if (!settingUp) {
