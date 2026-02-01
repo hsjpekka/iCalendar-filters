@@ -230,7 +230,6 @@ Page {
                         if (dialog.action === dialog.acCreate) {
                             newCalendar(dialog.calendarLabel, dialog.url)
                         } else if (dialog.action === dialog.acDelete) {
-                            console.log(dialog.calendarLabel, "pois")
                             removeCalendar(dialog.calendarLabel)
                         } else {
                             modifyCalendar(labelCurrent, dialog.calendarLabel, dialog.url)
@@ -383,16 +382,6 @@ Page {
             }
 
             TextSwitch {
-                id: useBoth
-                checked: false
-                text: checked? qsTr("use both reminder types for normal events") :
-                               qsTr("use only relative reminder type for normal events")
-                onCheckedChanged: {
-                    modifyUseBoth()
-                }
-            }
-
-            TextSwitch {
                 id: addReminderAdvance
                 text: checked? qsTr("add a relative reminder") : qsTr("no relative reminders")
                 onCheckedChanged: {
@@ -478,10 +467,8 @@ Page {
 
             TextSwitch {
                 id: addReminderTime
-                text: checked? (useBoth.checked?
-                                    qsTr("add a defined time reminder") :
-                                    qsTr("add a defined time reminder for full day events")):
-                               qsTr("no defined time reminders")
+                text: checked? ((useBoth.checked && useBoth.visible)? addBoth : addFullTime) :
+                               qsTr("no absolute time reminders")
                 //property bool selected: checked
                 onCheckedChanged: {
                     if (!settingUp) {
@@ -491,6 +478,9 @@ Page {
                         modifyReminderTime()
                     }
                 }
+
+                property string addBoth: qsTr("adding an absolute time reminder")
+                property string addFullTime: qsTr("adding an absolute time reminder on full time events")
             }
 
             TextField {
@@ -510,6 +500,17 @@ Page {
                 }
 
                 property string time: text.charAt(0) == "-" ? text : text.substring(1)
+            }
+
+            TextSwitch {
+                id: useBoth
+                checked: false
+                text: checked? qsTr("adding both reminder types on normal events") :
+                               qsTr("adding only relative reminder on normal events")
+                onCheckedChanged: {
+                    modifyUseBoth()
+                }
+                visible: addReminderTime.checked && addReminderAdvance.checked
             }
 
             SectionHeader{
@@ -548,21 +549,32 @@ Page {
                         url = "file://" + url;
                     }
 
+                    xhttp.onerror = function () {
+                        console.log("virhe kalenterin haussa")
+                    }
+
                     xhttp.onreadystatechange = function () {
+                        var str = ""
                         if (xhttp.readyState) {
-                            var str = " " + xhttp.readyState;
+                            str += " " + xhttp.readyState;
                             if (xhttp.status)
                                 str += " ~ " + xhttp.status;
                             if (xhttp.statusText)
                                 str += ", " + xhttp.statusText;
-                            console.log(str);
                         }
 
                         if (xhttp.readyState === 4) {
                             if (xhttp.status === 200) {
                                 whenReady(url, xhttp.responseText);
+                            } else {
+                                str += " ! unsuccessfull !"
                             }
                         }
+
+                        if (str !== "") {
+                            console.log(str);
+                        }
+
                         return;
                     }
 

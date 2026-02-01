@@ -217,6 +217,8 @@ SilicaListView{
     VerticalScrollDecorator{}
 
     function clear() {
+        icsOriginal = ""
+        icsModified = ""
         return calendarData.clear();
     }
 
@@ -300,7 +302,6 @@ SilicaListView{
                 } else {
                     etime = "";
                 }
-                console.log(strs[0], strs.length, edate)
             } else if (p === "summary" ||
                        (p === "description" && edesc === "")) {
                 edesc = props[i].value;

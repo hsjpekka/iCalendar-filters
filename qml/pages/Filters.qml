@@ -14,10 +14,9 @@ Page {
         readPropertyList()
         calendarLbl = filtersObj.calendars[calId].label
         calendarUrl = filtersObj.calendars[calId].url
-        //oldFilters = filtersObj.calendars[calId].filters
         newFiltersObj = JSON.parse(JSON.stringify(oldFiltersObj))
-        readCalendarFilters()
         settingUp = false
+        readCalendarFilters()
     }
     Component.onDestruction: {
         composeFilter()
@@ -36,7 +35,6 @@ Page {
     property string calendarLbl: ""//calendarName.text
     property string calendarUrl: ""
     property int calId
-    //property var cmpPrp
     property bool filtersModified: false
     property string icsFile: ""
     property var newFiltersObj: {"calendars": [] }
@@ -240,7 +238,7 @@ Page {
 
             ComboBox {
                 id: cbFilterComponent
-                label: qsTr("entry type")
+                label: qsTr("filter for component") // vevent, vfreebusy, vjournal, vtodo
                 menu: ContextMenu {
                     Repeater {
                         model: calendarComponents
@@ -264,8 +262,8 @@ Page {
 
             TextSwitch {
                 id: blockOrPass
-                text: checked? qsTr("read in matching components") :
-                               qsTr("leave out matching components")
+                text: checked? qsTr("reading in matching components") :
+                               qsTr("leaving out matching components")
                 onClicked: {
                     calendarComponents.modifyAction(cbFilterComponent.value, checked)
                     composeFilter()
@@ -283,7 +281,7 @@ Page {
 
             TextSwitch {
                 id: allOrAnyProperty
-                text: checked? qsTr("all filters have to match") :
+                text: checked? qsTr("all properties have to match") :
                                qsTr("a single matching property is enough")
                 onClicked: {
                     var limit
@@ -306,58 +304,14 @@ Page {
                 }
             }
 
-            /*
-            ListModel {
-                id: eventProperties
-                // class / created / description / geo /
-                // last-mod / location / organizer / priority /
-                // seq / status / summary / transp /
-                // url / recurid /dtend / duration /
-                // attach / attendee / categories / comment /
-                // contact / exdate / rstatus / related /
-                // resources / rdate / x-prop / iana-prop
-                ListElement {
-                    prop: "categories"
-                }
-                ListElement {
-                    prop: "dtstart"
-                }
-                ListElement {
-                    prop: "summary"
-                }
-
-                function addProperty(prop) {
-                    return append({"prop": prop});
-                }
-
-                function getIndex(name) {
-                    var i, N;
-                    N = -1;
-                    i = 0;
-                    while (i < eventProperties.count && name !== undefined) {
-                        if (eventProperties.get(i).prop === name) {
-                            N = i;
-                            i = eventProperties.count;
-                        }
-                        i++;
-                    }
-
-                    return N;
-                }
-
-                function removeProperty(prop) {
-                    var i;
-                    i = getIndex(prop);
-                    if (i >= 0 && i < eventProperties.count) {
-                        eventProperties.remove(i);
-                    }
-                    return i;
-                }
-            }
-            // */
-
             ListModel {
                 id: cmpProperties
+                /*
+                // class / created / description / geo / last-mod / location / organizer / priority /
+                // seq / status / summary / transp / url / recurid /dtend / duration /
+                // attach / attendee / categories / comment / contact / exdate / rstatus / related /
+                // resources / rdate / x-prop / iana-prop
+                */
                 ListElement {
                     prop: "categories"
                 }
@@ -406,7 +360,7 @@ Page {
             }
 
             ComboBox {
-                id: cbFilterProperty
+                id: cbFilteringProperty
                 label: qsTr("filtering property")
                 enabled: cmpProperties.count > 0
                 menu: ContextMenu {
@@ -419,17 +373,31 @@ Page {
                 }
                 onCurrentIndexChanged: {
                     if (!settingUp && currentIndex >= 0) {
-                        if (value === "dtstart") {
-                            cbPropertyType.setValue(cbPropertyType.ptime)
-                        } else {
-                            cbPropertyType.setValue(cbPropertyType.pstring)
-                        }
+                        cbPropertyType.setDefaultValue()
                     }
                 }
 
                 function setValue(str) {
                     currentIndex = cmpProperties.getIndex(str);
                     return currentIndex;
+                }
+            }
+
+            TextSwitch {
+                id: allOrAnyValue
+                text: checked? qsTr("all criteria have to match") :
+                               qsTr("a single matching criteria is enough")
+                onCheckedChanged: {
+                    composeFilter()
+                }
+
+                function setValue(fraction) {
+                    if (fraction*1.0 > 0.5) {
+                        checked = true;
+                    } else {
+                        checked = false;
+                    }
+                    return checked;
                 }
             }
 
@@ -510,6 +478,16 @@ Page {
                     return result;
                 }
 
+                function setDefaultValue() {
+                    console.log("cbFilteringProperty.value = ", cbFilteringProperty.value);
+                    if (cbFilteringProperty.value === "dtstart") {
+                        setValue(ptime)
+                    } else {
+                        setValue(pstring)
+                    }
+                    return;
+                }
+
                 function setValue(str) {
                     var result;
                     result = -1;
@@ -538,24 +516,6 @@ Page {
                     currentIndex = result;
 
                     return result;
-                }
-            }
-
-            TextSwitch {
-                id: allOrAnyValue
-                text: checked? qsTr("all criteria have to match") :
-                               qsTr("a single matching criteria is enough")
-                onCheckedChanged: {
-                    composeFilter()
-                }
-
-                function setValue(fraction) {
-                    if (fraction*1.0 > 0.5) {
-                        checked = true;
-                    } else {
-                        checked = false;
-                    }
-                    return checked;
                 }
             }
 
@@ -871,7 +831,7 @@ Page {
                             settingUp = true
                             //console.log(icsComponent, icsProperty, icsPropType, index, listViewFilters.currentIndex)
                             cbFilterComponent.setValue(icsComponent) //currentIndex = calendarComponents.getIndex(icsComponent)
-                            cbFilterProperty.setValue(icsProperty) //cbFilterProperty.currentIndex = eventProperties.getIndex(icsProperty)
+                            cbFilteringProperty.setValue(icsProperty) //cbFilteringProperty.currentIndex = eventProperties.getIndex(icsProperty)
                             cbPropertyType.setValue(icsPropType)
                             allOrAnyValue.setValue(icsValMatches) //allOrAnyValue.checked = icsValMatches > 0.5
                             cbFilteringCriteria.setValue(icsCriteria)//cbFilteringCriteria.selectedComparison = icsCriteria
@@ -895,10 +855,16 @@ Page {
             }
 
             SectionHeader{
-                text: viewFiltersFile.iContent === 0 ?    "<b>" + qsTr("original") + "</b> &nbsp; | &nbsp; <i>" + qsTr("filter") + "</i> &nbsp; | &nbsp; <i>" + qsTr("modified") + "</i>"
-                      : (viewFiltersFile.iContent === 1 ? "<i>" + qsTr("original") + "</i> &nbsp; | &nbsp; <b>" + qsTr("filter") + "</b> &nbsp; | &nbsp; <i>" + qsTr("modified") + "</i>"
-                        :                                 "<i>" + qsTr("original") + "</i> &nbsp; | &nbsp; <i>" + qsTr("filter") + "</i> &nbsp; | &nbsp; <b>" + qsTr("modified") + "</b>")
+                text: viewFiltersFile.iContent === 0 ? h1
+                      : (viewFiltersFile.iContent === 1 ? h2 : h3)
                 textFormat: Text.StyledText
+
+                property string txt1: qsTr("original")
+                property string txt2: qsTr("filter")
+                property string txt3: qsTr("modified")
+                property string h1: "<b>" + txt1 + "</b> &nbsp; | &nbsp; <i>" + txt2 + "</i> &nbsp; | &nbsp; <i>" + txt3 + "</i>"
+                property string h2: "<i>" + txt1 + "</i> &nbsp; | &nbsp; <b>" + txt2 + "</b> &nbsp; | &nbsp; <i>" + txt3 + "</i>"
+                property string h3: "<i>" + txt1 + "</i> &nbsp; | &nbsp; <i>" + txt2 + "</i> &nbsp; | &nbsp; <b>" + txt3 + "</b>"
             }
 
             TextArea {
@@ -907,6 +873,7 @@ Page {
                 font.pixelSize: Theme.fontSizeMedium
                 readOnly: true
                 text: icsFile
+                placeholderText: noContent
                 onClicked: {
                     iContent++
                     if (iContent === 0) {
@@ -921,6 +888,7 @@ Page {
                 }
 
                 property int iContent: 0
+                property string noContent: iContent === 0 ? qsTr("No iCalendar-file!") : (iContent === 1 ? qsTr("No filters!"): qsTr("-- no contents --"))
             }
 
             VerticalScrollDecorator {}
@@ -946,12 +914,12 @@ Page {
 
         if (filterNr >= 0) {
             filterModel.modifyFilter(filterNr, vcomponent, //action, propMatches,
-                                  cbFilterProperty.value, cbPropertyType.pTypeToString(cbPropertyType.ptype),
+                                  cbFilteringProperty.value, cbPropertyType.pTypeToString(cbPropertyType.ptype),
                                   valMatches, cbFilteringCriteria.selectedComparison(),
                                   filterValueTF.text);
         } else {
             filterModel.addFilter(vcomponent, //action, propMatches,
-                                  cbFilterProperty.value, cbPropertyType.pTypeToString(cbPropertyType.ptype),
+                                  cbFilteringProperty.value, cbPropertyType.pTypeToString(cbPropertyType.ptype),
                                   valMatches, cbFilteringCriteria.selectedComparison(),
                                   filterValueTF.text);
             listViewFilters.currentIndex = filterModel.count - 1;
@@ -1194,7 +1162,7 @@ Page {
     }
 
     function readPropertyList(cmp) {
-        // read iCalendar component properties to fill cbFilterProperty
+        // read iCalendar component properties to fill cbFilteringProperty
         // defaults
         // { "vevent": ["dtstart", "summary", "categories"],
         //   "vtodo": -"-, "vfreetime": -"-, "vjournal": -"- }
@@ -1249,7 +1217,7 @@ Page {
             //cbFilteringCriteria.selectedComparison = criteriaStrings.get(cbFilteringCriteria.currentIndex).comparison
             cbPropertyType.setValue(cbPropertyType.pstring)
             cbFilterComponent.currentIndex = 0
-            cbFilterProperty.currentIndex = 0
+            cbFilteringProperty.currentIndex = 0
         } else if (filters[0] && filters[0].component) {
             fltr0 = filters[0];
             cbFilterComponent.setValue(fltr0.component);
@@ -1257,7 +1225,7 @@ Page {
             allOrAnyProperty.setValue(fltr0.propMatches);
             readFilters(filters);
             prop0 = fltr0.properties[0];
-            cbFilterProperty.setValue(prop0.property);
+            cbFilteringProperty.setValue(prop0.property);
             cbPropertyType.setValue(prop0.type);
             allOrAnyValue.setValue(prop0.valueMatches);
             cbFilteringCriteria.setValue(prop0.values[0].criteria);

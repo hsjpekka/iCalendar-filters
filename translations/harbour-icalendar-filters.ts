@@ -74,18 +74,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>read in matching components</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>leave out matching components</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>all filters have to match</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>a single matching property is enough</source>
         <translation type="unfinished"></translation>
     </message>
@@ -186,10 +174,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>entry type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Config-file write error.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -199,6 +183,34 @@
     </message>
     <message>
         <source>select filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>reading in matching components</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>leaving out matching components</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filter for component</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>all properties have to match</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No iCalendar-file!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No filters!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-- no contents --</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -253,31 +265,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>use both reminder types for normal events</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>use only relative reminder type for normal events</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>add a relative reminder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>no relative reminders</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>add a defined time reminder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>no defined time reminders</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>add a defined time reminder for full day events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -298,6 +290,26 @@
     </message>
     <message>
         <source>Deleting %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>no absolute time reminders</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>adding an absolute time reminder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>adding an absolute time reminder on full time events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>adding both reminder types on normal events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>adding only relative reminder on normal events</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

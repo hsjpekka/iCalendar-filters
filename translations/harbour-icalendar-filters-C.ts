@@ -74,16 +74,8 @@
         <translation>%1 - suodattimet</translation>
     </message>
     <message>
-        <source>read in matching components</source>
-        <translation>lue vastaavat merkinnät</translation>
-    </message>
-    <message>
-        <source>leave out matching components</source>
-        <translation>hylkää vastaavat merkinnät</translation>
-    </message>
-    <message>
-        <source>all filters have to match</source>
-        <translation>kaikkien suodattimien on vastattava</translation>
+        <source>all properties have to match</source>
+        <translation>kaikkien ominaisuuksien on vastattava</translation>
     </message>
     <message>
         <source>a single matching property is enough</source>
@@ -103,7 +95,7 @@
     </message>
     <message>
         <source>filtering property</source>
-        <translation>suodatettava ominaisuus</translation>
+        <translation>suodattava ominaisuus</translation>
     </message>
     <message>
         <source>type of property</source>
@@ -186,10 +178,6 @@
         <translation>muokattu</translation>
     </message>
     <message>
-        <source>entry type</source>
-        <translation>merkintä</translation>
-    </message>
-    <message>
         <source>Config-file write error.</source>
         <translation>Asetustiedoston kirjoitusvirhe.</translation>
     </message>
@@ -200,6 +188,30 @@
     <message>
         <source>select filter</source>
         <translation>valitse suodin</translation>
+    </message>
+    <message>
+        <source>reading in matching components</source>
+        <translation>lukee vastaavat merkinnät</translation>
+    </message>
+    <message>
+        <source>leaving out matching components</source>
+        <translation>poistaa vastaavat merkinnät</translation>
+    </message>
+    <message>
+        <source>filter for component</source>
+        <translation>suodatettava merkintä</translation>
+    </message>
+    <message>
+        <source>No iCalendar-file!</source>
+        <translation>Ei iCalendar-tiedostoa!</translation>
+    </message>
+    <message>
+        <source>No filters!</source>
+        <translation>Ei suodattimia!</translation>
+    </message>
+    <message>
+        <source>-- no contents --</source>
+        <translation>-- ei sisältöä --</translation>
     </message>
 </context>
 <context>
@@ -257,32 +269,12 @@
         <translation>iCalendar-tiedoston osoite</translation>
     </message>
     <message>
-        <source>use both reminder types for normal events</source>
-        <translation>käytä molempia muistutuksia tavallisille tapahtumille</translation>
-    </message>
-    <message>
-        <source>use only relative reminder type for normal events</source>
-        <translation>käytä vain suhteellista ajoitusta tavallisten tapahtumien muistutuksille</translation>
-    </message>
-    <message>
         <source>add a relative reminder</source>
         <translation>lisää suhteellinen muistutus</translation>
     </message>
     <message>
         <source>no relative reminders</source>
         <translation>ei suhteellista muistutusta</translation>
-    </message>
-    <message>
-        <source>add a defined time reminder</source>
-        <translation>lisää muistutuksen aika</translation>
-    </message>
-    <message>
-        <source>no defined time reminders</source>
-        <translation>ei määritetyn ajan muistutusta</translation>
-    </message>
-    <message>
-        <source>add a defined time reminder for full day events</source>
-        <translation>lisää muistutuksen aika koko päivän tapahtumiin</translation>
     </message>
     <message>
         <source>set up filter</source>
@@ -299,6 +291,26 @@
     <message>
         <source>File write error.</source>
         <translation>Tiedoston kirjoitusvirhe.</translation>
+    </message>
+    <message>
+        <source>no absolute time reminders</source>
+        <translation>ei kiinteän ajan muistutuksia</translation>
+    </message>
+    <message>
+        <source>adding an absolute time reminder</source>
+        <translation>kiinteän ajan muistutus lisätään</translation>
+    </message>
+    <message>
+        <source>adding an absolute time reminder on full time events</source>
+        <translation>kiinteän ajan muistutus lisätään koko päivän tapahtumiin</translation>
+    </message>
+    <message>
+        <source>adding both reminder types on normal events</source>
+        <translation>molemmat muistutukset lisätään normaaleihin tapahtumiin</translation>
+    </message>
+    <message>
+        <source>adding only relative reminder on normal events</source>
+        <translation>lisää vain suhteellinen muistutus normaaleihin tapahtumiin</translation>
     </message>
 </context>
 <context>
