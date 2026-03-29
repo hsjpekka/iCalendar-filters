@@ -2,6 +2,7 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import Nemo.Notifications 1.0
 import "../components"
+import "../utils/globals.js" as Globals
 
 Page {
     id: page
@@ -9,7 +10,7 @@ Page {
     allowedOrientations: Orientation.All
 
     Component.onCompleted: {
-        readFilters()
+        readCalendars()
 
         if (calendarList.count > 0) {
             iCurrent = 0
@@ -27,14 +28,8 @@ Page {
     property bool settingUp: true
     property string shortLabel: ""
 
-    readonly property var emptyJson: {"calendars": [] }
-    readonly property string version: "1.1.1"
-
-    onICurrentChanged: {
-        if (!settingUp) {
-            updateView()
-        }
-    }
+    readonly property var emptyJson: JSON.parse(Globals.emptyJson)
+    readonly property string version: "1.2.1"
 
     onFiltersChanged: {
         if (!settingUp) {
@@ -42,174 +37,16 @@ Page {
         }
     }
 
+    // page seems to reset the current index of the combobox
+    // some time after page becomes on top, i.e. after
+    // the modify dalendars dialog closes.
     Timer {
-        id: timerChange
+        id: timerSelectLast
         repeat: false
-        interval: 1000
+        interval: 100
         running: false
         onTriggered: {
             calendarSelector.currentIndex = calendarList.count - 1
-        }
-    }
-
-    ListModel {
-        id: calendarList
-        // { calendarLabel: "", alarmAdvance: "120", alarmTime: "18:10", both: "yes" }
-        // advance & time: "" = not set, > 0 = before (previous day), < 0 = after
-
-        // adds or modifies calendar <label>
-        // returns the count if adding, or the index if modifying
-        function addCalendar(label, advance, time, both) {
-            var i;
-            if (label === "" || label === undefined) {
-                return -1;
-            }
-
-            if (advance === undefined) {
-                advance = "";
-            }
-            if (time === undefined) {
-                time = "";
-            }
-            if (both === undefined) {
-                both = "";
-            }
-
-            i = findCalendar(label);
-            if (i >= 0) {
-                setCalendarAdvance(label, advance + "", i);
-                setCalendarTime(label, time, i);
-            } else {
-                calendarList.append({"calendarLabel":label,
-                        "alarmAdvance":advance + "", "alarmTime":time,
-                        "both": both});
-                i = calendarList.count;
-            }
-            return i;
-        }
-
-        function alarmAdvance(label) {
-            var i, result;
-            result = "";
-            i = findCalendar(label);
-            if (i >= 0) {
-                result = calendarList.get(i).alarmAdvance * 1.0;
-            }
-            return result;
-        }
-
-        function alarmTime(label) {
-            var i, result;
-            result = "";
-            i = findCalendar(label);
-            if (i >= 0) {
-                result = calendarList.get(i).alarmTime;
-            }
-            return result;
-        }
-
-        function areBothUsed(label) {
-            var i, result;
-            result = false;
-            i = findCalendar(label);
-            if (i >= 0 && calendarList.get(i).both.toLowerCase() === "yes" ) {
-                result = true;
-            }
-
-            return result;
-        }
-
-        function findCalendar(label) {
-            var i, N;
-            i = 0;
-            N = -1;
-            while(i < calendarList.count) {
-                if (calendarList.get(i).calendarLabel === label) {
-                    N = i;
-                    i = calendarList.count;
-                }
-                i++;
-            }
-            return N;
-        }
-
-        function isAdvanceSet(label) {
-            var i, result;
-            result = false;
-            i = findCalendar(label);
-            if (i >= 0 && calendarList.get(i).alarmAdvance > "") {
-                result = true;
-            }
-            return result;
-        }
-
-        function isTimeSet(label) {
-            var i, result;
-            result = false;
-            i = findCalendar(label);
-            if (i >= 0 && calendarList.get(i).alarmTime > "") {
-                result = true;
-            }
-            return result;
-        }
-
-        function modifyCalendar(currentLabel, newLabel, newUrl) {
-            var i = findCalendar(currentLabel);
-            if (i < 0 || i >= count) {
-                return -1;
-            }
-            set(i, {calendarLabel: newLabel});
-            filtersObj.calendars[iCurrent].label = newLabel;
-            filtersObj.calendars[iCurrent].url = newUrl;
-            return i;
-        }
-
-        function removeCalendar(label) {
-            var i;
-            i = calendarList.findCalendar(label);
-            if (i >= 0) {
-                calendarList.remove(i);
-            }
-            return i;
-        }
-
-        function setBothAlarms(label, both, i) {
-            if (i === undefined || i < 0 || i >= calendarList.count) {
-                i = findCalendar(label);
-            }
-            if (i >= 0) {
-                calendarList.set(i, {"both": both + "" })
-            } else {
-                console.log("set advance error: calendar", label, "not found")
-            }
-
-            return i;
-        }
-
-        function setCalendarAdvance(label, advance, i) {
-            if (i === undefined || i < 0 || i >= calendarList.count) {
-                i = findCalendar(label);
-            }
-            if (i >= 0) {
-                calendarList.set(i, {"alarmAdvance": advance + "" })
-            } else {
-                console.log("set advance error: calendar", label, "not found")
-            }
-
-            return i;
-        }
-
-        function setCalendarTime(label, time, i) {
-            if (i === undefined || i < 0 || i >= calendarList.count) {
-                i = findCalendar(label);
-            }
-            if (i >= 0) {
-                calendarList.set(i, {"alarmTime":time})
-            } else {
-                console.log("set time error: calendar", label, "not found")
-            }
-
-            return i;
         }
     }
 
@@ -222,44 +59,47 @@ Page {
                 text: qsTr("manage calendars")
                 onClicked: {
                     var labelCurrent = calendarSelector.value
-                    var dialog = pageStack.push(Qt.resolvedUrl("NewCalendar.qml"),
-                                                {"calendarLabel": labelCurrent,
-                                                 "url": txtUrl.text
-                                                })
+                    var urlCurrent = iCurrent >= 0? filtersObj.calendars[iCurrent].url : ""
+                    var dialog = pageStack.push(
+                                Qt.resolvedUrl("NewCalendar.qml"),
+                                {   "oldLabel": labelCurrent,
+                                    "oldUrl": urlCurrent,
+                                    "oldFilters": filtersObj
+                                })
                     dialog.accepted.connect( function () {
+                        filtersObj = dialog.newFilters;
                         if (dialog.action === dialog.acCreate) {
-                            newCalendar(dialog.calendarLabel, dialog.url)
+                            newCal(dialog.newLabel, dialog.newUrl);
                         } else if (dialog.action === dialog.acDelete) {
-                            removeCalendar(dialog.calendarLabel)
+                            removeCal(dialog.newLabel);
                         } else {
-                            modifyCalendar(labelCurrent, dialog.calendarLabel, dialog.url)
+                            modifyCal(labelCurrent, dialog.newLabel, dialog.newUrl);
                         }
+                        page.filtersChanged();
                     })
                 }
 
-                function newCalendar(labelNew, urlNew) {
-                    var result = calendarList.addCalendar(labelNew);
-                    addCalendarToJson(labelNew, urlNew);
-                    if (result > 0) {
-                        timerChange.start();
-                    }
-                    page.filtersChanged();
+                function modifyCal(oLbl, nLbl, nUrl) {
+                    calendarList.modifyCalendar(oLbl, nLbl, nUrl);
+                    calendarSelector.setCurrent(nLbl);
                     return;
                 }
 
-                function removeCalendar(labelRemoved) {
-                    remorse.execute(qsTr("Deleting %1").arg(labelRemoved), function () {
-                        calendarSelector.currentIndex = -1;
-                        calendarList.removeCalendar(labelRemoved);
-                        removeCalendarFromJson(labelRemoved);
-                        page.filtersChanged();
-                        txtUrl.text = "";
-                        useBoth.checked = false;
-                        addReminderAdvance.checked = false;
-                        addReminderTime.checked = false;
-                        eventsView.clear();
-                        return;
-                    });
+                function newCal(labelNew, urlNew) {
+                    var result = calendarList.addCalendar(labelNew);
+                    if (result > 0) {
+                        timerSelectLast.start()
+                    }
+                    return;
+                }
+
+                function removeCal(labelRemoved) {
+                    calendarSelector.currentIndex = -1;
+                    calendarList.removeCalendar(labelRemoved);
+                    useBoth.checked = false;
+                    addReminderAdvance.checked = false;
+                    addReminderTime.checked = false;
+                    timerSelectLast.start();
                     return;
                 }
             }
@@ -304,7 +144,7 @@ Page {
                                             "icsFile": eventsView.icsOriginal,
                                             "settingsObj": settingsObj
                                         } )
-                        dialog.closing.connect( function() {
+                        dialog.accepted.connect( function() {
                             if (dialog.filtersModified) {
                                 filtersObj = dialog.newFiltersObj
                                 page.filtersChanged()
@@ -316,10 +156,6 @@ Page {
             }
         }
 
-        RemorsePopup {
-            id: remorse
-        }
-
         Label {
             text: version
             color: Theme.secondaryHighlightColor
@@ -328,7 +164,7 @@ Page {
                 right: parent.right
                 rightMargin: Theme.horizontalPageMargin
             }
-            y: header.y + header.height - height
+            y: column.y + header.y + header.height - height
         }
 
         Column {
@@ -340,6 +176,167 @@ Page {
             PageHeader {
                 id: header
                 title: qsTr("iCalendars")
+            }
+
+            ListModel {
+                id: calendarList
+                // { calendarLabel: "", alarmAdvance: "120", alarmTime: "18:10", both: "yes" }
+                // advance & time: "" = not set, > 0 = before (previous day), < 0 = after
+
+                // adds or modifies calendar <label>
+                // returns the count if adding, or the index if modifying
+                function addCalendar(label, advance, time, both) {
+                    var i;
+                    if (label === "" || label === undefined) {
+                        return -1;
+                    }
+
+                    if (advance === undefined) {
+                        advance = "";
+                    }
+                    if (time === undefined) {
+                        time = "";
+                    }
+                    if (both === undefined) {
+                        both = "";
+                    }
+
+                    i = findCalendar(label);
+                    if (i >= 0) {
+                        setCalendarAdvance(label, advance + "", i);
+                        setCalendarTime(label, time, i);
+                    } else {
+                        calendarList.append({"calendarLabel":label,
+                                "alarmAdvance":advance + "", "alarmTime":time,
+                                "both": both});
+                        i = calendarList.count;
+                    }
+                    return i;
+                }
+
+                function alarmAdvance(label) {
+                    var i, result;
+                    result = "";
+                    i = findCalendar(label);
+                    if (i >= 0) {
+                        result = calendarList.get(i).alarmAdvance * 1.0;
+                    }
+                    return result;
+                }
+
+                function alarmTime(label) {
+                    var i, result;
+                    result = "";
+                    i = findCalendar(label);
+                    if (i >= 0) {
+                        result = calendarList.get(i).alarmTime;
+                    }
+                    return result;
+                }
+
+                function areBothUsed(label) {
+                    var i, result;
+                    result = false;
+                    i = findCalendar(label);
+                    if (i >= 0 && calendarList.get(i).both.toLowerCase() === "yes" ) {
+                        result = true;
+                    }
+
+                    return result;
+                }
+
+                function findCalendar(label) {
+                    var i, N;
+                    i = 0;
+                    N = -1;
+                    while(i < calendarList.count) {
+                        if (calendarList.get(i).calendarLabel === label) {
+                            N = i;
+                            i = calendarList.count;
+                        }
+                        i++;
+                    }
+                    return N;
+                }
+
+                function isAdvanceSet(label) {
+                    var i, result;
+                    result = false;
+                    i = findCalendar(label);
+                    if (i >= 0 && calendarList.get(i).alarmAdvance > "") {
+                        result = true;
+                    }
+                    return result;
+                }
+
+                function isTimeSet(label) {
+                    var i, result;
+                    result = false;
+                    i = findCalendar(label);
+                    if (i >= 0 && calendarList.get(i).alarmTime > "") {
+                        result = true;
+                    }
+                    return result;
+                }
+
+                function modifyCalendar(currentLabel, newLabel, newUrl) {
+                    var i = findCalendar(currentLabel);
+                    if (i < 0 || i >= count) {
+                        return -1;
+                    }
+                    set(i, {calendarLabel: newLabel});
+                    filtersObj.calendars[iCurrent].label = newLabel;
+                    filtersObj.calendars[iCurrent].url = newUrl;
+                    return i;
+                }
+
+                function removeCalendar(label) {
+                    var i;
+                    i = calendarList.findCalendar(label);
+                    if (i >= 0) {
+                        calendarList.remove(i);
+                    }
+                    return i;
+                }
+
+                function setBothAlarms(label, both, i) {
+                    if (i === undefined || i < 0 || i >= calendarList.count) {
+                        i = findCalendar(label);
+                    }
+                    if (i >= 0) {
+                        calendarList.set(i, {"both": both + "" })
+                    } else {
+                        console.log("set advance error: calendar", label, "not found")
+                    }
+
+                    return i;
+                }
+
+                function setCalendarAdvance(label, advance, i) {
+                    if (i === undefined || i < 0 || i >= calendarList.count) {
+                        i = findCalendar(label);
+                    }
+                    if (i >= 0) {
+                        calendarList.set(i, {"alarmAdvance": advance + "" })
+                    } else {
+                        console.log("set advance error: calendar", label, "not found")
+                    }
+
+                    return i;
+                }
+
+                function setCalendarTime(label, time, i) {
+                    if (i === undefined || i < 0 || i >= calendarList.count) {
+                        i = findCalendar(label);
+                    }
+                    if (i >= 0) {
+                        calendarList.set(i, {"alarmTime":time})
+                    } else {
+                        console.log("set time error: calendar", label, "not found")
+                    }
+
+                    return i;
+                }
             }
 
             ComboBox {
@@ -355,30 +352,25 @@ Page {
                         }
                     }
                 }
-                currentIndex: -1
 
+                onCurrentIndexChanged: {
+                    updateView()
+                }
+
+                function setCurrent(lbl) {
+                    var i;
+                    i = calendarList.findCalendar(lbl);
+                    if (i < 0) {
+                        return i;
+                    }
+
+                    currentIndex = i;
+                    return currentIndex;
+                }
             }
 
-            TextField {
-                id: txtUrl
-                width: parent.width
-                placeholderText: qsTr("https://address.of.the/calendar")
-                label: qsTr("address of the iCalendar-file")
-                readOnly: true
-                opacity: readOnly? Theme.opacityOverlay : 1
-                EnterKey.onClicked: {
-                    addCalendarUrl(iCurrent, text)
-                    focus = false
-                }
-                EnterKey.iconSource: "image://theme/icon-m-accept"
-                onPressAndHold: {
-                    readOnly = false
-                }
-                onFocusChanged: {
-                    if (!focus) {
-                        readOnly = true
-                    }
-                }
+            SectionHeader {
+                text: qsTr("alarms")
             }
 
             TextSwitch {
@@ -442,15 +434,12 @@ Page {
                         for (str in strs) {
                             nbr += str + "";
                         }
-                        //console.log(nbr);
 
                         if (strs.length >= 2) {
                             txt = strs[0] + strs[1]
                         } else if (strs.length === 1) {
                             txt = strs[0]
                         }
-                        //if (!isNaN(txt*1.0)) {
-                        //    _editor.text = sign*txt*1.0
                         if (!isNaN(nbr*1.0)) {
                             _editor.text = sign*nbr*1.0
                         } else {
@@ -469,7 +458,6 @@ Page {
                 id: addReminderTime
                 text: checked? ((useBoth.checked && useBoth.visible)? addBoth : addFullTime) :
                                qsTr("no absolute time reminders")
-                //property bool selected: checked
                 onCheckedChanged: {
                     if (!settingUp) {
                         if (checked) {
@@ -550,7 +538,7 @@ Page {
                     }
 
                     xhttp.onerror = function () {
-                        console.log("virhe kalenterin haussa")
+                        console.log("error in fetching", url)
                     }
 
                     xhttp.onreadystatechange = function () {
@@ -622,43 +610,8 @@ Page {
             }
 
         }
-    }
 
-    function addCalendarToJson(newCalendar, calendarUrl) {
-        var k, record;
-        if (!filtersObj.calendars) {
-            filtersObj["calendars"] = [];
-        }
-        record = {"label": newCalendar, "url": calendarUrl };
-        if (addReminderAdvance.checked && reminderAdvance.text > "") {
-            record["reminder"] = reminderAdvance.text*1.0;
-        }
-        if (addReminderTime.checked && reminderTime.text > "") {
-            record["dayreminder"] = reminderTime.text;
-        }
-        if (useBoth.checked) {
-            record["bothReminders"] = "yes";
-        } else {
-            record["bothReminders"] = "no";
-        }
-
-        k = findCalendarIndex(newCalendar);
-        if (k === -1) {
-            filtersObj.calendars.push(record);
-            k = filtersObj.calendars.length;
-        } else {
-            filtersObj.calendars[k] = record;
-        }
-
-        return k;
-    }
-
-    function addCalendarUrl(iCal, url) {
-        filtersObj.calendars[iCal]["url"] = url;
-        filtersChanged();// storeFilters();
-        eventsView.fetchCalendar(url);
-
-        return;
+        VerticalScrollDecorator{}
     }
 
     function findCalendarIndex(label) {
@@ -677,19 +630,6 @@ Page {
             i++;
         }
         return k;
-    }
-
-    function modifyCalendar(currentLabel, newLabel, newUrl) {
-        var ic = findCalendarIndex(currentLabel);
-        if (newLabel > "") {
-            filtersObj.calendars[ic].label = newLabel;
-        }
-        if (newUrl > "") {
-            filtersObj.calendars[ic].url = newUrl;
-        }
-        filtersChanged();
-        updateView();
-        return;
     }
 
     function modifyReminderAdvance() {
@@ -716,8 +656,6 @@ Page {
                 filtersChanged();
             }
         }
-
-        //console.log(modCal["reminder"], filtersObj.calendars[i].reminder);
 
         return i;
     }
@@ -747,8 +685,6 @@ Page {
             }
         }
 
-        //console.log(modCal["dayreminder"], filtersObj.calendars[i].dayreminder);
-
         return i;
     }
 
@@ -759,7 +695,6 @@ Page {
         if (i >= 0) {
             if (useBoth.checked) {
                 filtersObj.calendars[i]["bothReminders"] = "yes";
-                //modifyReminderTime();
             } else {
                 filtersObj.calendars[i]["bothReminders"] = "no";
             }
@@ -769,9 +704,15 @@ Page {
         return i;
     }
 
-    function readFilters() {
+    function readCalendars() {
         // return -1 = no filters-file, 0 = no json-file, >0 = calendars
         var filtersFile, i, cal, adv, time, d=[];
+        if (!filtersObj.calendars) {
+            console.log("<-------->");
+            console.log("tyhjä suodatintiedosto");
+            console.log("<-------->");
+            filtersObj = emptyJson;
+        }
 
         i = 0;
         while (i < filtersObj.calendars.length) {
@@ -782,24 +723,6 @@ Page {
         }
 
         return filtersObj.calendars.length;
-    }
-
-    function removeCalendarFromJson(label) {
-        var i, k, djson;
-        i = findCalendarIndex(label);
-        console.log("removing nro", i, "calendar", label)
-        if (i >= 0) {
-            djson = JSON.parse(JSON.stringify(emptyJson));
-            k = 0;
-            while (k < filtersObj.calendars.length) {
-                if (k !== i) {
-                    djson.calendars.push(filtersObj.calendars[k]);
-                }
-                k++;
-            }
-            filtersObj = JSON.parse(JSON.stringify(djson));
-        }
-        return;
     }
 
     function updateView() {
@@ -838,14 +761,11 @@ Page {
 
             eventsView.clear();
             if (cal.url > "") {
-                txtUrl.text = cal.url;
-                txtUrl.readOnly = true;
                 eventsView.setFilterType(cal);
                 eventsView.fetchCalendar(cal.url);
-            } else {
-                txtUrl.text = "";
-                txtUrl.readOnly = false;
             }
+        } else {
+            eventsView.clear();
         }
 
         return;

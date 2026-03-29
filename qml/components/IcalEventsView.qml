@@ -214,8 +214,6 @@ SilicaListView{
         }
     }
 
-    VerticalScrollDecorator{}
-
     function clear() {
         icsOriginal = ""
         icsModified = ""

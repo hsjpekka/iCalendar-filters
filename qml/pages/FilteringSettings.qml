@@ -1,7 +1,6 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import "../components"
-import "../utils/globals.js" as Globals
 
 /*
  *     "filters": [ // only one item per component type - uses only one if multiple found
@@ -25,44 +24,32 @@ import "../utils/globals.js" as Globals
 Dialog {
     id: page
     Component.onCompleted: {
-        console.log("isoin", Theme.opacityOverlay, "suuri", Theme.opacityHigh, "pieni", Theme.opacityLow, "olematon", Theme.opacityFaint)
-        console.log(JSON.stringify(settingsObj))
         if (settingsObj && settingsObj.filteringProperties) {
-            filterProps = settingsObj.filteringProperties
-            //var i=0, cArr
-            //cArr = filterProps.keys()
-            //while (i < cArr.length) {
-            //    cmpList.addComponent(cArr[i])
-            //    i++
-            //}
-
             var i
+            filterProps = settingsObj.filteringProperties
             for (i in filterProps) {
                 cmpList.addComponent(i)
             }
-            //settingUp = false
             newFilterProps = filterProps
             cmpView.currentIndex = 0
-        } else {
-            console.log("miksei asetuksia")
-            console.log(JSON.stringify(settingsObj))
         }
     }
-    onAccepted: {
-        if (JSON.stringify(filterProps) === JSON.stringify(newFilterProps)) {
-            isModified = false
-        } else {
-            isModified = true
-        }
+    onDone: {
+        if (result === DialogResult.Accepted) {
+            if (JSON.stringify(filterProps) === JSON.stringify(newFilterProps) ) {
+                isModified = false
+            } else {
+                isModified = true
+            }
 
-        settingsObj.filteringProperties = newFilterProps
+            settingsObj.filteringProperties = newFilterProps
+        }
     }
 
-    property var filterProps//: Globals.settingsObj.filteringProperties
+    property var filterProps
     //  { "vevent": ["dtstart", "summary", "categories"],
     //    "vtodo": [-"-], "vfreetime": [-"-], "vjournal": [-"-]
     //  }
-    //property bool settingUp: true
     property bool isModified: false
     property var newFilterProps
     property var settingsObj
@@ -276,7 +263,6 @@ Dialog {
                 function addCmpProps(cmp, defs) {
                     var pArr, i = 0;
                     clear();
-                    console.log(cmp)
                     pArr = newFilterProps[cmp];
                     if (pArr && pArr.length > 0) {
                         while(i < pArr.length) {
@@ -381,12 +367,6 @@ Dialog {
                                     composeFilteringProps()
                                 }
                             }
-                            //MenuItem {
-                            //    text: qsTr("modify")
-                            //    onClicked: {
-                            //        prpList.set(index, txtProperty.text)
-                            //    }
-                            //}
                         }
                         onClicked: {
                             prpView.currentIndex = index
@@ -431,7 +411,6 @@ Dialog {
                 id: cbPrpAction
                 label: qsTr("modify") + " | " + qsTr("add")
                 opacity: txtProperty.text > ""? 1 : 0.5*(Theme.opacityHigh + Theme.opacityOverlay)
-                //enabled: txtProperty.text > ""
                 x: Theme.horizontalPageMargin
                 width: parent.width - 2*x
                 menu: ContextMenu {
@@ -453,7 +432,6 @@ Dialog {
                         onClicked: {
                             prpList.setProperty(prpView.currentIndex, txtProperty.text)
                             txtProperty.text = ""
-                            //prpView.currentIndex = -1
                             cbPrpAction.currentIndex = -1
                             cbPrpAction.value = ""
                             composeFilteringProps()
@@ -531,7 +509,6 @@ Dialog {
             }
             ic++;
         }
-        console.log(JSON.stringify(newFilterProps), "  >>>  ", JSON.stringify(fProps))
         newFilterProps = fProps;
 
         return;

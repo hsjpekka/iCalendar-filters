@@ -4,13 +4,14 @@ import Nemo.Notifications 1.0
 import "../components"
 import "../utils/globals.js" as Globals
 
-Page {
+Dialog {
     id: page
 
     allowedOrientations: Orientation.All
 
     Component.onCompleted: {
         readComponentList()
+        cmpProperties.setDefaults()
         readPropertyList()
         calendarLbl = filtersObj.calendars[calId].label
         calendarUrl = filtersObj.calendars[calId].url
@@ -18,33 +19,35 @@ Page {
         settingUp = false
         readCalendarFilters()
     }
-    Component.onDestruction: {
-        composeFilter()
-        if (JSON.stringify(newFiltersObj) === JSON.stringify(oldFiltersObj)) {
-            filtersModified = false
-        } else {
-            filtersModified = true
+
+    onDone: {
+        if (result === DialogResult.Accepted) {
+            composeFilter()
+            if (JSON.stringify(newFiltersObj) === JSON.stringify(oldFiltersObj)) {
+                filtersModified = false
+            } else {
+                filtersModified = true
+            }
         }
-        console.log("filtersModified = ", filtersModified)
-
-        closing()
     }
-
-    signal closing()
 
     property string calendarLbl: ""//calendarName.text
     property string calendarUrl: ""
     property int calId
     property bool filtersModified: false
     property string icsFile: ""
-    property var newFiltersObj: {"calendars": [] }
-    property var oldFiltersObj: {"calendars": [] }
-    property string reminderFullDay: ""
-    property string reminderMinutes: ""
+    property var newFiltersObj: emptyJson
+    property var oldFiltersObj: emptyJson
     property var settingsObj
     property bool settingUp: true
 
     readonly property bool isAccept: true
+    readonly property var emptyJson: JSON.parse(Globals.emptyJson)
+    readonly property var emptyCalendar: JSON.parse(Globals.emptyCalendar)
+    readonly property var emptyComponent: {"component": "", "properties": []}
+    readonly property var emptyProperty: {"property": "", "values": []}
+    readonly property var emptyCriteria: {"criteria": "", "value": ""}
+
 
     Notification {
         id: nPopUp
@@ -58,14 +61,11 @@ Page {
             MenuItem {
                 text: qsTr("modify filter settings")
                 onClicked: {
-                    //console.log(JSON.stringify(settingsObj))
                     var dialog = pageStack.push(Qt.resolvedUrl("FilteringSettings.qml"), {
                                                     "settingsObj": settingsObj
                                                 } )
                     dialog.accepted.connect( function() {
                         var result
-                        //console.log(JSON.stringify(page.settingsObj))
-                        //console.log(JSON.stringify(dialog.settingsObj))
                         if (dialog.isModified) {
                             page.settingsObj = JSON.parse(JSON.stringify(dialog.settingsObj))
                             readComponentList()
@@ -86,11 +86,13 @@ Page {
             }
 
             MenuItem {
-                text: qsTr("reset")
+                text: qsTr("show files")
                 onClicked: {
-                    filterModel.clear()
-                    newFiltersObj = JSON.parse(JSON.stringify(oldFiltersObj))
-                    readCalendarFilters()
+                    pageStack.push(Qt.resolvedUrl("FileContents.qml"), {
+                                                    "filtersObj": newFiltersObj,
+                                                    "calendarLbl": calendarLbl,
+                                                    "origIcsFile": icsFile
+                                                } )
                 }
             }
 
@@ -100,7 +102,7 @@ Page {
                     var dialog = pageStack.push(Qt.resolvedUrl("FilterTest.qml"), {
                                 "jsonFilters": newFiltersObj,
                                 "calendar": calendarLbl,
-                                "icsFile": icsFile
+                                "origIcsFile": icsFile
                             } )
                 }
             }
@@ -111,7 +113,7 @@ Page {
             width: parent.width
             spacing: 0//Theme.paddingSmall
 
-            PageHeader {
+            DialogHeader {
                 id: header
                 title: qsTr("filters for %1").arg(calendarLbl)
             }
@@ -255,7 +257,6 @@ Page {
 
                 function setValue(str) {
                     currentIndex = calendarComponents.getIndex(str);
-                    //value = calendarComponents.get(currentIndex).icalComponent
                     return currentIndex;
                 }
             }
@@ -304,15 +305,21 @@ Page {
                 }
             }
 
+            Item {
+                height: Theme.paddingMedium
+            }
+
             ListModel {
                 id: cmpProperties
+
+                property var defaultItems: ["dtstart", "summary", "categories"]
                 /*
                 // class / created / description / geo / last-mod / location / organizer / priority /
                 // seq / status / summary / transp / url / recurid /dtend / duration /
                 // attach / attendee / categories / comment / contact / exdate / rstatus / related /
                 // resources / rdate / x-prop / iana-prop
                 */
-                ListElement {
+                /*ListElement {
                     prop: "categories"
                 }
                 ListElement {
@@ -321,6 +328,7 @@ Page {
                 ListElement {
                     prop: "summary"
                 }
+                //*/
 
                 function addProperty(prop) {
                     return append({"prop": prop});
@@ -351,11 +359,25 @@ Page {
                 }
 
                 function setDefaults() {
+                    var i;
                     cmpProperties.clear();
-                    addProperty("categories");
-                    addProperty("dtstart");
-                    addProperty("summary");
+                    i = 0;
+                    while (i < defaultItems.length) {
+                        addProperty(defaultItems[i]);
+                        i++;
+                    }
                     return;
+                }
+
+                function getPropertyList() {
+                    var i, propList;
+                    propList = [];
+                    i = 0;
+                    while (i < count) {
+                        propList[i] = get(i).prop;
+                        i++;
+                    }
+                    return propList;
                 }
             }
 
@@ -369,11 +391,6 @@ Page {
                         MenuItem {
                             text: prop
                         }
-                    }
-                }
-                onCurrentIndexChanged: {
-                    if (!settingUp && currentIndex >= 0) {
-                        cbPropertyType.setDefaultValue()
                     }
                 }
 
@@ -401,331 +418,50 @@ Page {
                 }
             }
 
-            ComboBox {
-                id: cbPropertyType
-                label: qsTr("type of property")
-                menu: ContextMenu {
-                    MenuItem {
-                        text: qsTr("string")
-                        onClicked: {
-                            cbPropertyType.ptype = cbPropertyType.pstring
-                        }
-                    }
-                    MenuItem {
-                        text: qsTr("date")
-                        onClicked: {
-                            cbPropertyType.ptype = cbPropertyType.pdate
-                        }
-                    }
-                    MenuItem {
-                        text: qsTr("time")
-                        onClicked: {
-                            cbPropertyType.ptype = cbPropertyType.ptime
-                        }
-                    }
-                    MenuItem {
-                        text: qsTr("number")
-                        onClicked: {
-                            cbPropertyType.ptype = cbPropertyType.pnumber
-                        }
-                    }
-                }
-
-                property int ptype: pstring
-                readonly property int pstring: 1
-                readonly property int pdate: 2
-                readonly property int ptime: 3
-                readonly property int pnumber: 4
-                onPtypeChanged: {
-                    filterValueTF.text = ""
-                    if (ptype === pstring) {
-                        cbFilteringCriteria.setValue("s")
-                    } else if (ptype === pdate || ptype === ptime) {
-                        cbFilteringCriteria.setValue(">=")
-                    } else if (ptype === pnumber) {
-                        cbFilteringCriteria.setValue("=")
-                    }
-                }
-
-                function getIndex(nro) {
-                    var result;
-                    result = -1;
-                    if (nro === pstring) {
-                        result = pstring - 1;
-                    } else if (nro === pdate) {
-                        result = pdate - 1;
-                    } else if (nro === ptime) {
-                        result = ptime - 1;
-                    } else if (nro === pnumber){
-                        result = pnumber - 1;
-                    }
-
-                    return result;
-                }
-
-                function pTypeToString(typeNr) {
-                    var result;
-                    if (typeNr === pstring) {
-                        result = "string";
-                    } else if (typeNr === pdate) {
-                        result = "date";
-                    } else if (typeNr === ptime) {
-                        result = "time";
-                    } else if (typeNr === pnumber) {
-                        result = "number";
-                    }
-
-                    return result;
-                }
-
-                function setDefaultValue() {
-                    console.log("cbFilteringProperty.value = ", cbFilteringProperty.value);
-                    if (cbFilteringProperty.value === "dtstart") {
-                        setValue(ptime)
-                    } else {
-                        setValue(pstring)
-                    }
-                    return;
-                }
-
-                function setValue(str) {
-                    var result;
-                    result = -1;
-                    if (str === undefined) {
-                        str = "string";
-                    }
-                    if (typeof str === typeof "aa") {
-                        if (str.toLowerCase() === "string") {
-                            result = pstring - 1;
-                            ptype = pstring;
-                        } else if (str.toLowerCase() === "date") {
-                            result = pdate - 1;
-                            ptype = pdate;
-                        } else if (str.toLowerCase() === "time") {
-                            result = ptime - 1;
-                            ptype = ptime;
-                        } else if (str.toLowerCase() === "number"){
-                            result = pnumber - 1;
-                            ptype = pnumber;
-                        }
-                    } else {
-                        result = getIndex(str);
-                        ptype = result + 1;
-                    }
-
-                    currentIndex = result;
-
-                    return result;
-                }
-            }
-
-            ListModel {
-                id: criteriaStrings
-                ListElement {
-                    description: qsTr("equal to")
-                    comparison: "="
-                }
-                ListElement {
-                    description: qsTr("not equal to")
-                    comparison: "!="
-                }
-                ListElement {
-                    description: qsTr("contains")
-                    comparison: "s"
-                }
-                ListElement {
-                    description: qsTr("doesn't contain")
-                    comparison: "!s"
-                }
-
-                function getIndex(str) {
-                    var i, N;
-                    N = -1;
-                    i = 0;
-                    while (i < criteriaStrings.count && str !== undefined) {
-                        if (criteriaStrings.get(i).comparison === str) {
-                            N = i;
-                            i = criteriaStrings.count;
-                        }
-                        i++;
-                    }
-                    return N;
-                }
-            }
-
-            ListModel {
-                id: criteriaTime
-                ListElement {
-                    description: qsTr("equal to")
-                    comparison: "="
-                }
-                ListElement {
-                    description: qsTr("not equal to")
-                    comparison: "!="
-                }
-                ListElement {
-                    description: qsTr("earliest at")
-                    comparison: ">="
-                }
-                ListElement {
-                    description: qsTr("latest at")
-                    comparison: "<="
-                }
-
-                function getIndex(str) {
-                    var i, N;
-                    N = -1;
-                    i = 0;
-                    while (i < criteriaTime.count && str !== undefined) {
-                        if (criteriaTime.get(i).comparison === str) {
-                            N = i;
-                            i = criteriaTime.count;
-                        }
-                        i++;
-                    }
-                    return N;
-                }
-            }
-
-            ListModel {
-                id: criteriaNumber
-                ListElement {
-                    description: qsTr("equal to")
-                    comparison: "="
-                }
-                ListElement {
-                    description: qsTr("not equal to")
-                    comparison: "!="
-                }
-                ListElement {
-                    description: qsTr("larger than or equal to")
-                    comparison: ">="
-                }
-                ListElement {
-                    description: qsTr("smaller than or equal to")
-                    comparison: "<="
-                }
-
-                function getIndex(str) {
-                    var i, N;
-                    N = -1;
-                    i = 0;
-                    while (i < criteriaNumber.count && str !== undefined) {
-                        if (criteriaNumber.get(i).comparison === str) {
-                            N = i;
-                            i = criteriaNumber.count;
-                        }
-                        i++;
-                    }
-                    return N;
-                }
-            }
-
-            ComboBox {
-                id: cbFilteringCriteria
-                enabled: cbPropertyType.ptype >= 0
-                label: qsTr("criteria")
-                menu: ContextMenu {
-                    id: criteriaMenu3
-                    Repeater {
-                        model: cbPropertyType.ptype == cbPropertyType.pstring? criteriaStrings :
-                                    (cbPropertyType.ptype == cbPropertyType.pnumber?
-                                         criteriaNumber : criteriaTime)
-                        MenuItem {
-                            text: description
-                            onClicked: {
-                                cbFilteringCriteria.setValue(comparison)
-                            }
-                        }
-                    }
-                }
-
-                function selectedComparison() {
-                    var result;
-                    if (currentIndex >= 0) {
-                        if (cbPropertyType.ptype == cbPropertyType.pnumber) {
-                            result = criteriaNumber.get(currentIndex).comparison
-                        } else if (cbPropertyType.ptype == cbPropertyType.pstring) {
-                            result = criteriaStrings.get(currentIndex).comparison
-                        } else if (cbPropertyType.ptype == cbPropertyType.ptime ||
-                                   cbPropertyType.ptype == cbPropertyType.pdate) {
-                            result = criteriaTime.get(currentIndex).comparison
-                        }
-                    }
-                    return result;
-                }
-
-                function setValue(str) {
-                    var result, tp = "";
-                    result = -1;
-                    if (cbPropertyType.ptype === cbPropertyType.pstring) {
-                        result = criteriaStrings.getIndex(str);
-                    } else if (cbPropertyType.ptype === cbPropertyType.ptime ||
-                               cbPropertyType.ptype === cbPropertyType.pdate) {
-                        result = criteriaTime.getIndex(str);
-                    } else if (cbPropertyType.ptype === cbPropertyType.pnumber) {
-                        result = criteriaNumber.getIndex(str);
-                    }
-                    currentIndex = result;
-                    return result;
-                }
-            }
-
-            TextField {
-                id: filterValueTF
-                label: cbPropertyType.pdate == cbPropertyType.ptype? "dd.mm. || mm/dd"
-                            : cbPropertyType.ptime == cbPropertyType.ptype? "hh:mm"
-                            : qsTr("value")
-                placeholderText: qsTr("set filtering value")
-                width: parent.width
-                EnterKey.iconSource: filterModel.count == 0? "image://theme/icon-m-enter-accept" : "image://theme/icon-m-enter-next"
-                EnterKey.onClicked: {
-                    focus = false
-                    if (filterModel.count == 0) {
-                        addFilter()
-                        composeFilter()
-                    }
-                }
-
-                hideLabelOnEmptyField: false
-            }
-
-            ComboBox {
-                id: cbAction
-                label: qsTr("modify") + " | " + qsTr("add")
-                menu: ContextMenu {
-                    MenuItem {
-                        text: listViewFilters.currentIndex >= 0? qsTr("modify") : qsTr("select filter")
-                        enabled: listViewFilters.currentIndex >= 0 && filterValueTF.text > ""
-                        onClicked: {
-                            addFilter(listViewFilters.currentIndex)
-                            composeFilter()
-                            cbAction.currentIndex = -1
-                            cbAction.value = ""
-                        }
-                    }
-                    MenuItem {
-                        text: qsTr("add")
-                        enabled: filterValueTF.text > ""
-                        onClicked: {
-                            addFilter()
-                            composeFilter()
-                            cbAction.currentIndex = -1
-                            cbAction.value = ""
-                            listViewFilters.currentIndex = -1
-                        }
-                    }
-                }
-
-                Component.onCompleted: {
-                    currentIndex = -1
-                    value = ""
-                }
-            }
-
             SectionHeader{
                 id: shFilters
                 text: qsTr("filters")
+            }
+
+            TextSwitch {
+                id: tsShowOnlyCurrent
+                text: qsTr("only %1.%2-filters").arg(cbFilterComponent.value).arg(cbFilteringProperty.value)
+            }
+
+            Item {
+                width: parent.width
+                height: Theme.paddingLarge
+            }
+
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: parent.width - 3*Theme.horizontalPageMargin
+                text: qsTr("Create a filter")
+                onClicked: {
+                    var dialog = pageStack.push(
+                                Qt.resolvedUrl("PropertyFilter.qml"),
+                                {   "isAdd": true,
+                                    "filteredCmp": cbFilterComponent.value,
+                                    "filteringProp": cbFilteringProperty.value,
+                                    "propertyList": cmpProperties.getPropertyList()
+                                })
+                    dialog.accepted.connect( function () {
+                        var percnt;
+                        percnt = allOrAnyProperty.checked? 1 : 0
+                        filterModel.addFilter(cbFilterComponent.value,
+                                              dialog.filteringProp,
+                                              dialog.propertyType,
+                                              percnt, dialog.criteria,
+                                              dialog.filterValue);
+                        composeFilter();
+                    })
+
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: Theme.paddingMedium
             }
 
             ListModel {
@@ -733,12 +469,7 @@ Page {
                 //{"icsComponent", "icsProperty", "icsPropType",
                 //"icsValMatches", "icsCriteria", "icsValue"}
 
-                function addFilter(comp, prop, propType,//, reject, propMatches, prop, propType,
-                                   valMatches, crit, val) {
-                    //console.log("component", comp, "property", prop,
-                    //            "type", propType, "valueMatches",
-                    //            valMatches, "compare", crit,
-                    //            "value", val)
+                function addFilter(comp, prop, propType, valMatches, crit, val) {
                     checkPropertyChanges(comp, prop, valMatches);
                     if (comp === undefined || prop === undefined ||
                             crit === undefined || val === undefined ) {
@@ -772,8 +503,8 @@ Page {
                     return;
                 }
 
-                function modifyFilter(i, comp, prop, //reject, propMatches, prop,
-                                      propType, valMatches, crit, val) {
+                function modifyFilter(i, comp, prop, propType, valMatches,
+                                      crit, val) {
                     checkPropertyChanges(comp, prop, valMatches);
                     if (i >= 0 && i < count) {
                         set(i, {"icsComponent": comp,
@@ -792,10 +523,11 @@ Page {
                 id: listViewFilters
                 x: Theme.horizontalPageMargin
                 width: parent.width - 2*x
-                height: count > 3 ? 4*Theme.itemSizeSmall : count > 1?
-                                        count*Theme.itemSizeSmall : 2*Theme.itemSizeSmall
-                spacing: 0// Theme.paddingSmall
-                clip: false//
+                height: count < 2 ? 2*Theme.itemSizeSmall :
+                                    count*Theme.itemSizeSmall +
+                                    (count-1)*spacing + extraSpace
+                spacing: Theme.paddingSmall
+                clip: false
 
                 model: filterModel
                 delegate: filterDelegate
@@ -811,32 +543,45 @@ Page {
                 highlightFollowsCurrentItem: true
 
                 property int lastClicked: -1
+                property int extraSpace: 0
 
                 Component {
                     id: filterDelegate
                     ListItem {
-                        contentHeight: Theme.itemSizeSmall
+                        id: filterListItem
+                        enabled: delegateLabel.visible
+                        contentHeight: delegateLabel.visible?
+                                           Theme.itemSizeSmall : 0
                         menu: ContextMenu {
+                            onActiveChanged: {
+                                if (active) {
+                                    listViewFilters.extraSpace = 2*Theme.itemSizeSmall
+                                } else {
+                                    listViewFilters.extraSpace = 0
+                                }
+                            }
+
+                            MenuItem {
+                                text: qsTr("modify")
+                                onClicked: {
+                                    filterListItem.modifySelected()
+                                }
+
+                            }
+
                             MenuItem {
                                 text: qsTr("delete")
                                 onClicked: {
-                                    filterModel.remove(index)
-                                    listViewFilters.currentIndex = -1
-                                    page.composeFilter()
+                                    filterListItem.remorseDelete(function () {
+                                        filterModel.remove(index)
+                                        listViewFilters.currentIndex = -1
+                                        page.composeFilter()
+                                    } )
                                 }
                             }
                         }
                         onClicked: {
                             // click to select and unselect the item
-                            settingUp = true
-                            //console.log(icsComponent, icsProperty, icsPropType, index, listViewFilters.currentIndex)
-                            cbFilterComponent.setValue(icsComponent) //currentIndex = calendarComponents.getIndex(icsComponent)
-                            cbFilteringProperty.setValue(icsProperty) //cbFilteringProperty.currentIndex = eventProperties.getIndex(icsProperty)
-                            cbPropertyType.setValue(icsPropType)
-                            allOrAnyValue.setValue(icsValMatches) //allOrAnyValue.checked = icsValMatches > 0.5
-                            cbFilteringCriteria.setValue(icsCriteria)//cbFilteringCriteria.selectedComparison = icsCriteria
-                            filterValueTF.text = icsValue
-                            settingUp = false
                             if (listViewFilters.currentIndex === index) {
                                 listViewFilters.currentIndex = -1
                             } else {
@@ -845,50 +590,44 @@ Page {
                         }
 
                         Label {
+                            id: delegateLabel
                             anchors.centerIn: parent
                             text: icsComponent + "." + icsProperty + " " +
                                   icsCriteria + " " + icsValue
                             color: Theme.secondaryColor
+                            visible: tsShowOnlyCurrent.checked && !isCmpProp?
+                                         0 : Theme.itemSizeSmall
+                        }
+
+                        property bool isCmpProp: icsComponent === cbFilterComponent.value && icsProperty === cbFilteringProperty.value
+
+                        function modifySelected() {
+                            var dialog = pageStack.push(
+                                        Qt.resolvedUrl("PropertyFilter.qml"),
+                                        {   "isAdd": false,
+                                            "filteredCmp": cbFilterComponent.value,
+                                            "filteringProp": cbFilteringProperty.value,
+                                            "propertyType": icsPropType,
+                                            "filterValue": icsValue,
+                                            "criteria": icsCriteria,
+                                            "propertyList": cmpProperties.getPropertyList()
+                                        });
+                                dialog.accepted.connect( function () {
+                                    var percnt;
+                                    percnt = allOrAnyProperty.checked? 1 : 0;
+                                    filterModel.modifyFilter(
+                                                index, cbFilterComponent.value,
+                                                dialog.filteringProp,
+                                                dialog.propertyType,
+                                                percnt, dialog.criteria,
+                                                dialog.filterValue);
+                                    composeFilter();
+                                    return;
+                                });
+                            return;
                         }
                     }
                 }
-            }
-
-            SectionHeader{
-                text: viewFiltersFile.iContent === 0 ? h1
-                      : (viewFiltersFile.iContent === 1 ? h2 : h3)
-                textFormat: Text.StyledText
-
-                property string txt1: qsTr("original")
-                property string txt2: qsTr("filter")
-                property string txt3: qsTr("modified")
-                property string h1: "<b>" + txt1 + "</b> &nbsp; | &nbsp; <i>" + txt2 + "</i> &nbsp; | &nbsp; <i>" + txt3 + "</i>"
-                property string h2: "<i>" + txt1 + "</i> &nbsp; | &nbsp; <b>" + txt2 + "</b> &nbsp; | &nbsp; <i>" + txt3 + "</i>"
-                property string h3: "<i>" + txt1 + "</i> &nbsp; | &nbsp; <i>" + txt2 + "</i> &nbsp; | &nbsp; <b>" + txt3 + "</b>"
-            }
-
-            TextArea {
-                id: viewFiltersFile
-                width: parent.width
-                font.pixelSize: Theme.fontSizeMedium
-                readOnly: true
-                text: icsFile
-                placeholderText: noContent
-                onClicked: {
-                    iContent++
-                    if (iContent === 0) {
-                        text = icsFile
-                    } else if (iContent === 1){
-                        composeFilter()
-                        text = JSON.stringify(newFiltersObj, null, 2)
-                    } else {
-                        text = icsFilter.filterIcs(calendarLbl, icsFile, JSON.stringify(newFiltersObj))
-                        iContent = -1
-                    }
-                }
-
-                property int iContent: 0
-                property string noContent: iContent === 0 ? qsTr("No iCalendar-file!") : (iContent === 1 ? qsTr("No filters!"): qsTr("-- no contents --"))
             }
 
             VerticalScrollDecorator {}
@@ -897,32 +636,20 @@ Page {
     }
 
     // adds propertydata to the list
-    function addFilter(filterNr) { // if filterNr >= 0, modifies a filter
+    function addFilter(filterNr, cmp, prop, type, percnt, crit, value) {
+        // if filterNr >= 0, modifies filter filterNr, else adds a filter
+        // 0 <= percnt <= 100, 0 == one hit is enough
         var action, propMatches, valMatches, vcomponent;
 
-        if (filterValueTF.text === "") {
+        if (value === "") {
             return;
         }
 
-        if (allOrAnyValue.checked) {
-            valMatches = 100;
-        } else {
-            valMatches = 0.0;
-        }
-
-        vcomponent = cbFilterComponent.value;
-
-        if (filterNr >= 0) {
-            filterModel.modifyFilter(filterNr, vcomponent, //action, propMatches,
-                                  cbFilteringProperty.value, cbPropertyType.pTypeToString(cbPropertyType.ptype),
-                                  valMatches, cbFilteringCriteria.selectedComparison(),
-                                  filterValueTF.text);
-        } else {
-            filterModel.addFilter(vcomponent, //action, propMatches,
-                                  cbFilteringProperty.value, cbPropertyType.pTypeToString(cbPropertyType.ptype),
-                                  valMatches, cbFilteringCriteria.selectedComparison(),
-                                  filterValueTF.text);
+        if (filterNr < 0) {
+            filterModel.addFilter(cmp, prop, type, percnt, crit, value);
             listViewFilters.currentIndex = filterModel.count - 1;
+        } else if (filterNr < filterModel.count) {
+            filterModel.modifyFilter(filterNr, cmp, prop, type, percnt, crit, value);
         }
 
         return;
@@ -936,27 +663,6 @@ Page {
         cmponent = {"component": "", "properties": []};
         prop = {"property": "", "values": []};
         crtr = {"criteria": "", "value": ""};
-
-        /*
-        cals = newFiltersObj.calendars;
-        // search the filter for the current calendar
-        nc = newFiltersObj.calendars.length;
-        n = 0;
-        while (n < nc) {
-            if (newFiltersObj.calendars[n].label > "" && calendarLbl.toLocaleLowerCase().match(cals[n].label.toLocaleLowerCase())) {
-                //calN = cals[n];
-                nc = n;
-                n = cals.length;
-            }
-            n++;
-        }
-
-        if (n < nc) {
-            calN = cals[nc];
-        } else {
-            console.log("calendar", calendarLbl, "not found")
-        }
-        //*/
 
         //make a new json-object containing the filters for the current component
         flters = [];
@@ -1018,24 +724,7 @@ Page {
         }
 
         newFiltersObj.calendars[calId]["filters"] = flters;
-        //calN["filters"] = flters;
 
-        /*
-        if (nc < cals.length) {
-            if (cals[nc].url > "") {
-                calN["url"] = cals[nc].url;
-            }
-
-            cals[nc] = calN;
-        } else {
-            cals.push(calN);
-        }
-        //*/
-
-        //newFilters.calendars = cals;
-        //if (viewFiltersFile.iContent === -1) {
-        //    viewFiltersFile.text = JSON.stringify(newFilters, null, 2);
-        //}
         return;
     }
 
@@ -1190,12 +879,11 @@ Page {
             if (i === cmp) {
                 nr = 0;
                 pArr = settingsObj.filteringProperties[i];
-                console.log(cmp, ":", pArr);
+                //console.log(cmp, ":", pArr);
                 if (Array.isArray(pArr)) {
                     cmpProperties.clear();
                     j = 0;
                     while (j < pArr.length) {
-                        //console.log("addProperty", j, pArr[j])
                         cmpProperties.addProperty(pArr[j]);
                         nr++;
                         j++;
@@ -1213,9 +901,6 @@ Page {
     function setUpFields(filters) {
         var fltr0, prop0;
         if (filters === undefined) {
-            cbFilteringCriteria.currentIndex = 0
-            //cbFilteringCriteria.selectedComparison = criteriaStrings.get(cbFilteringCriteria.currentIndex).comparison
-            cbPropertyType.setValue(cbPropertyType.pstring)
             cbFilterComponent.currentIndex = 0
             cbFilteringProperty.currentIndex = 0
         } else if (filters[0] && filters[0].component) {
@@ -1226,10 +911,7 @@ Page {
             readFilters(filters);
             prop0 = fltr0.properties[0];
             cbFilteringProperty.setValue(prop0.property);
-            cbPropertyType.setValue(prop0.type);
             allOrAnyValue.setValue(prop0.valueMatches);
-            cbFilteringCriteria.setValue(prop0.values[0].criteria);
-            filterValueTF.text = prop0.values[0].value;
         } else {
             setUpFields();
         }

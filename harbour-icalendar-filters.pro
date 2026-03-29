@@ -27,6 +27,7 @@ DISTFILES += \
     harbour-icalendar-filters.desktop \
     qml/cover/CoverPage.qml \
     qml/harbour-icalendar-filters.qml \
+    qml/pages/PropertyFilter.qml \
     qml/pages/FilterTest.qml \
     qml/pages/Filters.qml \
     qml/pages/FirstPage.qml \

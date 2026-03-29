@@ -2,6 +2,37 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
+    <name>FileContents</name>
+    <message>
+        <source>%1-files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>original</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>modified</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No iCalendar-file!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No filters!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-- no contents --</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>FilterTest</name>
     <message>
         <source>%1, testing filter</source>
@@ -62,10 +93,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>reset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>test</source>
         <translation type="unfinished"></translation>
     </message>
@@ -82,107 +109,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>add</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>set filtering value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>filtering property</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>type of property</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>string</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>time</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>number</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>all criteria have to match</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>a single matching criteria is enough</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>equal to</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>not equal to</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>contains</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>doesn&apos;t contain</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>earliest at</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>latest at</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>larger than or equal to</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>smaller than or equal to</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>criteria</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>original</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>filter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>modified</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Config-file write error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>modify filter settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>select filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -202,15 +133,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No iCalendar-file!</source>
+        <source>filtering property</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No filters!</source>
+        <source>all criteria have to match</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>-- no contents --</source>
+        <source>a single matching criteria is enough</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create a filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>show files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>only %1.%2-filters</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -257,14 +200,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>https://address.of.the/calendar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>address of the iCalendar-file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>add a relative reminder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -289,10 +224,6 @@
         <translation>Tiedoston kirjoitusvirhe.</translation>
     </message>
     <message>
-        <source>Deleting %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>no absolute time reminders</source>
         <translation type="unfinished"></translation>
     </message>
@@ -312,31 +243,19 @@
         <source>adding only relative reminder on normal events</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>alarms</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewCalendar</name>
-    <message>
-        <source>calendar label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>write exactly as in Jolla Calendar</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Create calendar entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Delete calendar entry?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>https://address.of.the/calendar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>address of the iCalendar-file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -360,6 +279,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>calendar label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>write exactly as in Jolla Calendar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>remote server</source>
         <translation type="unfinished"></translation>
     </message>
@@ -369,6 +296,124 @@
     </message>
     <message>
         <source>choose file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>https://address.of.the/calendar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>address of the iCalendar-file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Calendar %1 exists already.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not added.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t modify calendar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You already have a calendar entry labelled %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Calendar label exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Parameter iCal out of scope, %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PropertyFilter</name>
+    <message>
+        <source>filtering property</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>equal to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>not equal to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>contains</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>doesn&apos;t contain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>earliest at</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>latest at</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>larger than or equal to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>smaller than or equal to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>criteria</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>set filtering value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>type of property</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add %1-filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Modify %1-filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>harbour-icalendar-filters</name>
+    <message>
+        <source>Bad filters-file format:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

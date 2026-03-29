@@ -4,12 +4,12 @@ import "pages"
 import "utils/globals.js" as Globals
 
 ApplicationWindow {
+    id: application
     //initialPage: Component { FirstPage { } }
     cover: Qt.resolvedUrl("cover/CoverPage.qml")
     allowedOrientations: defaultAllowedOrientations
     Component.onCompleted: {
         var i
-        //setFiltersFile()
         i = readFilters()
         if (i > 0) {
             cleanUpFiltersFile()
@@ -25,7 +25,10 @@ ApplicationWindow {
         })
     }
 
-    property var filtersObj: { "calendars": [] };
+    readonly property var emptyJson: JSON.parse(Globals.emptyJson)
+    readonly property var emptyCalendar: JSON.parse(Globals.emptyCalendar)
+
+    property var filtersObj: emptyJson;
     property var settingsObj: { "filteringProperties": {
         "vevent": ["dtstart", "summary", "categories"],
         "vtodo": ["dtstart", "summary", "categories"],
@@ -35,26 +38,35 @@ ApplicationWindow {
 
     function cleanUpFiltersFile() {
         var i, k, fltrs, lbl, unclean, cleared;
-        var emptyArray = [], emptyJson = { "calendars": emptyArray };
 
         i = 0;
         cleared = 0;
+        unclean = 0;
         fltrs = emptyJson;
-        while (i < filtersObj.calendars.length - 1) {
-            lbl = filtersObj.calendars[i].label;
-            k = i - 1;
-            unclean = 0;
-            while (k > 0) {
-                if (filtersObj.calendars[k].label === lbl) {
-                    unclean++;
-                    cleared++;
+        while (i < filtersObj.calendars.length) {
+            if (!filtersObj.calendars[i].label) {
+                unclean++;
+                cleared++;
+            } else {
+                lbl = filtersObj.calendars[i].label;
+                k = i - 1;
+                while (k >= 0) {
+                    if (filtersObj.calendars[k].label === lbl) {
+                        unclean++;
+                        cleared++;
+                    }
+                    k--;
                 }
-                k--;
             }
+
             if (unclean === 0) {
                 fltrs.calendars.push(filtersObj.calendars[i]);
+            } else {
+                unclean = 0;
             }
+
             i++;
+
         }
         if (cleared > 0) {
             filtersObj = JSON.parse(JSON.stringify(fltrs));
@@ -72,6 +84,10 @@ ApplicationWindow {
         Globals.settingsFilePath = fileOp.getConfigPath();
         fileOp.setFileName(Globals.filtersFileName, Globals.settingsFilePath);
         filtersStr = fileOp.readTxt();
+
+        if (!filtersStr || filtersStr.length < 1) {
+            console.log("empty filtersStr");
+        }
 
         if (filtersStr.length > 1){
             filtersObj = JSON.parse(filtersStr);
@@ -95,7 +111,6 @@ ApplicationWindow {
         //console.log(icsFilter.setFiltersFile())
         Globals.settingsFilePath = fileOp.getConfigPath();
         fileOp.setFileName(Globals.settingsFileName, Globals.settingsFilePath);
-        //fileOp.setFileName(icsFilter.setFiltersFile());
         jsonStr = fileOp.readTxt();
         if (jsonStr > "") {
             jsonObj = JSON.parse(jsonStr);
@@ -105,18 +120,6 @@ ApplicationWindow {
 
         return;
     }
-
-    /*
-    function setFiltersFile() {
-        var configPath, i;
-        configPath = icsFilter.setFiltersFile();
-        i = configPath.indexOf("/", 2); // /home/
-        i = configPath.indexOf("/", i+1); // /home/nemo || defaultuser
-        configPath = configPath.substring(0, i+1);
-        configPath += Globals.settingsFilePath;
-        return icsFilter.setFiltersFile(Globals.filtersFileName, configPath);
-    }
-    // */
 
     function setUpLists(fObj) {
         // defaults
@@ -170,7 +173,6 @@ ApplicationWindow {
                 }
             }
 
-            //Globals.settingsObj.filteringProperties = filterSettings;
             settingsObj.filteringProperties = filterSettings;
         }
         return;
@@ -178,8 +180,12 @@ ApplicationWindow {
 
     function storeFilters() {
         var filtersFile, result;
-        filtersFile = JSON.stringify(filtersObj, null, 2);
-        result = fileOp.writeTxt(filtersFile, Globals.filtersFileName, Globals.settingsFilePath);
+        if (filtersObj.calendars) {
+            filtersFile = JSON.stringify(filtersObj, null, 2);
+            result = fileOp.writeTxt(filtersFile, Globals.filtersFileName, Globals.settingsFilePath);
+        } else {
+            console.log(qsTr("Bad filters-file format:"), JSON.stringify(filtersObj, null, 2));
+        }
 
         return result;
     }

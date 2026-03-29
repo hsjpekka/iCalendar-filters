@@ -7,7 +7,7 @@ Page {
     id: page
     Component.onCompleted: {
         var i = findCalendarIndex(calendar)
-        eventsView.icsOriginalChange(icsFile)
+        eventsView.icsOriginalChange(origIcsFile)
         eventsView.setFilterType(jsonFilters.calendars[i])
         eventsView.filterIcs(jsonFilters)
     }
@@ -18,7 +18,7 @@ Page {
     }
 
     property string calendar: ""
-    property string icsFile: ""
+    property string origIcsFile: ""
     property var jsonFilters: {"calendars": [] }
     property bool exported: false
 
@@ -64,15 +64,13 @@ Page {
                 id: eventsView
                 x: Theme.horizontalPageMargin
                 width: parent.width - 1.5*x
-                height: page.height - y
+                height: contentHeight
 
                 function filterIcs(filterJson) {
-                    console.log(JSON.stringify(filterJson))
+                    //console.log(JSON.stringify(filterJson))
                     if (filterJson) {
-                        //icsModified = icsFilter.filterIcs(calendar, icsOriginal, JSON.stringify(filterJson));
                         icsModifiedChange(icsFilter.filterIcs(calendar, icsOriginal, JSON.stringify(filterJson)));
                     } else {
-                        //icsModified = icsFilter.filterIcs(calendar, icsOriginal);
                         icsModifiedChange(icsFilter.filterIcs(calendar, icsOriginal));
                     }
 
@@ -105,6 +103,8 @@ Page {
                 }
 
             }
+
+            VerticalScrollDecorator{}
 
         }
 
