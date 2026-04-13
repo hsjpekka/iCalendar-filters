@@ -115,7 +115,7 @@ SilicaListView{
         ListItem {
             id: eventsListItem
             width: parent.width
-            height: eventDay.height
+            contentHeight: eventDay.height
 
             property bool accept: include
 

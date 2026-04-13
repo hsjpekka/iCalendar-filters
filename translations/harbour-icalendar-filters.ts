@@ -62,15 +62,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>modify</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>component name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Component properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -79,6 +71,10 @@
     </message>
     <message>
         <source>add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1-properties</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -152,17 +148,9 @@
         <source>show files</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>only %1.%2-filters</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>FirstPage</name>
-    <message>
-        <source>iCalendars</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>calendar</source>
         <translation type="unfinished"></translation>
@@ -212,28 +200,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>manage calendars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>export to calendar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>File write error.</source>
         <translation>Tiedoston kirjoitusvirhe.</translation>
-    </message>
-    <message>
-        <source>no absolute time reminders</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>adding an absolute time reminder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>adding an absolute time reminder on full time events</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>adding both reminder types on normal events</source>
@@ -245,6 +217,22 @@
     </message>
     <message>
         <source>alarms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>edit calendar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>iCalendar-filters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>add a fixed time reminder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>no fixed time reminders</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

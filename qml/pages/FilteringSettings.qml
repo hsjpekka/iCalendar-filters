@@ -128,7 +128,8 @@ Dialog {
                 id: cmpView
                 x: Theme.horizontalPageMargin
                 width: parent.width - 2*x
-                height: 3*Theme.itemSizeSmall
+                height: count > 1 ? count*Theme.itemSizeSmall + extraSpace :
+                                    Theme.itemSizeSmall + extraSpace
                 spacing: 0// Theme.paddingSmall
                 clip: true//
 
@@ -139,14 +140,44 @@ Dialog {
                         text: "-"
                         visible: cmpList.count < 1
                         color: Theme.secondaryColor
+                        height: visible? contentHeight : 0
                     }
                 }
 
-                delegate: Component {
+                delegate: cmpDelegate
+
+                //*
+                highlight: Rectangle {
+                    color: Theme.highlightBackgroundColor
+                    height: cmpView.currentItem? cmpView.currentItem.height : 0
+                    width: cmpView.width
+                    radius: Theme.paddingMedium
+                    opacity: Theme.opacityLow
+                }
+
+                highlightFollowsCurrentItem: true
+                //*/
+
+                onCurrentIndexChanged: {
+                    var selectedComponent = cmpList.getValue(currentIndex)
+                    prpList.addCmpProps(selectedComponent, false)
+                }
+
+                property int extraSpace: 0
+
+                Component {
                     id: cmpDelegate
                     ListItem {
                         contentHeight: Theme.itemSizeSmall
                         menu: ContextMenu {
+                            onActiveChanged: {
+                                if (active) {
+                                    cmpView.extraSpace = 2*Theme.itemSizeSmall
+                                } else {
+                                    cmpView.extraSpace = 0
+                                }
+                            }
+
                             MenuItem {
                                 text: qsTr("delete")
                                 onClicked: {
@@ -161,39 +192,26 @@ Dialog {
                                     composeFilteringProps()
                                 }
                             }
+                            /*
                             MenuItem {
                                 text: qsTr("modify")
                                 onClicked: {
                                     cmpList.set(index, txtComponent.text)
                                 }
                             }
+                            //*/
                         }
                         onClicked: {
                             cmpView.currentIndex = index
                         }
 
                         Label {
+                            id: lbl
                             anchors.centerIn: parent
                             text: cmp
                             color: Theme.secondaryColor
                         }
                     }
-                }
-
-                highlight: Rectangle {
-                    color: Theme.highlightBackgroundColor
-                    height: cmpView.currentItem? cmpView.currentItem.height : 0
-                    width: cmpView.width
-                    radius: Theme.paddingMedium
-                    opacity: Theme.opacityLow
-                }
-
-                highlightFollowsCurrentItem: true
-
-                onCurrentIndexChanged: {
-                    console.log("valittu vaihtui", currentIndex)
-                    var selectedComponent = cmpList.getValue(currentIndex)
-                    prpList.addCmpProps(selectedComponent, false)
                 }
             }
 
@@ -206,6 +224,25 @@ Dialog {
                 }
             }
 
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("add")
+                enabled: txtComponent.text > ""
+                onClicked: {
+                    if (txtComponent.text > "") {
+                        cmpList.addComponent(txtComponent.text)
+                        prpList.addCmpProps(txtComponent.text, true)
+                        cmpView.currentIndex = -1
+                        cbCmpAction.currentIndex = -1
+                        cbCmpAction.value = ""
+                        txtComponent.text = ""
+
+                        composeFilteringProps()
+                    }
+                }
+            }
+
+            /*
             ComboBox {
                 id: cbCmpAction
                 label: qsTr("modify") + " | " + qsTr("add")
@@ -251,9 +288,10 @@ Dialog {
                     radius: Theme.paddingMedium
                 }
             }
+            //*/
 
             SectionHeader {
-                text: qsTr("Component properties")
+                text: qsTr("%1-properties").arg(cmpList.getValue(cmpView.currentIndex))
             }
 
             ListModel {
@@ -345,6 +383,7 @@ Dialog {
                         text: "-"
                         visible: prpList.count < 1
                         color: Theme.secondaryColor
+                        height: visible? contentHeight : 0
                     }
                 }
 
@@ -373,6 +412,7 @@ Dialog {
                         }
 
                         Label {
+                            id: lbl
                             anchors.centerIn: parent
                             text: prop
                             color: Theme.secondaryColor
@@ -380,6 +420,7 @@ Dialog {
                     }
                 }
 
+                /*
                 highlight: Rectangle {
                     color: Theme.highlightBackgroundColor
                     height: prpView.currentItem? prpView.currentItem.height : 0
@@ -389,13 +430,15 @@ Dialog {
                 }
 
                 highlightFollowsCurrentItem: true
+                //*/
 
+                /*
                 onCurrentIndexChanged: {
                     if (currentIndex >= 0 && currentIndex < count) {
                         txtProperty.text = prpList.getValue(currentIndex)
                     }
-
                 }
+                //*/
             }
 
             TextField {
@@ -407,6 +450,23 @@ Dialog {
                 }
             }
 
+            Button {
+                text: qsTr("add")
+                anchors.horizontalCenter: parent.horizontalCenter
+                enabled: txtProperty.text > ""
+                onClicked: {
+                    if (txtProperty.text > "") {
+                        prpList.addProperty(txtProperty.text)
+                        txtProperty.text = ""
+                        prpView.currentIndex = -1
+                        cbPrpAction.currentIndex = -1
+                        cbPrpAction.value = ""
+                        composeFilteringProps()
+                    }
+                }
+            }
+
+            /*
             ComboBox {
                 id: cbPrpAction
                 label: qsTr("modify") + " | " + qsTr("add")
@@ -447,6 +507,7 @@ Dialog {
                     radius: 0.5*Theme.fontSizeTiny
                 }
             }
+            //*/
 
             Rectangle {
                 color: "transparent"

@@ -52,11 +52,11 @@ Page {
 
     SilicaFlickable {
         anchors.fill: parent
-        contentHeight: column.height
+        contentHeight: column.height + Theme.paddingLarge
 
         PullDownMenu {
             MenuItem {
-                text: qsTr("manage calendars")
+                text: qsTr("edit calendar")
                 onClicked: {
                     var labelCurrent = calendarSelector.value
                     var urlCurrent = iCurrent >= 0? filtersObj.calendars[iCurrent].url : ""
@@ -139,8 +139,6 @@ Page {
                         dialog = pageStack.push(Qt.resolvedUrl("Filters.qml"), {
                                             "oldFiltersObj": filtersObj,
                                             "calId": i,
-                                            //"calendarLbl": cal.label,
-                                            //"calendarUrl": cal.url,
                                             "icsFile": eventsView.icsOriginal,
                                             "settingsObj": settingsObj
                                         } )
@@ -175,7 +173,7 @@ Page {
 
             PageHeader {
                 id: header
-                title: qsTr("iCalendars")
+                title: qsTr("iCalendar-filters")
             }
 
             ListModel {
@@ -456,8 +454,8 @@ Page {
 
             TextSwitch {
                 id: addReminderTime
-                text: checked? ((useBoth.checked && useBoth.visible)? addBoth : addFullTime) :
-                               qsTr("no absolute time reminders")
+                text: checked? qsTr("add a fixed time reminder") : //((useBoth.checked && useBoth.visible)? addBoth : addFullTime) :
+                               qsTr("no fixed time reminders")
                 onCheckedChanged: {
                     if (!settingUp) {
                         if (checked) {
@@ -467,8 +465,8 @@ Page {
                     }
                 }
 
-                property string addBoth: qsTr("adding an absolute time reminder")
-                property string addFullTime: qsTr("adding an absolute time reminder on full time events")
+                //property string addBoth: qsTr("adding an absolute time reminder")
+                //property string addFullTime: qsTr("adding a fixed time reminder on full time events")
             }
 
             TextField {
@@ -708,9 +706,7 @@ Page {
         // return -1 = no filters-file, 0 = no json-file, >0 = calendars
         var filtersFile, i, cal, adv, time, d=[];
         if (!filtersObj.calendars) {
-            console.log("<-------->");
-            console.log("tyhjä suodatintiedosto");
-            console.log("<-------->");
+            console.log("empty filters");
             filtersObj = emptyJson;
         }
 

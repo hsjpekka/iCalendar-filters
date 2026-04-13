@@ -9,7 +9,7 @@
     </message>
     <message>
         <source>original</source>
-        <translation type="unfinished">alkuperäinen</translation>
+        <translation>alkuperäinen</translation>
     </message>
     <message>
         <source>filter</source>
@@ -62,16 +62,8 @@
         <translation>poista</translation>
     </message>
     <message>
-        <source>modify</source>
-        <translation>muokkaa</translation>
-    </message>
-    <message>
         <source>component name</source>
         <translation>merkintä</translation>
-    </message>
-    <message>
-        <source>Component properties</source>
-        <translation>merkinnän ominaisuudet</translation>
     </message>
     <message>
         <source>property name</source>
@@ -80,6 +72,10 @@
     <message>
         <source>add</source>
         <translation>lisää</translation>
+    </message>
+    <message>
+        <source>%1-properties</source>
+        <translation>%1-ominaisuudet</translation>
     </message>
 </context>
 <context>
@@ -152,17 +148,9 @@
         <source>show files</source>
         <translation>tarkastele tiedostoja</translation>
     </message>
-    <message>
-        <source>only %1.%2-filters</source>
-        <translation>vain %1.%2-suodattimet</translation>
-    </message>
 </context>
 <context>
     <name>FirstPage</name>
-    <message>
-        <source>iCalendars</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>calendar</source>
         <translation>kalenteri</translation>
@@ -212,28 +200,12 @@
         <translation>suodattimen määritys</translation>
     </message>
     <message>
-        <source>manage calendars</source>
-        <translation>hallitse kalentereita</translation>
-    </message>
-    <message>
         <source>export to calendar</source>
         <translation>vie kalenteriin</translation>
     </message>
     <message>
         <source>File write error.</source>
         <translation>Tiedoston kirjoitusvirhe.</translation>
-    </message>
-    <message>
-        <source>no absolute time reminders</source>
-        <translation>ei kiinteän ajan muistutuksia</translation>
-    </message>
-    <message>
-        <source>adding an absolute time reminder</source>
-        <translation>kiinteän ajan muistutus lisätään</translation>
-    </message>
-    <message>
-        <source>adding an absolute time reminder on full time events</source>
-        <translation>kiinteän ajan muistutus lisätään koko päivän tapahtumiin</translation>
     </message>
     <message>
         <source>adding both reminder types on normal events</source>
@@ -246,6 +218,22 @@
     <message>
         <source>alarms</source>
         <translation>muistutukset</translation>
+    </message>
+    <message>
+        <source>edit calendar</source>
+        <translation>muokkaa kalenteria</translation>
+    </message>
+    <message>
+        <source>iCalendar-filters</source>
+        <translation>iCalendar-suodattimet</translation>
+    </message>
+    <message>
+        <source>add a fixed time reminder</source>
+        <translation>lisää kiinteän ajan muistutus</translation>
+    </message>
+    <message>
+        <source>no fixed time reminders</source>
+        <translation>ei kiinteän ajan muistutusta</translation>
     </message>
 </context>
 <context>

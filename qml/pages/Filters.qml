@@ -423,11 +423,6 @@ Dialog {
                 text: qsTr("filters")
             }
 
-            TextSwitch {
-                id: tsShowOnlyCurrent
-                text: qsTr("only %1.%2-filters").arg(cbFilterComponent.value).arg(cbFilteringProperty.value)
-            }
-
             Item {
                 width: parent.width
                 height: Theme.paddingLarge
@@ -458,6 +453,11 @@ Dialog {
 
                 }
             }
+
+            /*TextSwitch {
+                id: tsShowOnlyCurrent
+                text: qsTr("only %1.%2-filters").arg(cbFilterComponent.value).arg(cbFilteringProperty.value)
+            }//*/
 
             Item {
                 width: parent.width
@@ -523,7 +523,7 @@ Dialog {
                 id: listViewFilters
                 x: Theme.horizontalPageMargin
                 width: parent.width - 2*x
-                height: count < 2 ? 2*Theme.itemSizeSmall :
+                height: count < 2 ? Theme.itemSizeSmall + extraSpace:
                                     count*Theme.itemSizeSmall +
                                     (count-1)*spacing + extraSpace
                 spacing: Theme.paddingSmall
@@ -531,14 +531,6 @@ Dialog {
 
                 model: filterModel
                 delegate: filterDelegate
-
-                highlight: Rectangle {
-                    color: Theme.highlightBackgroundColor
-                    height: listViewFilters.currentItem? listViewFilters.currentItem.height : 0
-                    width: listViewFilters.width
-                    radius: Theme.paddingMedium
-                    opacity: Theme.opacityLow
-                }
 
                 highlightFollowsCurrentItem: true
 
@@ -549,6 +541,8 @@ Dialog {
                     id: filterDelegate
                     ListItem {
                         id: filterListItem
+                        visible: !isCmpProp? // && tsShowOnlyCurrent.checked
+                                     0 : Theme.itemSizeSmall
                         enabled: delegateLabel.visible
                         contentHeight: delegateLabel.visible?
                                            Theme.itemSizeSmall : 0
@@ -580,14 +574,11 @@ Dialog {
                                 }
                             }
                         }
+                        //*
                         onClicked: {
-                            // click to select and unselect the item
-                            if (listViewFilters.currentIndex === index) {
-                                listViewFilters.currentIndex = -1
-                            } else {
-                                listViewFilters.currentIndex = index
-                            }
-                        }
+                            cbFilterComponent.setValue(icsComponent)
+                            cbFilteringProperty.setValue(icsProperty)
+                        }//*/
 
                         Label {
                             id: delegateLabel
@@ -595,11 +586,9 @@ Dialog {
                             text: icsComponent + "." + icsProperty + " " +
                                   icsCriteria + " " + icsValue
                             color: Theme.secondaryColor
-                            visible: tsShowOnlyCurrent.checked && !isCmpProp?
-                                         0 : Theme.itemSizeSmall
                         }
 
-                        property bool isCmpProp: icsComponent === cbFilterComponent.value && icsProperty === cbFilteringProperty.value
+                        property bool isCmpProp: icsComponent === cbFilterComponent.value// && icsProperty === cbFilteringProperty.value
 
                         function modifySelected() {
                             var dialog = pageStack.push(
