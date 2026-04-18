@@ -405,6 +405,14 @@ Dialog {
                 text: checked? qsTr("all criteria have to match") :
                                qsTr("a single matching criteria is enough")
                 onCheckedChanged: {
+                    var perCent
+                    if (checked) {
+                        perCent = 100
+                    } else {
+                        perCent = 0
+                    }
+
+                    filterModel.checkPropertyChanges(cbFilterComponent.value, cbFilteringProperty.value, perCent)
                     composeFilter()
                 }
 
@@ -591,11 +599,12 @@ Dialog {
                         property bool isCmpProp: icsComponent === cbFilterComponent.value// && icsProperty === cbFilteringProperty.value
 
                         function modifySelected() {
+                            console.log("muokattavaksi ", cbFilterComponent.value, cbFilteringProperty.value, icsPropType, icsValue, icsCriteria )
                             var dialog = pageStack.push(
                                         Qt.resolvedUrl("PropertyFilter.qml"),
                                         {   "isAdd": false,
-                                            "filteredCmp": cbFilterComponent.value,
-                                            "filteringProp": cbFilteringProperty.value,
+                                            "filteredCmp": icsComponent,
+                                            "filteringProp": icsProperty,
                                             "propertyType": icsPropType,
                                             "filterValue": icsValue,
                                             "criteria": icsCriteria,
@@ -676,7 +685,7 @@ Dialog {
             }
             cmponent["propMatches"] = calendarComponents.getLimit(cmponent["component"]);
 
-            ip = isPropertyIncluded(prperties, filterModel.get(ic).icsProperty);
+            ip = isPropertyIncluded(prperties, filterModel.get(ic).icsProperty, filterModel.get(ic).icsPropType);
             if (ip >= 0) { // rewrite filters for the property
                 prop = prperties[ip];
                 vals = prop.values;
@@ -732,12 +741,13 @@ Dialog {
         return result;
     }
 
-    function isPropertyIncluded(propertyList, prName) {
+    function isPropertyIncluded(propertyList, prName, prType) {
         var i, result;
         result = -1;
         i = 0;
         while (i < propertyList.length) {
-            if (propertyList[i].property.toLowerCase() === prName.toLowerCase()){
+            if (propertyList[i].property.toLowerCase() === prName.toLowerCase() &&
+                    propertyList[i].type.toLowerCase() === prType.toLowerCase() ){
                 result = i;
             }
             i++;

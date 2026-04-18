@@ -6,10 +6,12 @@ Dialog {
     allowedOrientations: Orientation.All
     onDone: {
         filteringProp = cbFilteringProperty.value
-        propertyType = cbPropertyType.value
+        propertyType = cbPropertyType.pTypeToString()
         filterValue = filterValueTF.text
+        criteria = cbFilteringCriteria.criteria
     }
     Component.onCompleted: {
+        console.log("alussa", criteria)
         cmpProperties.setUp()
         cbFilteringProperty.setValue(filteringProp)
         if (propertyType > "") {
@@ -19,9 +21,10 @@ Dialog {
         }
         cbFilteringCriteria.setValue(criteria)
         filterValueTF.text = filterValue
+        console.log("asetettu ", filteredCmp, filteringProp, propertyType, filterValue, criteria)
     }
 
-    property alias criteria: cbFilteringCriteria.criteria
+    property string criteria//: cbFilteringCriteria.criteria
     property string filteredCmp
     property string filteringProp
     property string propertyType
@@ -160,6 +163,9 @@ Dialog {
 
                 function pTypeToString(typeNr) {
                     var result;
+                    if (typeNr === undefined) {
+                        typeNr = ptype;
+                    }
                     if (typeNr === pstring) {
                         result = "string";
                     } else if (typeNr === pdate) {
@@ -250,6 +256,7 @@ Dialog {
                         }
                         i++;
                     }
+                    console.log("merkit", str, N);
                     return N;
                 }
             }
