@@ -113,8 +113,8 @@
         <translation>Asetustiedoston kirjoitusvirhe.</translation>
     </message>
     <message>
-        <source>modify filter settings</source>
-        <translation>muokkaa suotimen asetuksia</translation>
+        <source>settings</source>
+        <translation>asetukset</translation>
     </message>
     <message>
         <source>reading in matching components</source>

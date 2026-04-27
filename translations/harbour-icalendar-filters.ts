@@ -109,10 +109,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>modify filter settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>reading in matching components</source>
         <translation type="unfinished"></translation>
     </message>
@@ -146,6 +142,10 @@
     </message>
     <message>
         <source>show files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

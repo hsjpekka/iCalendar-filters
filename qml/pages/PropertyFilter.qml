@@ -11,7 +11,6 @@ Dialog {
         criteria = cbFilteringCriteria.criteria
     }
     Component.onCompleted: {
-        console.log("alussa", criteria)
         cmpProperties.setUp()
         cbFilteringProperty.setValue(filteringProp)
         if (propertyType > "") {
@@ -21,7 +20,6 @@ Dialog {
         }
         cbFilteringCriteria.setValue(criteria)
         filterValueTF.text = filterValue
-        console.log("asetettu ", filteredCmp, filteringProp, propertyType, filterValue, criteria)
     }
 
     property string criteria//: cbFilteringCriteria.criteria

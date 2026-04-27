@@ -65,6 +65,7 @@ Page {
                 x: Theme.horizontalPageMargin
                 width: parent.width - 1.5*x
                 height: contentHeight
+                fontSize: Theme.fontSizeLarge
 
                 function filterIcs(filterJson) {
                     //console.log(JSON.stringify(filterJson))

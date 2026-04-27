@@ -59,7 +59,7 @@ Dialog {
 
         PullDownMenu {
             MenuItem {
-                text: qsTr("modify filter settings")
+                text: qsTr("settings")
                 onClicked: {
                     var dialog = pageStack.push(Qt.resolvedUrl("FilteringSettings.qml"), {
                                                     "settingsObj": settingsObj
@@ -78,8 +78,6 @@ Dialog {
                                 nPopUp.body = fileOp.error();
                                 nPopUp.summary = qsTr("Config-file write error.")
                             }
-                        } else {
-                            console.log("ei muokkauksia")
                         }
                     } )
                 }
@@ -450,7 +448,7 @@ Dialog {
                                 })
                     dialog.accepted.connect( function () {
                         var percnt;
-                        percnt = allOrAnyProperty.checked? 1 : 0
+                        percnt = allOrAnyProperty.checked? 100 : 0
                         filterModel.addFilter(cbFilterComponent.value,
                                               dialog.filteringProp,
                                               dialog.propertyType,
@@ -599,7 +597,6 @@ Dialog {
                         property bool isCmpProp: icsComponent === cbFilterComponent.value// && icsProperty === cbFilteringProperty.value
 
                         function modifySelected() {
-                            console.log("muokattavaksi ", cbFilterComponent.value, cbFilteringProperty.value, icsPropType, icsValue, icsCriteria )
                             var dialog = pageStack.push(
                                         Qt.resolvedUrl("PropertyFilter.qml"),
                                         {   "isAdd": false,
